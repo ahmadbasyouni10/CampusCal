@@ -1,13 +1,8 @@
 import datetime
 import pandas as pd
 from collections import defaultdict
-from models import Task, Schedule
-# from app import db
-
-class Schedule(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True nullable=False)
-    tasks = db.relationship('Task', backref='schedule', lazy=True)
+# from models import Task, Schedule, User
+from test import Task, Schedule, User
 '''
 What needs to be stored in a users Schedule:
 Any events that need to be blocked out
@@ -95,7 +90,7 @@ def updateExams(schedule_id, exam):
             if studyTime <= length:
                 totalStudy-= studyTime
                 tookFlag = True
-                study = Task(user_id=schedule.user_id, name=f"Study for {exam["name"]}", task_type="Study", priority=exam["priority"],
+                study = Task(user_id=schedule.user_id, name="Study for "+exam["name"], task_type="Study", priority=exam["priority"],
                              date=today, start_time=times[0], end_time=times[0]+studyTime)
                 studySessions.append(study)
                 break
@@ -127,5 +122,4 @@ test_exam = {
     "hours": 20,
     "priority": 1,
     "class": "CS 288"
-}
-updateExams(test_exam)
+}   
