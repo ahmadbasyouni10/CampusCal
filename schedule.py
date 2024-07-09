@@ -17,7 +17,7 @@ Blocked out times for studying
 
 def populate(schedule_Id):
     # What actually loads the schedule, will return all open and closed time slots by days
-    schedule = Schedule.query.get_or_404(schedule)
+    schedule = Schedule.query.get_or_404(schedule_Id)
     allTasks = Task.query.filter_by(schedule_id=schedule.id).order_by(Task.start_time).all()
     response = defaultdict(list)
     for task in allTasks:
