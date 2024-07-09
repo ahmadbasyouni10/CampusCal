@@ -1,18 +1,8 @@
 import datetime
 import pandas as pd
 from collections import defaultdict
-<<<<<<< HEAD
-# from models import Task, Schedule, User
-from test import Task, Schedule, User
-=======
-from models import Task, Schedule
-# from app import db
+from models import Task, Schedule, User
 
-class Schedule(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True nullable=False)
-    tasks = db.relationship('Task', backref='schedule', lazy=True)
->>>>>>> e58f932869500e434c5ae0984193d2aeba662a82
 '''
 What needs to be stored in a users Schedule:
 Any events that need to be blocked out
@@ -100,11 +90,7 @@ def updateExams(schedule_id, exam):
             if studyTime <= length:
                 totalStudy-= studyTime
                 tookFlag = True
-<<<<<<< HEAD
                 study = Task(user_id=schedule.user_id, name="Study for "+exam["name"], task_type="Study", priority=exam["priority"],
-=======
-                study = Task(user_id=schedule.user_id, name=f"Study for {exam["name"]}", task_type="Study", priority=exam["priority"],
->>>>>>> e58f932869500e434c5ae0984193d2aeba662a82
                              date=today, start_time=times[0], end_time=times[0]+studyTime)
                 studySessions.append(study)
                 break
@@ -128,17 +114,3 @@ dict {
 }
 
 '''
-
-test_exam = {
-    "name": "CS288 Midterm",
-    "date": datetime.datetime(2024, 8, 9, 11, 30),
-    "time": "11:30 am",
-    "hours": 20,
-    "priority": 1,
-    "class": "CS 288"
-<<<<<<< HEAD
-}   
-=======
-}
-updateExams(test_exam)
->>>>>>> e58f932869500e434c5ae0984193d2aeba662a82
