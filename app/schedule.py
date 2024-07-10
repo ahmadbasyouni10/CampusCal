@@ -1,7 +1,7 @@
 import datetime
 import pandas as pd
 from collections import defaultdict
-from models import Task
+from app.models import Task
 
 def populate(user_id):
     # What actually loads the schedule, will return all open and closed time slots by days

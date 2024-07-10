@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from app.db import db
 
 load_dotenv()
 
@@ -13,7 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI', 'sqlite:///Cam
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'mysecret')
 
-db = SQLAlchemy(app)
+db.init_app(app)
 
 from app.routes import bp as auth_bp
 app.register_blueprint(auth_bp, url_prefix='/auth')

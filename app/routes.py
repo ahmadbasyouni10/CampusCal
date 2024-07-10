@@ -1,8 +1,9 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import User, Task, Performance, db
+from app.models import User, Task, Performance
 from datetime import datetime, timedelta
 from app.schedule import populate, generate_study_plan
+from app.db import db
 import random
 
 bp = Blueprint('auth', __name__)
