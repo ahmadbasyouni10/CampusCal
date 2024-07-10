@@ -47,6 +47,19 @@ def add_assessment():
     db.session.commit()
     return jsonify({'message': 'New assessment added!'})
 
+@bp.route('/schedule/<int:user_id>/task/<int:task_id>/remove', methods=['post'])
+def remove_task(user_id, task_id):
+    task = Task.query.get(task_id)
+    if not task:
+        return jsonify({'message': 'Task not found'}), 404
+    if task.children:
+        child_task = task.children
+        for child in child_task:
+            db.session.remove(child)
+    db.session.remove(task)
+    db.session.commit()
+    return jsonify({'message': 'Task and all related child tasks removed'})
+
 @bp.route('/schedule/<int:user_id>', methods=['GET'])
 def get_schedule(user_id):
     user = User.query.get(user_id)
@@ -59,7 +72,7 @@ def get_schedule(user_id):
     return jsonify(schedule)
 
 # when creating the plan for tasks, should the user then input the amount of hours it would take?
-@bp.route('schedule/<int:user_id>/task/<int:task_id>/new_study_plan', methods=['POST'])
+@bp.route('/schedule/<int:user_id>/task/<int:task_id>/new_study_plan', methods=['POST'])
 def create_study_plan(user_id, task_id):
     user = User.query.get(user_id)
     if not user:
