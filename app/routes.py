@@ -58,9 +58,12 @@ def add_classes(user_id):
             user_id=user_id,
             name=cl['className'],
             task_type="Class",
-            start_time=datetime.strptime(cl['startTimeHour']+":"+cl['startTimeMinute'])
-        )
-    db.session.add_all(classTasks)
+            start_time=datetime.strptime(cl['startTimeHour']+":"+cl['startTimeMinute']+":"+cl['startTimeAmPm'], "%%I:%M:%p").time(),
+            end_time=datetime.strptime(cl['endTimeHour']+":"+cl['endTimeMinute']+":"+cl['endTimeAmPm'], "%%I:%M:%p").time(),
+            date=cl['date'] # don't think the date is set currently
+        ) # will need to update later once the front end is properly configured this likely doesn't work
+        classTasks.append(clas)
+    db.session.add_all(classTasks) 
     db.session.commit()
 @bp.route('/schedule/<int:user_id>/task/<int:task_id>/remove', methods=['post'])
 def remove_task(user_id, task_id):
