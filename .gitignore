@@ -1,0 +1,5 @@
+.env
+instance
+__pycache__
+CampusCal.db
+app/__pycache__

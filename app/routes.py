@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User, Task, Performance, db
 from datetime import datetime, timedelta
+from app.schedule import populate, generate_study_plan
 import random
 
 bp = Blueprint('auth', __name__)
@@ -46,41 +47,46 @@ def add_assessment():
     db.session.commit()
     return jsonify({'message': 'New assessment added!'})
 
-@bp.route('/get_schedule/<int:user_id>', methods=['GET'])
+@bp.route('/schedule/<int:user_id>/task/<int:task_id>/remove', methods=['post'])
+def remove_task(user_id, task_id):
+    task = Task.query.get(task_id)
+    if not task:
+        return jsonify({'message': 'Task not found'}), 404
+    if task.children:
+        child_task = task.children
+        for child in child_task:
+            db.session.remove(child)
+    db.session.remove(task)
+    db.session.commit()
+    return jsonify({'message': 'Task and all related child tasks removed'})
+
+@bp.route('/schedule/<int:user_id>', methods=['GET'])
 def get_schedule(user_id):
     user = User.query.get(user_id)
     if not user:
         return jsonify({'message': 'User not found'}), 404
     
-    tasks = Task.query.filter_by(user_id=user_id).all()
-    study_plan = generate_study_plan(user, tasks)
-    
-    return jsonify({'study_plan': study_plan})
+    # tasks = Task.query.filter_by(user_id=user_id).all()
+    # study_plan = generate_study_plan(user, tasks)
+    schedule = populate(user.id)
+    return jsonify(schedule)
 
-def generate_study_plan(user, tasks):
-    study_plan = []
-    now = datetime.now()
+# when creating the plan for tasks, should the user then input the amount of hours it would take?
+@bp.route('/schedule/<int:user_id>/task/<int:task_id>/new_study_plan', methods=['POST'])
+def create_study_plan(user_id, task_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    task = Task.query.get(task_id)
+    if not task:
+        return jsonify({'message': 'Task not found'}), 404
     
-    for task in tasks:
-        days_until_due = (task.date - now.date()).days
-        study_hours_per_day = user.study_hours_per_day
-        
-        if task.priority >= 8:
-            days_to_study = days_until_due
-        elif task.priority >= 6:
-            days_to_study = days_until_due // 2
-        else:
-            days_to_study = days_until_due // 3
+    allStudySessions = generate_study_plan(user, task)
+    db.session.add_all(allStudySessions)
+    db.session.commit()
 
-        for day in range(days_to_study):
-            study_date = (now + timedelta(days=day)).date().isoformat()
-            study_plan.append({
-                'task': task.name,
-                'study_hours': study_hours_per_day,
-                'date': study_date
-            })
-    
-    return study_plan
+    return jsonify(populate(user.id))
+
 
 @bp.route('/update_performance', methods=['POST'])
 def update_performance():
