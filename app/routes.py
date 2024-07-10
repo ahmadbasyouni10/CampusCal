@@ -1,0 +1,132 @@
+from flask import Blueprint, request, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
+from app.models import User, Task, Performance, db
+from datetime import datetime, timedelta
+import random
+
+bp = Blueprint('auth', __name__)
+
+@bp.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    hashed_password = generate_password_hash(data['password'], method='sha256')
+    new_user = User(
+        username=data['username'],
+        email=data['email'],
+        password=hashed_password,
+        study_hours_per_day=data['study_hours_per_day'],
+        preferred_study_time=data['preferred_study_time']
+    )
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'New user created!'})
+
+@bp.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    user = User.query.filter_by(username=data['username']).first()
+    if user and check_password_hash(user.password, data['password']):
+        return jsonify({'message': 'Login successful!'})
+    return jsonify({'message': 'Invalid username or password'})
+
+@bp.route('/add_assessment', methods=['POST'])
+def add_assessment():
+    data = request.get_json()
+    user_id = data['user_id']
+    new_task = Task(
+        user_id=user_id,
+        name=data['name'],
+        task_type=data['task_type'],
+        priority=data['priority'],
+        date=datetime.strptime(data['date'], '%Y-%m-%d').date(),
+        start_time=datetime.strptime(data['start_time'], '%H:%M:%S').time() if data.get('start_time') else None,
+        end_time=datetime.strptime(data['end_time'], '%H:%M:%S').time() if data.get('end_time') else None
+    )
+    db.session.add(new_task)
+    db.session.commit()
+    return jsonify({'message': 'New assessment added!'})
+
+@bp.route('/get_schedule/<int:user_id>', methods=['GET'])
+def get_schedule(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    
+    tasks = Task.query.filter_by(user_id=user_id).all()
+    study_plan = generate_study_plan(user, tasks)
+    
+    return jsonify({'study_plan': study_plan})
+
+def generate_study_plan(user, tasks):
+    study_plan = []
+    now = datetime.now()
+    
+    for task in tasks:
+        days_until_due = (task.date - now.date()).days
+        study_hours_per_day = user.study_hours_per_day
+        
+        if task.priority >= 8:
+            days_to_study = days_until_due
+        elif task.priority >= 6:
+            days_to_study = days_until_due // 2
+        else:
+            days_to_study = days_until_due // 3
+
+        for day in range(days_to_study):
+            study_date = (now + timedelta(days=day)).date().isoformat()
+            study_plan.append({
+                'task': task.name,
+                'study_hours': study_hours_per_day,
+                'date': study_date
+            })
+    
+    return study_plan
+
+@bp.route('/update_performance', methods=['POST'])
+def update_performance():
+    data = request.get_json()
+    user_id = data['user_id']
+    task_id = data['task_id']
+    score = data['score']
+    
+    performance = Performance.query.filter_by(user_id=user_id, task_id=task_id).first()
+    if performance:
+        performance.score = score
+    else:
+        new_performance = Performance(user_id=user_id, task_id=task_id, score=score)
+        db.session.add(new_performance)
+    
+    db.session.commit()
+    
+    user = User.query.get(user_id)
+    performances = Performance.query.filter_by(user_id=user_id).all()
+    adjusted_study_plan = adjust_study_plan_based_on_performance(user, performances)
+    
+    return jsonify({'message': 'Performance updated!', 'adjusted_study_plan': adjusted_study_plan})
+
+def adjust_study_plan_based_on_performance(user, performances):
+    adjusted_plan = []
+    
+    for performance in performances:
+        task = Task.query.get(performance.task_id)
+        days_until_due = (task.date - datetime.now().date()).days
+        
+        if performance.score < 6:
+            days_to_study = days_until_due
+            study_hours_per_day = user.study_hours_per_day + 1
+        elif performance.score >= 8:
+            days_to_study = days_until_due // 2
+            study_hours_per_day = user.study_hours_per_day - 1
+        else:
+            days_to_study = days_until_due // 3
+            study_hours_per_day = user.study_hours_per_day
+
+        for day in range(days_to_study):
+            study_date = (datetime.now() + timedelta(days=random.randint(0, days_until_due))).date().isoformat()
+            adjusted_plan.append({
+                'task': task.name,
+                'study_hours': study_hours_per_day,
+                'date': study_date
+            })
+    
+    return adjusted_plan
