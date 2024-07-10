@@ -29,7 +29,7 @@ def login():
     if user and check_password_hash(user.password, data['password']):
         return jsonify({'message': 'Login successful!'})
     return jsonify({'message': 'Invalid username or password'})
-
+# On login redirect to schedule and populate it
 @bp.route('/add_assessment', methods=['POST'])
 def add_assessment():
     data = request.get_json()
@@ -47,6 +47,20 @@ def add_assessment():
     db.session.commit()
     return jsonify({'message': 'New assessment added!'})
 
+@bp.route('/schedule/<int:user_id>/classes', methods=['POST'])
+def add_classes(user_id):
+    data = request.get_json()
+    classes = data # would be all of the inputed classes
+    classTasks = []
+    for cl in classes:
+        clas = Task(
+            user_id=user_id,
+            name=cl['className'],
+            task_type="Class",
+            start_time=datetime.strptime(cl['startTimeHour']+":"+cl['startTimeMinute'])
+        )
+    db.session.add_all(classTasks)
+    db.session.commit()
 @bp.route('/schedule/<int:user_id>/task/<int:task_id>/remove', methods=['post'])
 def remove_task(user_id, task_id):
     task = Task.query.get(task_id)
