@@ -1,7 +1,7 @@
 # routes.py
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import User, db, Schedule
+from models import User, db, Schedule, Task
 from schedule import populate, updateExams
 
 bp = Blueprint('auth', __name__)
@@ -23,20 +23,25 @@ def login():
         return jsonify({'message': 'Login successful!'})
     return jsonify({'message': 'Invalid username or password'})
 
-@bp.route('user/<int:user_id>/schedule', methods=['POST'])
-def init_schedule(user_id):
-    user = User.query.get_or_404(user_id)
-    if user.schedule:
-        return jsonify({'message': 'User schedule already exists'}), 400
-
-    schedule = Schedule(user_id=user_id)
-    db.session.add(schedule)
-    db.session.commit()
-    return jsonify({'message': 'Schedule created'}), 201
-
-@bp.route('user/<int:user_id>/schedule', methods=['GET'])
+# add security for only allowing the user to look at their schedule
+@bp.route('/user/<int:user_id>/schedule', methods=['GET'])
 def get_schedule(user_id):
     user = User.query.get_or_404(user_id)
-    if not user.schedule:
-        return jsonify({'message': 'User schedule was not found'}), 404
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
     return jsonify(populate()), 200
+
+@bp.route('/user/<int:user_id>/task', methods=['POST'])
+def create_Task(user_id):
+    user = User.query.get_or_404(user_id)
+    data = request.get_json()
+    task = Task(user_id=user_id, name=data['name'], task_type=data['type'],
+                priority=data['priority'], date=data['date'], start_time=data['start_time'],
+                end_time=data['end_time'])
+    db.session.add(task)
+    db.session.commit()
+    return jsonify({'message': 'Task created!'})
+
+@bp.route('/user/<int:user_id>/task/<int:task_id>', methods=['GET'])
+def delete_Task(user_id, task_id):
+    task = Task.query.get_or_404(task_id)

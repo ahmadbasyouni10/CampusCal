@@ -1,7 +1,7 @@
 import datetime
 import pandas as pd
 from collections import defaultdict
-from models import Task, Schedule, User
+from models import Task
 
 '''
 What needs to be stored in a users Schedule:
@@ -10,10 +10,9 @@ Blocked out times for studying
  -For the blocked out times, link the task because if the task finishes early delete the rest
 '''
 
-def populate(schedule_Id):
+def populate(user_id):
     # What actually loads the schedule, will return all open and closed time slots by days
-    schedule = Schedule.query.get_or_404(schedule_Id)
-    allTasks = Task.query.filter_by(schedule_id=schedule.id).order_by(Task.start_time).all()
+    allTasks = Task.query.filter_by(user_id=user_id).order_by(Task.start_time).all()
     response = defaultdict(list)
     for task in allTasks:
         response[task.date].append((task.start_time, task.end_time, task.name, task.id)) # Gets all the tasks to be linked together to their dates
@@ -45,9 +44,8 @@ def update():
     pass
     # calls other update functions depending on what was inputted
 
-def getFreeTimes(schedule_id, date):
-    schedule = Schedule.query.get_or_404(schedule_id) # Gets the Schedule
-    tasks = Task.query.filter_by(schedule_id=schedule.id, date=date).order_by(Task.start_time).all() # Gets the tasks for a certain day
+def getFreeTimes(user_id, date):
+    tasks = Task.query.filter_by(user_id=user_id, date=date).order_by(Task.start_time).all() # Gets the tasks for a certain day
     response = []
     current_time = datetime.time(0, 0 ,0)
     for task in tasks:
@@ -58,7 +56,7 @@ def getFreeTimes(schedule_id, date):
         response.append((current_time, datetime.time(23, 59, 59)))
     return response
 
-def updateExams(schedule_id, exam):
+def updateExams(user, exam):
 
     '''
     Block out exam time
@@ -70,12 +68,11 @@ def updateExams(schedule_id, exam):
 
     '''
     today = datetime.datetime.now()
-    future = exam["date"]
+    future = exam.date
     days = (future - today).days
     print(days)
-    totalStudy = exam["hours"]
+    totalStudy = exam.study_time
     studyTime = days/totalStudy
-    schedule = Schedule.query.get_or_404(schedule_id)
 
     '''
     Edge cases
@@ -83,15 +80,21 @@ def updateExams(schedule_id, exam):
     '''
     studySessions = []
     while today < future:
-        freeTimes = getFreeTimes(schedule_id, today)
+        freeTimes = getFreeTimes(user.id, today)
         tookFlag = False
         for times in freeTimes:
             length = times[1]-times[0] # Length of the free time
             if studyTime <= length:
                 totalStudy-= studyTime
                 tookFlag = True
-                study = Task(user_id=schedule.user_id, name="Study for "+exam["name"], task_type="Study", priority=exam["priority"],
-                             date=today, start_time=times[0], end_time=times[0]+studyTime)
+                study = Task(user_id=user.id, 
+                             name="Study for "+exam.name, 
+                             task_type="Study", 
+                             priority=exam.priority,
+                             date=today, 
+                             start_time=times[0], 
+                             end_time=times[0]+studyTime,
+                             parent_id=exam.id)
                 studySessions.append(study)
                 break
         
@@ -104,13 +107,3 @@ def updateExams(schedule_id, exam):
     # Block out studyTime hours for "days" days starting from today to the day before the exam
 
     # once this is done call the populate function again to refresh the schedule
-    
-'''
-Storing the Schedule
-dates as keys
-dict {
-    2024-07-09: {#timeRanges as Keys}
-
-}
-
-'''
