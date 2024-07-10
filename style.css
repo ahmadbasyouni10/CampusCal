@@ -1,0 +1,33 @@
+.test{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid red;
+    width: auto;
+}
+.p{
+    margin: 16px 10px"
+}
+.input-group{
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.time-group{
+    margin:5px;
+    flex-basis: 45%;
+    text-align: center;
+}
+input{
+    text-align: center;
+}
+.center{
+    text-align: center;
+}
+.center-flex{
+    display: grid;
+    align-items: center;
+    height: auto;
+}

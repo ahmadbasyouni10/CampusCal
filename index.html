@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name = "viewport" 
+        content="width=device-width, initial-scale=1.0">
+        <title>CampusCal</title>
+        <link rel = "stylesheet" href = "style.css">
+    </head>
+    <body>
+        <h1 style = "text-align:center; background-color: darkcyan;">CampusCal</h1>
+        <h3 class = "center">Student scheduling has never been easier</h3>
+<div style = "text-align:center;" > Help us get to know you</div>
+        <div class = "test">
+      <div>
+        <p> How many classes are you taking?</p>
+      </div> 
+      <div style = "width:5%"> </div> 
+      <div>
+        <input type ="number" id = "numClasses" min="1" max="7">
+        <button type = "button" onClick = "generateClass()">Get Started</button>
+      </div>
+      </div>
+    <form style = "display:none" class = "test" id = "allInfo" >
+        <div class = "test" id = "additionalQuestions">
+            <div>
+                <p> Are you a student athlete?</p>
+                <p style = "display:none" id = "athleteHours">Enter your weekly hour commitment:</p>
+              <p> How many hours of sleep do you intend to get everyday? </p>
+            </div> 
+            <div style = "width:5%"> </div> 
+            <div class = "center-flex">
+                <input id = "athleteCheckbox" onchange = "toggleAthleteHours()" style = "padding: 10%" type = "checkbox"></input>
+                <input style = "display:none; margin: 10%" type = "number" id = "athleteHourCommitment" min = "1" max = "20">
+              <input style = "margin: 15%" type ="number" id = "sleepHours" min="1" max="12">
+            </div>
+            </div>
+                <button type="submit" style="display:none; margin:20px auto;" id="submitSchedule">Submit Schedule</button>
+    </form>
+    <script> 
+        function toggleAthleteHours(){
+            var checkbox = document.getElementById('athleteCheckbox');
+            var hourInput = document.getElementById('athleteHours');
+            var realhourInput = document.getElementById('athleteHourCommitment');
+            if(checkbox.checked){
+                hourInput.style.display = 'block';
+                realhourInput.style.display = 'block';
+            } else {
+                hourInput.style.display = 'none';
+                realhourInput.style.display = 'none';
+            }
+        }
+        function generateTime(prefix){
+            let hourOptions = '';
+            for(let hour = 1; hour <= 12; hour++){
+                hourOptions += `<option value="${hour}">${hour}</option>`;
+            }
+            let minuteOptions = '';
+            for(let minute = 0; minute < 60; minute += 5){
+                // Corrected from "$minute.toString()" to "${minute.toString().padStart(2,'0')}"
+                minuteOptions += `<option value="${minute.toString().padStart(2,'0')}">${minute.toString().padStart(2,'0')}</option>`;
+            }
+            let amPm = `<option value="AM">AM</option>
+                <option value="PM">PM</option>`;
+            return `<select name="${prefix}Hour">
+                ${hourOptions}
+            </select> :
+            <select name="${prefix}Minute">
+                ${minuteOptions}
+            </select>
+            <select name="${prefix}AMPM">
+                ${amPm}
+            </select>`;
+}
+        function generateClass(){
+            var numClasses = document.getElementById('numClasses').value;
+            var form = document.getElementById('allInfo');
+            var additionalQuestions = document.getElementById('additionalQuestions');
+            var submitButton = document.getElementById('submitSchedule');
+            
+            additionalQuestions.style.display = 'flex';
+            submitButton.style.display = 'block';
+
+            var existingClasses = form.getElementsByClassName('input-group');
+            while(existingClasses[0]) {
+                existingClasses[0].parentNode.removeChild(existingClasses[0]);
+            }
+
+            for(let i = 0; i < numClasses; i++){
+                var div = document.createElement('div');
+                div.className = 'input-group';
+                div.innerHTML = `<strong>Class ${i + 1}</strong><br>
+                                 Class Name: <input type="text" name="className${i}"><br>
+                                 Room: <input type="text" name="room${i}"><br>
+                                 <div class = "time-group">
+                                 Start Time: ` + generateTime(`startTime${i}`) + `<br>
+                                 End Time: ` + generateTime(`endTime${i}`) + `</div>`;       
+                form.insertBefore(div, additionalQuestions);                    
+                }
+                form.style.display = 'block';
+        }
+    
+    //console.log everything received in Form
+        document.getElementById('allInfo').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the form from submitting which reloads the page
+    
+    console.log("Class information and additional questions:");
+    
+    //class information
+    const classesInputs = document.querySelectorAll('.input-group input[type="text"]');
+    classesInputs.forEach((input, index) => {
+        console.log(`Class ${index + 1} Name: ${input.value}`);
+    });
+    
+    //time selection
+    const times = document.querySelectorAll('.time-group select');
+    times.forEach((select, index) => {
+        if (index % 3 === 0) { //three selects: hour, minute, AMPM
+            const hourSelect = select;
+            const minuteSelect = hourSelect.nextElementSibling;
+            const amPmSelect = minuteSelect.nextElementSibling;
+
+            const hour = hourSelect.value;
+            const minute = minuteSelect.value;
+            const amPm = amPmSelect.value;
+
+            console.log(`Class ${Math.floor(index / 3) + 1} Time: ${hour}:${minute.padStart(2, '0')} ${amPm}`);
+        }
+    });
+
+    //athlete checkbox
+    var athleteCheckbox = document.getElementById('athleteCheckbox');
+    console.log(`Is Athlete: ${athleteCheckbox.checked}`);
+
+    //athlete hours if applicable
+    if (athleteCheckbox.checked) {
+        var athleteHours = document.getElementById('athleteHourCommitment');
+        console.log(`Athlete Hour Commitment: ${athleteHours.value}`);
+    }
+
+    //sleep
+    var sleepHours = document.getElementById('sleepHours');
+    console.log(`Sleep Hours: ${sleepHours.value}`);
+});    
+    </script>
+    </body>
+    </html>

@@ -1,0 +1,76 @@
+.App {
+  font-family: 'Arial', sans-serif; /* Ensures a clean, readable font is used */
+  padding: 20px;
+  max-width: 1200px; /* Limits the width of the form for better aesthetics */
+  margin: auto; /* Centers the app in the middle of the page */
+  background-color: #f8f8f8; /* A light background color for the app */
+  box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Subtle shadow around the app */
+}
+
+.test {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Ensures the container uses full width for alignment */
+  margin: 20px 0; /* Adds vertical spacing around sections */
+}
+
+.input-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px;
+  background-color: #fff; /* Adds a white background to each input group */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Adds subtle shadow for depth */
+  width: 100%; /* Full width to align items properly */
+}
+
+.time-group {
+  display: flex;
+  justify-content: space-between;
+  width: 100%; /* Ensures time selections fill the available space */
+  margin-left: 20px; /* Adds some left margin for spacing from text inputs */
+}
+
+input, select {
+  padding: 8px 10px; /* Adds padding for better touch interaction */
+  margin-right: 10px; /* Right margin for spacing between fields */
+  border: 1px solid #ccc; /* Standard border for inputs */
+  border-radius: 4px; /* Rounded corners for inputs */
+  width: auto; /* Auto width to allow flexibility */
+}
+
+.center, .center-flex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Ensures centering takes full width */
+}
+
+.submit-button {
+  padding: 10px 20px;
+  background-color: darkcyan;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer; /* Hand cursor on hover */
+  font-size: 16px; /* Larger font size for readability */
+  margin-top: 20px; /* Space above the submit button */
+  width: 200px; /* Fixed width for consistency */
+  align-self: center; /* Aligns button in the center of its container */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .input-group, .time-group {
+      flex-direction: column; /* Stacks the fields vertically on smaller screens */
+  }
+
+  .test, .center-flex {
+      flex-direction: column;
+  }
+}
