@@ -1,7 +1,6 @@
 # models.py
-
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask_login import UserMixin
 from app import db
 
@@ -27,6 +26,8 @@ class Task(db.Model):
     date = db.Column(db.Date, nullable=False)
     start_time = db.Column(db.Time, nullable=True)
     end_time = db.Column(db.Time, nullable=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('task.id'))
+    children = db.relationship('Task')
 
     def __repr__(self):
         return f"Task('{self.name}', '{self.date}')"
