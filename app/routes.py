@@ -1,36 +1,60 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User, Task, Performance
 from datetime import datetime, timedelta
 from app.schedule import populate, generate_study_plan
-from app.db import db
 import random
+from app import db
 
-bp = Blueprint('auth', __name__)
+bp = Blueprint('routes', __name__)
 
 @bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    hashed_password = generate_password_hash(data['password'], method='sha256')
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({'message': 'Username and password are required!'}), 400
+
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
     new_user = User(
-        username=data['username'],
-        email=data['email'],
-        password=hashed_password,
-        study_hours_per_day=data['study_hours_per_day'],
-        preferred_study_time=data['preferred_study_time']
+        username=username,
+        password=hashed_password
     )
     db.session.add(new_user)
     db.session.commit()
+    
     return jsonify({'message': 'New user created!'})
 
-@bp.route('/login', methods=['POST'])
+
+@bp.route('/login', methods=['POST', 'OPTIONS'])  # Allow OPTIONS method for CORS preflight
 def login():
+    if request.method == 'OPTIONS':  # Handle preflight request for CORS
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "*")
+        response.headers.add("Access-Control-Allow-Methods", "*")
+        return response
+
     data = request.get_json()
-    user = User.query.filter_by(username=data['username']).first()
-    if user and check_password_hash(user.password, data['password']):
-        return jsonify({'message': 'Login successful!'})
-    return jsonify({'message': 'Invalid username or password'})
-# On login redirect to schedule and populate it
+    if not data:
+        return jsonify({'error': 'No data received'}), 400
+
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({'error': 'Username or password missing'}), 400
+
+    user = User.query.filter_by(username=username).first()
+    if not user or not check_password_hash(user.password, password):
+        return jsonify({'message': 'Invalid username or password'}), 401
+
+    # Assuming you want to return some data upon successful login
+    return jsonify({'message': 'Login successful!', 'username': user.username})
+
+
 @bp.route('/add_assessment', methods=['POST'])
 def add_assessment():
     data = request.get_json()
