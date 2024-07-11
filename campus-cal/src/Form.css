@@ -1,0 +1,75 @@
+.App {
+    font-family: 'Arial', sans-serif; 
+    padding: 20px;
+    max-width: 1200px; 
+    margin: auto; 
+    background-color: #f8f8f8; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+  }
+  
+  .test {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; 
+    margin: 10px 0; 
+  }
+  
+  .input-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px;
+    background-color: #fff; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    width: 100%; 
+  }
+  
+  .time-group {
+    display: flex;
+    justify-content: space-between;
+    width: 100%; 
+    margin-left: 20px;
+  }
+  
+  input, select {
+    padding: 8px 10px; 
+    margin-right: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    width: auto; 
+  }
+  
+  .center, .center-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%; 
+  }
+  
+  .submit-button {
+    padding: 10px 20px;
+    background-color: darkcyan;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer; 
+    font-size: 16px;
+    margin-top: 20px; 
+    width: 200px; 
+    align-self: center;
+  }
+  
+  @media (max-width: 768px) {
+    .input-group, .time-group {
+        flex-direction: column; 
+    }
+  
+    .test, .center-flex {
+        flex-direction: column;
+    }
+  }
+  

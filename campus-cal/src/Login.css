@@ -1,0 +1,52 @@
+.log-form {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    border-radius: 5px;
+}
+
+.log-form h2 {
+    text-align: center;
+    color: #333;
+}
+
+.log-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+.log-form input {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.log-form button.btn {
+    padding: 10px;
+    background-color: #5C67F2;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.log-form button.btn:hover {
+    background-color: #4a54e1;
+}
+
+.log-form a.forgot {
+    display: block;
+    text-align: right;
+    color: #4a54e1;
+    text-decoration: none;
+    font-size: 0.8em;
+    margin-top: -10px;
+}
+
+.log-form a.forgot:hover {
+    text-decoration: underline;
+}
