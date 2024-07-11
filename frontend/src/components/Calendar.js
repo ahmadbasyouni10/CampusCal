@@ -111,6 +111,26 @@ const Calendar = () => {
 
   }, []);
 
+  const handleCreateAssessment = async () => {
+    const modal = await DayPilot.Modal.prompt("Create a new assessment:", "Assessment Name");
+    if (modal.canceled) {
+      return;
+    }
+  
+    // Use DayPilot.Date.today() to get the current date and format it in ISO 8601 format
+    const start = new DayPilot.Date(DayPilot.Date.today()).toString("yyyy-MM-ddTHH:mm:ss");
+    // Add 2 hours to the start time for the end time and format it
+    const end = new DayPilot.Date(start).addHours(2).toString("yyyy-MM-ddTHH:mm:ss");
+  
+    const newEvent = {
+      start: start,
+      end: end,
+      text: modal.result
+    };
+  
+    setEvents(events => [...events, newEvent]);
+  };
+
   return (
     <div className={"container"}>
       <div className={"navigator"}>
@@ -121,6 +141,7 @@ const Calendar = () => {
           onTimeRangeSelected={args => setStartDate(args.day)}
           events={events}
         />
+        <button onClick={handleCreateAssessment} className="create-assessment-btn">Create Assessment</button>
       </div>
       <div className={"content"}>
         <div className={"toolbar"}>

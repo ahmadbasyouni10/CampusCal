@@ -92,3 +92,14 @@ body .month_default_event_inner {
 .toolbar button:active {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+.create-assessment-btn {
+    display: block; /* Ensure the button is a block-level element to fit the full width */
+    margin: 10px auto; /* Center the button and add some margin */
+    padding: 16px 32px; /* Add some padding for better appearance */
+    background-color: #007bff; /* Example background color */
+    color: white; /* Text color */
+    border: none;
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+  }
