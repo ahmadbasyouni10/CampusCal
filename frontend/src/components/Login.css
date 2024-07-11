@@ -1,0 +1,38 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  form label {
+    margin-bottom: 5px;
+  }
+  
+  form input {
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  form button {
+    padding: 10px;
+    font-size: 16px;
+    background-color: #50985b;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  form button:hover {
+    background-color: #3e8e41;
+  }
