@@ -3,12 +3,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { DayPilot, DayPilotCalendar, DayPilotMonth, DayPilotNavigator } from "@daypilot/daypilot-lite-react";
 import "./Calendar.css";
+import axios from 'axios';
 
 const Calendar = () => {
 
   const [view, setView] = useState("Week");
   const [startDate, setStartDate] = useState(DayPilot.Date.today());
   const [events, setEvents] = useState([]);
+  const [quote, setQuote] = useState([]);
 
   const [dayView, setDayView] = useState();
   const [weekView, setWeekView] = useState();
@@ -29,8 +31,20 @@ const Calendar = () => {
     setEvents([...events, e]);
   };
 
-  useEffect(() => {
+  const fetchQuote = async () => {
+    try {
+        const response = await axios.get('http://localhost:5000/quotes');
+        console.log('API Response:', response);
+        setQuote(response.data)
+    } catch (error) {
+        console.error('Error fetching quotes:', error);
+    }
+  };
 
+
+  useEffect(() => {
+    console.log("Test");
+    fetchQuote();
     const data = [
       {
         id: 1,
@@ -151,6 +165,14 @@ const Calendar = () => {
             <button onClick={() => setView("Month")} className={view === "Month" ? "selected" : ""}>Month</button>
           </div>
           <button onClick={() => setStartDate(DayPilot.Date.today())} className={"standalone"}>Today</button>
+          <div className={"quotes"}>
+            {quote && (
+                <div className="quote-item">
+                    <p>{quote.quote}</p>
+                    <p>-{quote.author}</p>
+                </div>
+            )}
+            </div>
         </div>
 
         <DayPilotCalendar
