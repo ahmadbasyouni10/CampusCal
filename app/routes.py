@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import User, Task, Performance
+from app.models import User, Task
 from datetime import datetime, timedelta
 from app.schedule import populate, generate_study_plan
 import random
@@ -11,20 +11,16 @@ bp = Blueprint('routes', __name__)
 @bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-
-    if not username or not password:
-        return jsonify({'message': 'Username and password are required!'}), 400
-
-    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
     new_user = User(
-        username=username,
-        password=hashed_password
+        username=data['username'],
+        password=generate_password_hash(data['password'], method='pbkdf2:sha256'),
+        sleep_hours=data.get('sleep_hours', 8),
+        other_commitments=data.get('other_commitments', ''),
+        study_hours_per_day=data.get('study_hours_per_day', 2),
+        preferred_study_time=data.get('preferred_study_time', 'morning')
     )
     db.session.add(new_user)
     db.session.commit()
-    
     return jsonify({'message': 'New user created!'})
 
 
@@ -55,22 +51,38 @@ def login():
     return jsonify({'message': 'Login successful!', 'username': user.username})
 
 
-@bp.route('/add_assessment', methods=['POST'])
+@bp.route('/add_assessment', methods=['POST', 'PUT'])
 def add_assessment():
     data = request.get_json()
-    user_id = data['user_id']
-    new_task = Task(
-        user_id=user_id,
-        name=data['name'],
-        task_type=data['task_type'],
-        priority=data['priority'],
-        date=datetime.strptime(data['date'], '%Y-%m-%d').date(),
-        start_time=datetime.strptime(data['start_time'], '%H:%M:%S').time() if data.get('start_time') else None,
-        end_time=datetime.strptime(data['end_time'], '%H:%M:%S').time() if data.get('end_time') else None
-    )
-    db.session.add(new_task)
+    if request.method == 'POST':
+        user_id = data['user_id']
+        new_task = Task(
+            user_id=user_id,
+            name=data['name'],
+            priority=data['priority'],
+            date=datetime.strptime(data['date'], '%Y-%m-%d').date(),
+            start_time=datetime.strptime(data['start_time'], '%H:%M:%S').time() if data.get('start_time') else None,
+            end_time=datetime.strptime(data['end_time'], '%H:%M:%S').time() if data.get('end_time') else None,
+            performance=data.get('performance', None)  # Corrected line
+        )
+        db.session.add(new_task)
+    else:
+        task_id = data.get("id")
+        if task_id is None:
+            return jsonify({'message': 'Task ID is required for updates.'}), 400
+        task = Task.query.get(task_id)
+        if task is None:
+            return jsonify({'message': 'Task not found.'}), 404
+        if 'name' in data:
+            task.name = data['name']
+        if 'priority' in data:
+            task.priority = data['priority']
+        if 'performance' in data:
+            task.performance = data['performance']
+        # Consider adding updates for date, start_time, and end_time as well
+
     db.session.commit()
-    return jsonify({'message': 'New assessment added!'})
+    return jsonify({'message': 'New assessment updated or added!'})
 
 @bp.route('/schedule/<int:user_id>/classes', methods=['POST'])
 def add_classes(user_id):
