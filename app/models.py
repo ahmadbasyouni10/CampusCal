@@ -23,6 +23,7 @@ class Task(db.Model):
     task_type = db.Column(db.String(50), nullable=False)  # e.g., class, exam, activity
     priority = db.Column(db.Integer, nullable=False)  # Priority out of 10
     date = db.Column(db.Date, nullable=False)
+    performance = db.Column(db.Float, nullable=True)
     start_time = db.Column(db.Time, nullable=True)
     end_time = db.Column(db.Time, nullable=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('task.id'))
@@ -30,13 +31,3 @@ class Task(db.Model):
 
     def __repr__(self):
         return f"Task('{self.name}', '{self.date}')"
-
-class Performance(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
-    score = db.Column(db.Float, nullable=True)
-    completion_time = db.Column(db.Float, nullable=True)
-
-    def __repr__(self):
-        return f"Performance('{self.user_id}', '{self.task_id}')"
