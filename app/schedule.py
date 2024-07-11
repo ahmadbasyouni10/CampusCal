@@ -1,7 +1,7 @@
 import datetime
 import pandas as pd
 from collections import defaultdict
-from app.models import Task
+from app.models import Task, User
 
 def populate(user_id):
     # Query all tasks for the given user, ordered by start time
@@ -139,3 +139,24 @@ def generate_study_plan(user, task):
             studyTime = totalStudy / remaining_days
     
     return studySessions
+
+def setSleep(user_id, sleep_hours):
+    sleepHours = sleep_hours
+    bedtime = datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0, 0))
+    wakeup = (bedtime + datetime.timedelta(hours=sleepHours)).time()
+    bedtime = bedtime.time()
+    n = 8 * 7
+    date = datetime.date.today()
+    sleeps = []
+    for i in range(n):
+        sleep = Task(
+            user_id=user_id,
+            name="Sleep",
+            task_type="Sleep",
+            priority=10,
+            date=date+datetime.timedelta(days=i),
+            start_time=bedtime,
+            end_time=wakeup
+        )
+        sleeps.append(sleep)
+    return sleeps
