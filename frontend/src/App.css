@@ -1,16 +1,54 @@
-
 .wrap {
-    display: "flex";
-  }
+  display: flex;
+}
 
-  .left {
-    marginRight: "10px";
-  }
+.left {
+  margin-right: 10px;
+}
 
-  .main {
-    flexGrow: "1";
-  }
+.main {
+  flex-grow: 1;
+}
 
+/* Navbar specific styles */
+header {
+  background-color: #50985b; /* Adjust the color as needed */
+  width: 100%;
+  height: 60px; /* Adjust the height as needed */
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center; /* Center navbar content horizontally */
+  align-items: center; /* Center navbar content vertically */
+}
+
+nav ul {
+  list-style-type: none; /* Remove bullet points */
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+label {
+  margin-right: 5px;
+}
+
+nav ul li {
+  float: left; /* Align the links to the left */
+}
+
+nav ul li a {
+  display: block;
+  color: white; /* Adjust text color as needed */
+  text-align: center;
+  padding: 14px 16px; /* Adjust padding as needed */
+  text-decoration: none;
+}
+
+nav ul li a:hover {
+  background-color: #3e8e41; /* Adjust hover background color as needed */
+}
+
+/* Existing styles for other elements */
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -23,7 +61,6 @@
 }
 
 .App-header {
-  background-color: #50985b;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -35,6 +72,10 @@
 
 .App-link {
   color: #61dafb;
+}
+
+.App {
+  margin-top: 70px;
 }
 
 @keyframes App-logo-spin {
