@@ -34,7 +34,6 @@ const Calendar = () => {
   const fetchQuote = async () => {
     try {
         const response = await axios.get('http://localhost:5000/quotes');
-        console.log('API Response:', response);
         setQuote(response.data)
     } catch (error) {
         console.error('Error fetching quotes:', error);
@@ -43,7 +42,6 @@ const Calendar = () => {
 
 
   useEffect(() => {
-    console.log("Test");
     fetchQuote();
     const data = [
       {

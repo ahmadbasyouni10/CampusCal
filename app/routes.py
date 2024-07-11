@@ -202,7 +202,7 @@ def quotes():
     response = requests.get(url, params=params)
     if response.status_code == 200:
         data = response.json()
-        return jsonify({"quote": data["quoteText"], "author": data["quoteAuthor"]})
+        return jsonify({"quote": data["quoteText"], "author": data["quoteAuthor"] if data['quoteAuthor'] else "Unknown"})
     else:
         return jsonify({"error": "Failed to fetch quote"}), response.status_code
     

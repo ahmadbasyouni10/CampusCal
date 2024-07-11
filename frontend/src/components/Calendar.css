@@ -92,7 +92,17 @@ body .month_default_event_inner {
 .toolbar button:active {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-
+.quotes .quote-item{
+    float: right;
+    align-items: right;
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-left: 20px;
+    width: 300px;
+}
 .create-assessment-btn {
     display: block; /* Ensure the button is a block-level element to fit the full width */
     margin: 10px auto; /* Center the button and add some margin */
