@@ -167,7 +167,7 @@ const Calendar = () => {
             {quote && (
                 <div className="quote-item">
                     <p>{quote.quote}</p>
-                    <p>-{quote.author}</p>
+                    <p>- {quote.author}</p>
                 </div>
             )}
             </div>
