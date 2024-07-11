@@ -9,11 +9,14 @@ import "./CalendarStyles.css";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
+    const userId = parseInt(localStorage.getItem('userId'), 10);
+    if (token && !isNaN(userId)) {
       setLoggedIn(true);
+      setUserId(userId);
     }
   }, []);
 
@@ -47,7 +50,7 @@ function App() {
           </nav>
         </header>
         <Routes>
-          <Route path="/" element={loggedIn ? <Calendar /> : <Navigate replace to="/login" />} />
+          <Route path="/" element={loggedIn ? <Calendar userId={userId} /> : <Navigate replace to="/login" />} />
           <Route path="/login" element={!loggedIn ? <LoginForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
           <Route path="/register" element={!loggedIn ? <RegistrationForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
         </Routes>

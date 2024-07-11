@@ -4,131 +4,80 @@ import React, { useEffect, useRef, useState } from 'react';
 import { DayPilot, DayPilotCalendar, DayPilotMonth, DayPilotNavigator } from "@daypilot/daypilot-lite-react";
 import "./Calendar.css";
 
-const Calendar = () => {
 
+const Calendar = ({ userId }) => {
   const [view, setView] = useState("Week");
   const [startDate, setStartDate] = useState(DayPilot.Date.today());
   const [events, setEvents] = useState([]);
+  const dayViewRef = useRef(null);
+  const weekViewRef = useRef(null);
+  const monthViewRef = useRef(null);
 
-  const [dayView, setDayView] = useState();
-  const [weekView, setWeekView] = useState();
-  const [monthView, setMonthView] = useState();
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const response = await fetch(`http://localhost:5000/schedule/${userId}/events`);
+      const data = await response.json();
+      const formattedEvents = data.map(event => ({
+        id: event.id,
+        text: event.name,
+        start: `${event.date}T${event.start_time}`,
+        end: `${event.date}T${event.end_time}`,
+        backColor: event.priority === 'High' ? '#ff0000' : event.priority === 'Low' ? '#00ff00' : '#0000ff',
+      }));
+      setEvents(formattedEvents);
+    };
+
+    fetchEvents();
+  }, [userId]);
 
   const onTimeRangeSelected = async (args) => {
     const dp = args.control;
-    const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
+    const eventName = await DayPilot.Modal.prompt("Create a new event:", "Event Name");
+    const eventPriority = await DayPilot.Modal.prompt("Priority:", "Normal");
     dp.clearSelection();
-    if (modal.canceled) {
+    if (eventName.canceled || eventPriority.canceled) {
       return;
     }
     const e = {
       start: args.start,
       end: args.end,
-      text: modal.result
+      text: eventName.result,
+      priority: eventPriority.result,
     };
     setEvents([...events, e]);
+
+    const startDate = new Date(args.start);
+    const endDate = new Date(args.end);
+
+    const isoStartDate = startDate.toISOString();
+    const isoEndDate = endDate.toISOString(); 
+
+    const date = isoStartDate.substring(0, 10);
+
+
+    const start_time = isoStartDate.substring(11, 19);
+
+    const end_time = isoEndDate.substring(11, 19);
+
+    await fetch('http://localhost:5000/add_assessment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        name: eventName.result,
+        priority: eventPriority.result,
+        date: date,
+        start_time: start_time,
+        end_time: end_time,
+      }),
+    });
   };
 
-  useEffect(() => {
-
-    const data = [
-      {
-        id: 1,
-        text: "Event 1",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(11),
-      },
-      {
-        id: 2,
-        text: "Event 2",
-        start: DayPilot.Date.today().addHours(10),
-        end: DayPilot.Date.today().addHours(12),
-        backColor: "#93c47d",
-        borderColor: "darker"
-      },
-      {
-        id: 9,
-        text: "Event 9",
-        start: DayPilot.Date.today().addHours(13),
-        end: DayPilot.Date.today().addHours(15),
-        backColor: "#76a5af", // Teal background
-        borderColor: "darker"
-      },
-      {
-        id: 3,
-        text: "Event 3",
-        start: DayPilot.Date.today().addDays(1).addHours(9),
-        end: DayPilot.Date.today().addDays(1).addHours(11),
-        backColor: "#ffd966", // Yellow background
-        borderColor: "darker"
-      },
-      {
-        id: 4,
-        text: "Event 4",
-        start: DayPilot.Date.today().addDays(1).addHours(11).addMinutes(30),
-        end: DayPilot.Date.today().addDays(1).addHours(13).addMinutes(30),
-        backColor: "#f6b26b", // Orange background
-        borderColor: "darker"
-      },
-
-      {
-        id: 7,
-        text: "Event 7",
-        start: DayPilot.Date.today().addDays(1).addHours(14),
-        end: DayPilot.Date.today().addDays(1).addHours(16),
-        backColor: "#e691b8", // Pink background
-        borderColor: "darker"
-      },
-      {
-        id: 5,
-        text: "Event 5",
-        start: DayPilot.Date.today().addDays(4).addHours(9),
-        end: DayPilot.Date.today().addDays(4).addHours(11),
-        backColor: "#8e7cc3", // Purple background
-        borderColor: "darker"
-      },
-      {
-        id: 6,
-        text: "Event 6",
-        start: DayPilot.Date.today().addDays(4).addHours(13),
-        end: DayPilot.Date.today().addDays(4).addHours(15),
-        backColor: "#6fa8dc", // Light Blue background
-        borderColor: "darker"
-      },
-
-      {
-        id: 8,
-        text: "Event 8",
-        start: DayPilot.Date.today().addDays(5).addHours(13),
-        end: DayPilot.Date.today().addDays(5).addHours(15),
-        backColor: "#b6d7a8", // Light Green background
-        borderColor: "darker"
-      },
-
-    ];
-
-    setEvents(data);
-
-  }, []);
-
-  const handleCreateAssessment = async () => {
-    const modal = await DayPilot.Modal.prompt("Create a new assessment:", "Assessment Name");
-    if (modal.canceled) {
-      return;
-    }
-  
-    // Use DayPilot.Date.today() to get the current date and format it in ISO 8601 format
-    const start = new DayPilot.Date(DayPilot.Date.today()).toString("yyyy-MM-ddTHH:mm:ss");
-    // Add 2 hours to the start time for the end time and format it
-    const end = new DayPilot.Date(start).addHours(2).toString("yyyy-MM-ddTHH:mm:ss");
-  
-    const newEvent = {
-      start: start,
-      end: end,
-      text: modal.result
-    };
-  
-    setEvents(events => [...events, newEvent]);
+  const handleCreateAssessment = () => {
+    // Define what happens when the button is clicked.
+    // If this function is unnecessary, remove the button reference from the render.
   };
 
   return (
@@ -160,7 +109,7 @@ const Calendar = () => {
           visible={view === "Day"}
           durationBarVisible={false}
           onTimeRangeSelected={onTimeRangeSelected}
-          controlRef={setDayView}
+          ref={dayViewRef}
         />
         <DayPilotCalendar
           viewType={"Week"}
@@ -169,7 +118,7 @@ const Calendar = () => {
           visible={view === "Week"}
           durationBarVisible={false}
           onTimeRangeSelected={onTimeRangeSelected}
-          controlRef={setWeekView}
+          ref={weekViewRef}
         />
         <DayPilotMonth
           startDate={startDate}
@@ -177,10 +126,11 @@ const Calendar = () => {
           visible={view === "Month"}
           eventBarVisible={false}
           onTimeRangeSelected={onTimeRangeSelected}
-          controlRef={setMonthView}
+          ref={monthViewRef}
         />
       </div>
     </div>
   );
 }
+
 export default Calendar;

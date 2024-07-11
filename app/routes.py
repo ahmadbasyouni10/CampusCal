@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import User, Task
+from app.models import User, Task, Performance
 from datetime import datetime, timedelta
 from app.schedule import populate, generate_study_plan
 import random
@@ -8,9 +8,21 @@ from app import db
 
 bp = Blueprint('routes', __name__)
 
+@bp.errorhandler(Exception)
+def handle_exception(e):
+    # You can decide to log the exception here if you want to debug
+    return jsonify({'error': 'A server error occurred', 'details': str(e)}), 500
+
 @bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
+    # Validate required fields
+    required_fields = ['username', 'password']
+    missing_fields = [field for field in required_fields if field not in data]
+    if missing_fields:
+        return jsonify({'error': f'Missing fields: {", ".join(missing_fields)}'}), 400
+
+    # Create new user instance
     new_user = User(
         username=data['username'],
         password=generate_password_hash(data['password'], method='pbkdf2:sha256'),
@@ -21,12 +33,12 @@ def register():
     )
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({'message': 'New user created!'})
+    return jsonify({'message': 'New user created!'}), 201
 
-
-@bp.route('/login', methods=['POST', 'OPTIONS'])  # Allow OPTIONS method for CORS preflight
+@bp.route('/login', methods=['POST', 'OPTIONS'])
 def login():
-    if request.method == 'OPTIONS':  # Handle preflight request for CORS
+    if request.method == 'OPTIONS':
+        # Handle CORS preflight
         response = make_response()
         response.headers.add("Access-Control-Allow-Origin", "*")
         response.headers.add("Access-Control-Allow-Headers", "*")
@@ -37,71 +49,98 @@ def login():
     if not data:
         return jsonify({'error': 'No data received'}), 400
 
+    # Validate required fields
     username = data.get('username')
     password = data.get('password')
-
     if not username or not password:
         return jsonify({'error': 'Username or password missing'}), 400
 
+    # Authenticate user
     user = User.query.filter_by(username=username).first()
     if not user or not check_password_hash(user.password, password):
-        return jsonify({'message': 'Invalid username or password'}), 401
+        return jsonify({'error': 'Invalid username or password'}), 401
 
-    # Assuming you want to return some data upon successful login
-    return jsonify({'message': 'Login successful!', 'username': user.username})
+    return jsonify({'message': 'Login successful!', 'user_id': user.id, 'username': user.username}), 200
 
-
-@bp.route('/add_assessment', methods=['POST', 'PUT'])
+@bp.route('/add_assessment', methods=['POST'])
 def add_assessment():
     data = request.get_json()
-    if request.method == 'POST':
-        user_id = data['user_id']
+
+    # Check for user_id presence and validity
+    user_id = data.get('user_id')
+    if not user_id:
+        return jsonify({'message': 'User ID is required'}), 400
+
+    # Validate required fields for POST request
+    required_fields = ['name', 'priority', 'date', 'start_time', 'end_time']
+    missing_fields = [field for field in required_fields if field not in data]
+    if missing_fields:
+        return jsonify({'message': f'Missing required field(s): {", ".join(missing_fields)}'}), 400
+
+    try:
+        start_time = datetime.strptime(data['start_time'], '%H:%M:%S').time()
+        end_time = datetime.strptime(data['end_time'], '%H:%M:%S').time()
+
         new_task = Task(
+            user_id=user_id,
+            name=data['name'],
+            priority=data['priority'],
+            date=datetime.strptime(data['date'], '%Y-%m-%d').date(),
+            start_time=start_time,
+            end_time=end_time,
+            performance=data.get('performance')
+        )
+
+        db.session.add(new_task)
+        db.session.commit()
+
+        # Generate study sessions based on priority and days until due date
+        user = User.query.get(user_id)
+        all_study_sessions = generate_study_plan(user, new_task)
+        db.session.add_all(all_study_sessions)
+        db.session.commit()
+
+        return jsonify({'message': 'Assessment updated or added!', 'study_sessions': all_study_sessions}), 201
+
+    except ValueError as e:
+        db.session.rollback()  # Rollback changes in case of any exception
+        return jsonify({'message': f'Invalid date or time format: {e}'}), 400
+
+    except Exception as e:
+        db.session.rollback()  # Rollback changes in case of any exception
+        return jsonify({'message': f'Failed to add assessment: {str(e)}'}), 500
+
+@bp.route('/schedule/<int:user_id>/events', methods=['GET', 'POST'])
+def get_events(user_id):
+    if request.method == 'GET':
+        events = Task.query.filter_by(user_id=user_id).all()
+        formatted_events = [{
+            'id': event.id,
+            'name': event.name,
+            'date': event.date.strftime('%Y-%m-%d'),
+            'start_time': event.start_time.strftime('%H:%M:%S') if event.start_time else None,
+            'end_time': event.end_time.strftime('%H:%M:%S') if event.end_time else None,
+            'priority': event.priority
+        } for event in events]
+        return jsonify(formatted_events)
+    elif request.method == 'POST':
+        data = request.get_json()
+        # Validate and process the incoming data
+        new_event = Task(
             user_id=user_id,
             name=data['name'],
             priority=data['priority'],
             date=datetime.strptime(data['date'], '%Y-%m-%d').date(),
             start_time=datetime.strptime(data['start_time'], '%H:%M:%S').time() if data.get('start_time') else None,
             end_time=datetime.strptime(data['end_time'], '%H:%M:%S').time() if data.get('end_time') else None,
-            performance=data.get('performance', None)  # Corrected line
         )
-        db.session.add(new_task)
-    else:
-        task_id = data.get("id")
-        if task_id is None:
-            return jsonify({'message': 'Task ID is required for updates.'}), 400
-        task = Task.query.get(task_id)
-        if task is None:
-            return jsonify({'message': 'Task not found.'}), 404
-        if 'name' in data:
-            task.name = data['name']
-        if 'priority' in data:
-            task.priority = data['priority']
-        if 'performance' in data:
-            task.performance = data['performance']
-        # Consider adding updates for date, start_time, and end_time as well
+        # Add new_event to database
+        db.session.add(new_event)
+        db.session.commit()
+        return jsonify({'message': 'Event added successfully'}), 201
 
-    db.session.commit()
-    return jsonify({'message': 'New assessment updated or added!'})
 
-@bp.route('/schedule/<int:user_id>/classes', methods=['POST'])
-def add_classes(user_id):
-    data = request.get_json()
-    classes = data # would be all of the inputed classes
-    classTasks = []
-    for cl in classes:
-        clas = Task(
-            user_id=user_id,
-            name=cl['className'],
-            task_type="Class",
-            start_time=datetime.strptime(cl['startTimeHour']+":"+cl['startTimeMinute']+":"+cl['startTimeAmPm'], "%%I:%M:%p").time(),
-            end_time=datetime.strptime(cl['endTimeHour']+":"+cl['endTimeMinute']+":"+cl['endTimeAmPm'], "%%I:%M:%p").time(),
-            date=cl['date'] # don't think the date is set currently
-        ) # will need to update later once the front end is properly configured this likely doesn't work
-        classTasks.append(clas)
-    db.session.add_all(classTasks) 
-    db.session.commit()
-@bp.route('/schedule/<int:user_id>/task/<int:task_id>/remove', methods=['post'])
+@bp.route('/schedule/<int:user_id>/task/<int:task_id>/remove', methods=['POST'])
 def remove_task(user_id, task_id):
     task = Task.query.get(task_id)
     if not task:
@@ -109,8 +148,8 @@ def remove_task(user_id, task_id):
     if task.children:
         child_task = task.children
         for child in child_task:
-            db.session.remove(child)
-    db.session.remove(task)
+            db.session.delete(child)
+    db.session.delete(task)
     db.session.commit()
     return jsonify({'message': 'Task and all related child tasks removed'})
 
@@ -120,12 +159,9 @@ def get_schedule(user_id):
     if not user:
         return jsonify({'message': 'User not found'}), 404
     
-    # tasks = Task.query.filter_by(user_id=user_id).all()
-    # study_plan = generate_study_plan(user, tasks)
     schedule = populate(user.id)
     return jsonify(schedule)
 
-# when creating the plan for tasks, should the user then input the amount of hours it would take?
 @bp.route('/schedule/<int:user_id>/task/<int:task_id>/new_study_plan', methods=['POST'])
 def create_study_plan(user_id, task_id):
     user = User.query.get(user_id)
@@ -140,7 +176,6 @@ def create_study_plan(user_id, task_id):
     db.session.commit()
 
     return jsonify(populate(user.id))
-
 
 @bp.route('/update_performance', methods=['POST'])
 def update_performance():

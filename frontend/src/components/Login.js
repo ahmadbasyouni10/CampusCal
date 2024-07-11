@@ -15,8 +15,9 @@ const LoginForm = ({ onLogin }) => {
           'Content-Type': 'application/json',
         },
       });
-      const { token } = response.data; // Assuming backend sends back a token
+      const { token, user_id } = response.data; // Assuming backend sends back a token
       localStorage.setItem('token', token); // Store token in localStorage
+      localStorage.setItem('userId', user_id.toString()); // Store user ID in localStorage
       onLogin(); // Notify parent component (e.g., App.js) about successful login
     } catch (error) {
       setError('Invalid credentials. Please try again.');
