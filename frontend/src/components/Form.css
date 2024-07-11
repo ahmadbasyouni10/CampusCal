@@ -5,18 +5,22 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    background-color: #f4f4f4; 
 }
-
-form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
+  .studyTime{
+    margin-bottom: 10px;
+  }
+  .formatting{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    
   }
   
   .form-group {
     margin-bottom: 15px;
   }
-  
+
   form label {
     margin-bottom: 5px;
   }

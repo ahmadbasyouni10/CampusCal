@@ -65,8 +65,9 @@ const RegistrationForm = ({ onLogin }) => {
 
   return (
     <div className="form-container">
-      <form onSubmit={handleSubmit}>
+      <form className = "form" onSubmit={handleSubmit}>
         <div>
+        <p className = "login-header"> Make a new Account</p>
           <label htmlFor="username">Username:</label>
           <input
             type="text"
@@ -91,6 +92,7 @@ const RegistrationForm = ({ onLogin }) => {
           <input
             type="number"
             id="sleepHours"
+            min = "0"
             value={sleepHours}
             onChange={(e) => setSleepHours(e.target.value)}
             required
@@ -101,6 +103,7 @@ const RegistrationForm = ({ onLogin }) => {
           <input
             type="number"
             id="studyHoursPerDay"
+            min = "0"
             value={studyHoursPerDay}
             onChange={(e) => setStudyHoursPerDay(e.target.value)}
             required
@@ -117,6 +120,7 @@ const RegistrationForm = ({ onLogin }) => {
         <div>
           <label htmlFor="preferredStudyTime">Preferred Study Time:</label>
           <select
+            className = "studyTime"
             id="preferredStudyTime"
             value={preferredStudyTime}
             onChange={(e) => setPreferredStudyTime(e.target.value)}

@@ -2,26 +2,48 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 95vh;
+    background-color: #f4f4f4;
   }
   
   form {
     display: flex;
     flex-direction: column;
-    width: 300px;
+    width: 100%;
+    max-width: 280px;
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0,1);
+    border-radius: 8px;
   }
-  
+  .login-header{
+    text-align:center;
+    margin-top:0px;
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #50985b;
+    font-weight: bold;
+  }
+
   .form-group {
     margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
   }
   
   form label {
     margin-bottom: 5px;
+    font-weight:bold;
   }
   
   form input {
     padding: 10px;
     font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+  }
+  form input:focus{
+    border-color:#50985b;
   }
   
   form button {
@@ -31,6 +53,8 @@
     color: white;
     border: none;
     cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 4px;
   }
   
   form button:hover {
