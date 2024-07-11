@@ -145,7 +145,7 @@ def setSleep(user_id, sleep_hours):
     bedtime = datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0, 0))
     wakeup = (bedtime + datetime.timedelta(hours=sleepHours)).time()
     bedtime = bedtime.time()
-    n = 8 * 7
+    n = 8 * 7 # defaults for 8 weeks
     date = datetime.date.today()
     sleeps = []
     for i in range(n):

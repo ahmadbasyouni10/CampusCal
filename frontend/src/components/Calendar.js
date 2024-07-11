@@ -130,6 +130,47 @@ const Calendar = () => {
   
     setEvents(events => [...events, newEvent]);
   };
+  
+  const createClass = async () => {
+    const form = [
+        {name: "Class Name", id: "name", required: true, type: 'text'},
+        {name: "Starting Time", id: "startTime", required: true, timeFormat: "HH:mm",  type: 'time'},
+        {name: "Ending Time", id: "endTime", required: true, timeFormat: "HH:mm",  type: 'time'},
+        {name: "Start Date", id: "start", required: true, dateFormat: "MM/dd/yyyy", type: "date"},
+        {name: "End Date", id: "end", required: true, dateFormat: "MM/dd/yyyy", type: "date"},
+        {name: "Monday", id: 'monday', type: 'checkbox'},
+        {name: "Tuesday", id: 'tuesday', type: 'checkbox'},
+        {name: "Wednesday", id: 'wednesday', type: 'checkbox'},
+        {name: "Thursday", id: 'thursday', type: 'checkbox'},
+        {name: "Friday", id: 'friday', type: 'checkbox'},
+    ]
+    const modal = await DayPilot.Modal.form(form);
+    console.log("Modal:", modal);
+    if (modal.canceled) {
+      return;
+    }
+    try {
+
+    
+        // Use DayPilot.Date.today() to get the current date and format it in ISO 8601 format
+        const startDate = new DayPilot.Date(modal.result.start, "MM/dd/yyyy").toString("yyyy-MM-dd");
+        // Add 2 hours to the start time for the end time and format it
+        const endDate = new DayPilot.Date(modal.result.end, "MM/dd/yyyy").toString("yyyy-MM-dd");
+        
+        const startTime = new DayPilot.Date(modal.result.startTime, "HH:mm:ss").toString("HH:mm:ss");
+        const endTime = new DayPilot.Date(modal.result.endTime, "HH:mm:ss").toString("HH:mm:ss");
+
+        const newEvent = {
+        start: startTime,
+        end: endTime,
+        text: modal.result.name
+        };
+    
+        setEvents(events => [...events, newEvent]);
+    } catch (error) {
+        console.log(error);
+    }
+  };
 
   return (
     <div className={"container"}>
@@ -142,6 +183,7 @@ const Calendar = () => {
           events={events}
         />
         <button onClick={handleCreateAssessment} className="create-assessment-btn">Create Assessment</button>
+        <button onClick={createClass} className="create-class-btn">Create Class</button>
       </div>
       <div className={"content"}>
         <div className={"toolbar"}>
