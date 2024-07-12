@@ -10,6 +10,7 @@ const Calendar = ({ userId }) => {
   const [view, setView] = useState("Week");
   const [startDate, setStartDate] = useState(DayPilot.Date.today());
   const [events, setEvents] = useState([]);
+  const [quote, setQuote] = useState([]);
 
   const [dayView, setDayView] = useState();
   const [weekView, setWeekView] = useState();
@@ -30,6 +31,18 @@ const Calendar = ({ userId }) => {
     setEvents([...events, e]);
   };
 
+
+  const fetchQuote = async () => {
+    try {
+        const response = await axios.get('http://localhost:5000/quotes');
+        setQuote(response.data)
+    } catch (error) {
+        console.error('Error fetching quotes:', error);
+    }
+  };
+
+
+
   const getTasks = async () => {
     try {
         console.log("Calendar User ID: ", userId);
@@ -43,6 +56,8 @@ const Calendar = ({ userId }) => {
   }
   useEffect(() => {
     getTasks();
+
+    fetchQuote();
     const data = [
       {
         id: 1,
@@ -165,6 +180,14 @@ const Calendar = ({ userId }) => {
             <button onClick={() => setView("Month")} className={view === "Month" ? "selected" : ""}>Month</button>
           </div>
           <button onClick={() => setStartDate(DayPilot.Date.today())} className={"standalone"}>Today</button>
+          <div className={"quotes"}>
+            {quote && (
+                <div className="quote-item">
+                    <p>{quote.quote}</p>
+                    <p>- {quote.author}</p>
+                </div>
+            )}
+            </div>
         </div>
 
         <DayPilotCalendar

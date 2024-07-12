@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User, Task
 from datetime import datetime, timedelta
 from app.schedule import populate, generate_study_plan, setSleep
-import random
+import random, requests
 from app import db
 
 bp = Blueprint('routes', __name__)
@@ -193,3 +193,19 @@ def adjust_study_plan_based_on_performance(user, performances):
             })
     
     return adjusted_plan
+
+@bp.route('/quotes', methods=['GET'])
+def quotes():
+    url = "http://api.forismatic.com/api/1.0/"
+    params = {
+        "method":"getQuote",
+        "format":"json",
+        "lang":"en",
+    }
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        return jsonify({"quote": data["quoteText"], "author": data["quoteAuthor"] if data['quoteAuthor'] else "Unknown"})
+    else:
+        return jsonify({"error": "Failed to fetch quote"}), response.status_code
+    
