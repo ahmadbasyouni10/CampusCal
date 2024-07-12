@@ -6,12 +6,11 @@ import {
     ModalContent, ModalHeader, useRadioGroup,
     ModalBody, ModalCloseButton, FormControl,
     FormLabel, FormErrorMessage, useDisclosure,
-    Input, HStack
+    Input, HStack, Checkbox, CheckboxGrou
 } from "@chakra-ui/react";
 
 import { Field, Form, Formik } from 'formik';
 
-//should the id match the dict value?
 
 function RadioCard(props) {
     const { getInputProps, getRadioProps } = useRadio(props)
@@ -45,8 +44,7 @@ function RadioCard(props) {
     )
 }
 
-
-export default function OLay({ Id, trigger, onCloseModal, timee, dura }) {
+export default function OLay({ Id, trigger, onCloseModal, timee, dura, checkb}) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [selectedOption, setSelectedOption] = useState('');
 
@@ -71,7 +69,7 @@ export default function OLay({ Id, trigger, onCloseModal, timee, dura }) {
             backdropBlur="10px"
         />
     )
-    
+
     const [overlay, setOverlay] = React.useState(<Overlay />)
 
 
@@ -104,7 +102,7 @@ export default function OLay({ Id, trigger, onCloseModal, timee, dura }) {
                         <ModalCloseButton />
                         <ModalBody>
                             <Formik
-                                initialValues={{ name: '', priority: '', time: {timee}, hours: {dura} }}
+                                initialValues={{ name: '', priority: '', time: { timee }, hours: { dura }, checkbox: {checkb} }}
                                 onSubmit={(values, actions) => {
                                     setTimeout(() => {
                                         alert(JSON.stringify(values, null, 2))
@@ -167,19 +165,38 @@ export default function OLay({ Id, trigger, onCloseModal, timee, dura }) {
                                                             </Box>
                                                         ))}
                                                     </HStack>
-                                                    <br/>
+                                                    <br /><br />
                                                 </div>
                                             }
                                         </Field>
-                                        <Button
-                                            mt={4}
-                                            colorScheme='teal'
-                                            isLoading={props.isSubmitting}
-                                            type='submit'
-                                            ref={initRef}
-                                        >
-                                            Submit
-                                        </Button>
+                                        < Field name='checkbox'>
+                                            {({ field, form }) => (
+                                                <div>
+                                                    <FormLabel>Generate study plan?</FormLabel>
+                                                    <Checkbox defaultChecked {...field} />
+                                                </div>
+                                            )}
+                                        </Field>
+                                        <div>
+                                            (checkout) ? <Button
+                                                mt={4}
+                                                colorScheme='teal'
+                                                isLoading={props.isSubmitting}
+                                                type='submit'
+                                                ref={initRef}
+                                            >
+                                                Submit
+                                            </Button> : 
+                                            <Button
+                                                mt={4}
+                                                colorScheme='teal'
+                                                isLoading={props.isSubmitting}
+                                                type='submit'
+                                                ref={initRef}
+                                            >
+                                                Generating plan...
+                                            </Button>
+                                        </div>
                                     </Form>
                                 )}
                             </Formik>

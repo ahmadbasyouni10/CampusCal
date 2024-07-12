@@ -4,17 +4,12 @@ import { DayPilotCalendar, DayPilotMonth, DayPilotNavigator, DayPilot } from "@d
 import Create from "./CreateEventButton.js";
 import OLay from "./AddingOLay.js";
 import "./Calendar.css";
+import axios from 'axios';
 
 const Calendar = ({ userId }) => {
     const [view, setView] = useState("Week");
     const [startDate, setStartDate] = useState(DayPilot.Date.today());
     const [tasks, setTasks] = useState([]);
-
-    const [modalVisible, setModalVisible] = useState(false);
-
-    const [events, setEvents] = useState([]);
-    const [selectedTimeRange, setSelectedTimeRange] = useState(null);
-
 
     const [dayView, setDayView] = useState();
     const [weekView, setWeekView] = useState();
@@ -24,6 +19,9 @@ const Calendar = ({ userId }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [duration, setDuration] = useState(0);
 
+    const [events, setEvents] = useState([]);
+
+    // await may have an error lowk did a quick jank fix
     const onTimeRangeSelected = (args) => {
         setSelectedTimeRange({
             start: args.start,
@@ -31,7 +29,7 @@ const Calendar = ({ userId }) => {
         });
         setModalVisible(true);
     };
-    
+
     // Calculate duration whenever selectedTimeRange changes
     useEffect(() => {
         if (selectedTimeRange && selectedTimeRange.start && selectedTimeRange.end) {
@@ -48,19 +46,67 @@ const Calendar = ({ userId }) => {
     const handleModalClose = (modalData) => {
         setModalVisible(false);
         if (modalData) {
-            const newEvent = {
+            const event = {
+                user_id: userId,
+                name: modalData.name, // this is also an attribute if they wanted to assign it to a class modalData.Id, could help with training later
+                priority: modalData.priority,
+                date: selectedTimeRange.start.toString("yyyy-MM-dd"),
                 start: selectedTimeRange.start,
                 end: selectedTimeRange.end,
-                text: modalData.name,
-                type: modalData.Id,
-                priority: modalData.priority,
-                hours: modalData.hours,
-                select: modalData.select,
+                performance: null,
             };
-            setEvents([...events, newEvent]);
+
+            setEvents([...events, event]);
+            
+            const response = async () => await axios('http://localhost:5000/add_assessment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                data: JSON.stringify(event)
+            });
+
+            if (modalData.checkb == true) async () => {
+                // /schedule/<int:user_id>/task/<int:task_id>/new_study_plan
+                await axios.post(`http://localhost:5000/schedule/${userId}/task/${response.data.task_id}/new_study_plan`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+            }
+            async () => await getTasks();
+        };
+    }
+
+    setSelectedTimeRange(null);
+
+
+    const fetchQuote = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/quotes');
+            setQuote(response.data)
+        } catch (error) {
+            console.error('Error fetching quotes:', error);
         }
-        setSelectedTimeRange(null);
     };
+
+    const getTasks = async () => {
+        try {
+            // console.log("Calendar User ID: ", userId);
+            const response = await axios.get(`http://localhost:5000/schedule/${userId}`);
+            // console.log(response)
+            setEvents(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+
+    }
+    useEffect(() => {
+        getTasks();
+
+        fetchQuote();
+
+    }, []);
 
     useEffect(() => {
 
@@ -144,10 +190,18 @@ const Calendar = ({ userId }) => {
 
     }, []);
 
-    
+
     return (
         <div className={"container"}>
             <div className={"toolbar"}>
+                <div className={"quotes"}>
+                    {quote && (
+                        <div className="quote-item">
+                            <p>{quote.quote}</p>
+                            <p>- {quote.author}</p>
+                        </div>
+                    )}
+                </div>
                 <button onClick={() => setStartDate(DayPilot.Date.today())} className={"standalone"}>Today</button>
                 <div className={"toolbar-group"}>
                     <button onClick={() => setView("Day")} className={view === "Day" ? "selected" : ""}>Day</button>
@@ -205,88 +259,37 @@ const Calendar = ({ userId }) => {
                 </div>
             </div>
             {modalVisible && (
-            <OLay
-                Id="Assignment"
-                trigger={true}
-                onCloseModal={handleModalClose}
-                timee={selectedTimeRange.start}
-                dura={duration}
-            />
-        )}
+                <OLay
+                    Id="Assignment"
+                    trigger={true}
+                    onCloseModal={handleModalClose}
+                    timee={selectedTimeRange.start}
+                    dura={duration}
+                />
+            )}
         </div>
     );
-}
+};
 
 export default Calendar;
 
-
 /*
-const onTimeRangeSelected = async (args) => {
-    const dp = args.control;
-    const taskName = await DayPilot.Modal.prompt("Create a new task:", "Task Name");
-    const taskPriority = await DayPilot.Modal.prompt("Priority:", "Normal");
-    dp.clearSelection();
-    if (taskName.canceled || taskPriority.canceled) {
+const handleCreateAssessment = async () => {
+    const modal = await DayPilot.Modal.prompt("Create a new assessment:", "Assessment Name");
+    if (modal.canceled) {
       return;
     }
-    const newTask = {
-      start: args.start,
-      end: args.end,
-      text: taskName.result,
-      priority: taskPriority.result,
-      userId: userId
-    };
-    setTasks([...tasks, newTask]);
-  };
-  const { name, priority, start, end } = modal.result;
-
-    const newTask = {
+  
+    // Use DayPilot.Date.today() to get the current date and format it in ISO 8601 format
+    const start = new DayPilot.Date(DayPilot.Date.today()).toString("yyyy-MM-ddTHH:mm:ss");
+    // Add 2 hours to the start time for the end time and format it
+    const end = new DayPilot.Date(start).addHours(2).toString("yyyy-MM-ddTHH:mm:ss");
+  
+    const newEvent = {
       start: start,
       end: end,
-      text: name,
-      priority: priority,
-      userId: userId
+      text: modal.result
     };
-
-    setTasks(tasks => [...tasks, newTask]);
-  };
-
-
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const response = await fetch(`http://localhost:5000/schedule/${userId}>/events`);
-      const data = await response.json();
-      setTasks(data);
-    };
-
-    fetchTasks();
-  }, [userId]);
-
-  const handleCreateTask = async () => {
-    const form = [
-      { name: "Name", id: "name" },
-      { name: "Priority", id: "priority", type: "select", options: ["High", "Normal", "Low"], defaultValue: "Normal" },
-      { name: "Start Date and Time", id: "start", type: "datetime-local", dateFormat: "YYYY-MM-DDTHH:MM" },
-      { name: "End Date and Time", id: "end", type: "datetime-local", dateFormat: "YYYY-MM-DDTHH:MM" }
-    ];
-
-/*const handleCreateAssessment = async () => {
-        const modal = await DayPilot.Modal.prompt("Create a new assessment:", "Assessment Name");
-        if (modal.canceled) {
-            return;
-        }
-
-        const { name, priority, start, end } = modal.result;
-
-        const newTask = {
-            start: start,
-            end: end,
-            text: name,
-            priority: priority,
-            userId: userId
-        };
-
-        setEvents(events => [...events, newTask]);
-    };
-
-*/
+  
+    setEvents(events => [...events, newEvent]);
+  };*/
