@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react'
-import './AddingOLay.css'
+
 import {
     Box, Button,
     Modal, ModalOverlay, useRadio,
@@ -8,8 +8,8 @@ import {
     FormLabel, FormErrorMessage, useDisclosure,
     Input, HStack
 } from "@chakra-ui/react";
-import { Field, Form, Formik } from 'formik';
 
+import { Field, Form, Formik } from 'formik';
 
 //should the id match the dict value?
 
@@ -46,10 +46,9 @@ function RadioCard(props) {
 }
 
 
-export default function OLay({ Id, trigger, onCloseModal }) {
+export default function OLay({ Id, trigger, onCloseModal, timee, dura }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [selectedOption, setSelectedOption] = useState('');
-    const group = getRootProps()
 
     const initRef = React.useRef()
 
@@ -59,9 +58,10 @@ export default function OLay({ Id, trigger, onCloseModal }) {
         onChange: setSelectedOption,
     })
 
+    const group = getRootProps()
+
     const options = ['Class 1', 'Class 2', 'Class 3']
     //here is where the course options would go.. need to select between the options below
-
 
 
     const Overlay = () => (
@@ -104,7 +104,7 @@ export default function OLay({ Id, trigger, onCloseModal }) {
                         <ModalCloseButton />
                         <ModalBody>
                             <Formik
-                                initialValues={{ name: '', priority: '', hours: '' }}
+                                initialValues={{ name: '', priority: '', time: {timee}, hours: {dura} }}
                                 onSubmit={(values, actions) => {
                                     setTimeout(() => {
                                         alert(JSON.stringify(values, null, 2))

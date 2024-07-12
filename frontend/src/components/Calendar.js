@@ -1,7 +1,9 @@
 // source: https://code.daypilot.org/27556/react-day-week-month-calendar
 
-import React, { useEffect, useRef, useState } from 'react';
-import { DayPilot, DayPilotCalendar, DayPilotMonth, DayPilotNavigator } from "@daypilot/daypilot-lite-react";
+import React, { useEffect, useState } from 'react';
+import {DayPilotCalendar, DayPilotMonth, DayPilotNavigator, DayPilot} from "@daypilot/daypilot-lite-react"
+import Create from "./CreateEventButton.js";
+import OLay from "./AddingOLay.js";
 import "./Calendar.css";
 
 const Calendar = () => {
@@ -13,34 +15,47 @@ const Calendar = () => {
     const [dayView, setDayView] = useState();
     const [weekView, setWeekView] = useState();
     const [monthView, setMonthView] = useState();
-    //const [calendar, setCalendar] = useState();
 
-    const todayEvents = DayPilot.Date.today().toString();
+    const [selectedTimeRange, setSelectedTimeRange] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [duration, setDuration] = useState(0);
 
-    const onTimeRangeSelected = async (args) => {
-        const dp = args.control;
-        
-        const modal =  await new Promise((resolve) => {
-            OLay({ Id: "Assignment", trigger: true, onCloseModal: resolve }); // Adjust parameters as needed
-        });
-    
-        if (!modal) {
-            return; // Return if OLay was canceled or closed without selecting an option
-        }
-    
-        dp.clearSelection();
-    
-        const e = {
+    const onTimeRangeSelected = (args) => {
+        setSelectedTimeRange({
             start: args.start,
             end: args.end,
-            text: modal.name, //specify the properties
-            type: modal.Id,
-            priority: modal.priority,
-            hours: modal.hours,
-            select: modal.select, //assign a group? not sure if backend supports
-        };
+        });
+        setModalVisible(true);
+    };
     
-        setEvents([...events, e]); 
+    // Calculate duration whenever selectedTimeRange changes
+    useEffect(() => {
+        if (selectedTimeRange && selectedTimeRange.start && selectedTimeRange.end) {
+            const start = new Date(selectedTimeRange.start);
+            const end = new Date(selectedTimeRange.end);
+            const diffMilliseconds = end - start;
+            const diffHours = diffMilliseconds / (1000 * 60 * 60); // Convert milliseconds to hours
+            setDuration(diffHours);
+        } else {
+            setDuration(0); // Reset duration if selectedTimeRange is not provided or invalid
+        }
+    }, [selectedTimeRange]);
+
+    const handleModalClose = (modalData) => {
+        setModalVisible(false);
+        if (modalData) {
+            const newEvent = {
+                start: selectedTimeRange.start,
+                end: selectedTimeRange.end,
+                text: modalData.name,
+                type: modalData.Id,
+                priority: modalData.priority,
+                hours: modalData.hours,
+                select: modalData.select,
+            };
+            setEvents([...events, newEvent]);
+        }
+        setSelectedTimeRange(null);
     };
 
     useEffect(() => {
@@ -125,7 +140,7 @@ const Calendar = () => {
 
     }, []);
 
-    const handleCreateAssessment = async () => {
+    /*const handleCreateAssessment = async () => {
         const modal = await DayPilot.Modal.prompt("Create a new assessment:", "Assessment Name");
         if (modal.canceled) {
             return;
@@ -143,7 +158,7 @@ const Calendar = () => {
         };
 
         setEvents(events => [...events, newEvent]);
-    };
+    }; */
 
     return (
         <div className={"container"}>
@@ -204,6 +219,15 @@ const Calendar = () => {
                     />
                 </div>
             </div>
+             {modalVisible && (
+            <OLay
+                Id="Assignment"
+                trigger={true}
+                onCloseModal={handleModalClose}
+                timee={selectedTimeRange.start}
+                dura={duration}
+            />
+        )}
         </div>
     );
 }
