@@ -19,6 +19,10 @@ header {
   display: flex;
   justify-content: center; /* Center navbar content horizontally */
   align-items: center; /* Center navbar content vertically */
+  width: 100%; /* Take full width of the viewport */
+  position: absolute;
+  top: 0; /* Align to the top of the viewport */
+  left: 0; /* Align to the left of the viewport */
 }
 
 nav ul {

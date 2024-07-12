@@ -1,43 +1,73 @@
 /* Extend existing styles for the registration form */
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 400px;
+  /* Adjust width as needed */
+  margin: 0 auto;
+  /* Center horizontally */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
-.form-container2 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f4f4f4; 
-  }
-  .studyTime{
-    margin-bottom: 10px;
-  }
-  .formatting{
-    display:flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  form label {
-    margin-bottom: 5px;
-  }
-  
-  form input {
-    padding: 10px;
-    font-size: 16px;
-  }
-  
-  form button {
-    padding: 10px;
-    font-size: 16px;
-    background-color: #50985b;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  form button:hover {
-    background-color: #3e8e41;
-  }
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+}
+
+h3 {
+  color: #50985b;
+}
+
+form label {
+  font-size: large;
+  font-weight: bold;
+  color: #2a2d44;
+}
+
+form input, textarea {
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+  height: var(--input-height);
+  font-size: var(--input-font-size);
+  -webkit-padding-start: var(--input-padding);
+  padding-inline-start: var(--input-padding);
+  -webkit-padding-end: var(--input-padding);
+  padding-inline-end: var(--input-padding);
+  border-radius: var(--input-border-radius);
+  min-width: 0px;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  position: relative;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  transition-property: var(--chakra-transition-property-common);
+  transition-duration: var(--chakra-transition-duration-normal);
+  --input-font-size: var(--chakra-fontSizes-md);
+  --input-padding: var(--chakra-space-4);
+  --input-border-radius: var(--chakra-radii-md);
+  --input-height: var(--chakra-sizes-10);
+  border: 1px solid;
+  border-radius: 5px;
+}
+
+form button {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #50985b;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #3e8e41;
+}
