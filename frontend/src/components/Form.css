@@ -1,48 +1,3 @@
-/* Extend existing styles for the registration form */
-
-<<<<<<< HEAD
-.form-container2 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f4f4f4; 
-  }
-  .studyTime{
-    margin-bottom: 10px;
-  }
-  .formatting{
-    display:flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  form label {
-    margin-bottom: 5px;
-  }
-  
-  form input {
-    padding: 10px;
-    font-size: 16px;
-  }
-  
-  form button {
-    padding: 10px;
-    font-size: 16px;
-    background-color: #50985b;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  form button:hover {
-    background-color: #3e8e41;
-  }
-=======
 
 .form-container {
   display: flex;
@@ -116,4 +71,3 @@ form button {
 form button:hover {
   background-color: #3e8e41;
 }
->>>>>>> ahmad
