@@ -1,16 +1,20 @@
-// source: https://code.daypilot.org/27556/react-day-week-month-calendar
 
 import React, { useEffect, useState } from 'react';
-import {DayPilotCalendar, DayPilotMonth, DayPilotNavigator, DayPilot} from "@daypilot/daypilot-lite-react"
+import { DayPilotCalendar, DayPilotMonth, DayPilotNavigator, DayPilot } from "@daypilot/daypilot-lite-react"
 import Create from "./CreateEventButton.js";
 import OLay from "./AddingOLay.js";
 import "./Calendar.css";
 
-const Calendar = () => {
-
+const Calendar = ({ userId }) => {
     const [view, setView] = useState("Week");
     const [startDate, setStartDate] = useState(DayPilot.Date.today());
+    const [tasks, setTasks] = useState([]);
+
+    const [modalVisible, setModalVisible] = useState(false);
+
     const [events, setEvents] = useState([]);
+    const [selectedTimeRange, setSelectedTimeRange] = useState(null);
+
 
     const [dayView, setDayView] = useState();
     const [weekView, setWeekView] = useState();
@@ -140,26 +144,7 @@ const Calendar = () => {
 
     }, []);
 
-    /*const handleCreateAssessment = async () => {
-        const modal = await DayPilot.Modal.prompt("Create a new assessment:", "Assessment Name");
-        if (modal.canceled) {
-            return;
-        }
-
-        // Use DayPilot.Date.today() to get the current date and format it in ISO 8601 format
-        const start = new DayPilot.Date(DayPilot.Date.today()).toString("yyyy-MM-ddTHH:mm:ss");
-        // Add 2 hours to the start time for the end time and format it
-        const end = new DayPilot.Date(start).addHours(2).toString("yyyy-MM-ddTHH:mm:ss");
-
-        const newEvent = {
-            start: start,
-            end: end,
-            text: modal.result
-        };
-
-        setEvents(events => [...events, newEvent]);
-    }; */
-
+    
     return (
         <div className={"container"}>
             <div className={"toolbar"}>
@@ -219,7 +204,7 @@ const Calendar = () => {
                     />
                 </div>
             </div>
-             {modalVisible && (
+            {modalVisible && (
             <OLay
                 Id="Assignment"
                 trigger={true}
@@ -233,3 +218,75 @@ const Calendar = () => {
 }
 
 export default Calendar;
+
+
+/*
+const onTimeRangeSelected = async (args) => {
+    const dp = args.control;
+    const taskName = await DayPilot.Modal.prompt("Create a new task:", "Task Name");
+    const taskPriority = await DayPilot.Modal.prompt("Priority:", "Normal");
+    dp.clearSelection();
+    if (taskName.canceled || taskPriority.canceled) {
+      return;
+    }
+    const newTask = {
+      start: args.start,
+      end: args.end,
+      text: taskName.result,
+      priority: taskPriority.result,
+      userId: userId
+    };
+    setTasks([...tasks, newTask]);
+  };
+  const { name, priority, start, end } = modal.result;
+
+    const newTask = {
+      start: start,
+      end: end,
+      text: name,
+      priority: priority,
+      userId: userId
+    };
+
+    setTasks(tasks => [...tasks, newTask]);
+  };
+
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const response = await fetch(`http://localhost:5000/schedule/${userId}>/events`);
+      const data = await response.json();
+      setTasks(data);
+    };
+
+    fetchTasks();
+  }, [userId]);
+
+  const handleCreateTask = async () => {
+    const form = [
+      { name: "Name", id: "name" },
+      { name: "Priority", id: "priority", type: "select", options: ["High", "Normal", "Low"], defaultValue: "Normal" },
+      { name: "Start Date and Time", id: "start", type: "datetime-local", dateFormat: "YYYY-MM-DDTHH:MM" },
+      { name: "End Date and Time", id: "end", type: "datetime-local", dateFormat: "YYYY-MM-DDTHH:MM" }
+    ];
+
+/*const handleCreateAssessment = async () => {
+        const modal = await DayPilot.Modal.prompt("Create a new assessment:", "Assessment Name");
+        if (modal.canceled) {
+            return;
+        }
+
+        const { name, priority, start, end } = modal.result;
+
+        const newTask = {
+            start: start,
+            end: end,
+            text: name,
+            priority: priority,
+            userId: userId
+        };
+
+        setEvents(events => [...events, newTask]);
+    };
+
+*/
