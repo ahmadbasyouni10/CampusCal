@@ -3,4 +3,4 @@ instance
 venv/
 __pycache__
 CampusCal.db
-app/__pycache__
+./app/__pycache__/*

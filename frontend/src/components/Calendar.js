@@ -23,12 +23,24 @@ const Calendar = ({ userId }) => {
     if (modal.canceled) {
       return;
     }
+
     const e = {
+      user_id: userId,
+      name: modal.result,
+      priority: 1,
+      date: args.start.toString("yyyy-MM-dd"),
       start: args.start,
       end: args.end,
-      text: modal.result
+      performance: null
     };
-    setEvents([...events, e]);
+    await axios('http://localhost:5000/add_assessment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        data: JSON.stringify(e)
+    })
+    await getTasks();
   };
 
 
@@ -41,13 +53,11 @@ const Calendar = ({ userId }) => {
     }
   };
 
-
-
   const getTasks = async () => {
     try {
-        console.log("Calendar User ID: ", userId);
+        // console.log("Calendar User ID: ", userId);
       const response = await axios.get(`http://localhost:5000/schedule/${userId}`);
-      console.log(response)
+      // console.log(response)
       setEvents(response.data);
     } catch (error) {
       console.error(error);
@@ -58,85 +68,6 @@ const Calendar = ({ userId }) => {
     getTasks();
 
     fetchQuote();
-    const data = [
-      {
-        id: 1,
-        text: "Event 1",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(11),
-      },
-      {
-        id: 2,
-        text: "Event 2",
-        start: DayPilot.Date.today().addHours(10),
-        end: DayPilot.Date.today().addHours(12),
-        backColor: "#93c47d",
-        borderColor: "darker"
-      },
-      {
-        id: 9,
-        text: "Event 9",
-        start: DayPilot.Date.today().addHours(13),
-        end: DayPilot.Date.today().addHours(15),
-        backColor: "#76a5af", // Teal background
-        borderColor: "darker"
-      },
-      {
-        id: 3,
-        text: "Event 3",
-        start: DayPilot.Date.today().addDays(1).addHours(9),
-        end: DayPilot.Date.today().addDays(1).addHours(11),
-        backColor: "#ffd966", // Yellow background
-        borderColor: "darker"
-      },
-      {
-        id: 4,
-        text: "Event 4",
-        start: DayPilot.Date.today().addDays(1).addHours(11).addMinutes(30),
-        end: DayPilot.Date.today().addDays(1).addHours(13).addMinutes(30),
-        backColor: "#f6b26b", // Orange background
-        borderColor: "darker"
-      },
-
-      {
-        id: 7,
-        text: "Event 7",
-        start: DayPilot.Date.today().addDays(1).addHours(14),
-        end: DayPilot.Date.today().addDays(1).addHours(16),
-        backColor: "#e691b8", // Pink background
-        borderColor: "darker"
-      },
-      {
-        id: 5,
-        text: "Event 5",
-        start: DayPilot.Date.today().addDays(4).addHours(9),
-        end: DayPilot.Date.today().addDays(4).addHours(11),
-        backColor: "#8e7cc3", // Purple background
-        borderColor: "darker"
-      },
-      {
-        id: 6,
-        text: "Event 6",
-        start: DayPilot.Date.today().addDays(4).addHours(13),
-        end: DayPilot.Date.today().addDays(4).addHours(15),
-        backColor: "#6fa8dc", // Light Blue background
-        borderColor: "darker"
-      },
-
-      {
-        id: 8,
-        text: "Event 8",
-        start: DayPilot.Date.today().addDays(5).addHours(13),
-        end: DayPilot.Date.today().addDays(5).addHours(15),
-        backColor: "#b6d7a8", // Light Green background
-        borderColor: "darker"
-      },
-
-    ];
-    
-
-
-    setEvents(data);
 
   }, []);
 

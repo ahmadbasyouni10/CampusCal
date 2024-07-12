@@ -14,7 +14,7 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
-    console.log("App UserId: ", userId);
+    // console.log("App UserId: ", userId);
     if (token && userId) {
       setLoggedIn(true);
       setUserId(userId);

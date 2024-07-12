@@ -64,8 +64,8 @@ def add_assessment():
             name=data['name'],
             priority=data['priority'],
             date=datetime.strptime(data['date'], '%Y-%m-%d').date(),
-            start_time=datetime.strptime(data['start_time'], '%H:%M:%S').time() if data.get('start_time') else None,
-            end_time=datetime.strptime(data['end_time'], '%H:%M:%S').time() if data.get('end_time') else None,
+            start_time=datetime.strptime(data['start'], '%Y-%m-%dT%H:%M:%S').time() if data.get('start') else None,
+            end_time=datetime.strptime(data['end'], '%Y-%m-%dT%H:%M:%S').time() if data.get('end') else None,
             performance=data.get('performance', None)  # Corrected line
         )
         db.session.add(new_task)
