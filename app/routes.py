@@ -14,10 +14,10 @@ def register():
     new_user = User(
         username=data['username'],
         password=generate_password_hash(data['password'], method='pbkdf2:sha256'),
-        sleep_hours=data.get('sleep_hours', 8),
-        other_commitments=data.get('other_commitments', ''),
-        study_hours_per_day=data.get('study_hours_per_day', 2),
-        preferred_study_time=data.get('preferred_study_time', 'morning')
+        sleep_hours=data.get('sleepHours', 8),
+        other_commitments=data.get('otherCommitments', ''),
+        study_hours_per_day=data.get('studyHoursPerDay', 2),
+        preferred_study_time=data.get('preferredStudyTime', 'morning')
     )
     db.session.add(new_user)
     db.session.commit()
