@@ -6,6 +6,7 @@ import OLay from "./AddingOLay.js";
 import "./Calendar.css";
 import axios from 'axios';
 
+
 const Calendar = ({ userId }) => {
     const [view, setView] = useState("Week");
     const [startDate, setStartDate] = useState(DayPilot.Date.today());
@@ -20,6 +21,7 @@ const Calendar = ({ userId }) => {
     const [duration, setDuration] = useState(0);
 
     const [events, setEvents] = useState([]);
+    const [quote, setQuote] = useState([]);
 
     // await may have an error lowk did a quick jank fix
     const onTimeRangeSelected = (args) => {
@@ -57,7 +59,7 @@ const Calendar = ({ userId }) => {
             };
 
             setEvents([...events, event]);
-            
+
             const response = async () => await axios('http://localhost:5000/add_assessment', {
                 method: 'POST',
                 headers: {
@@ -66,15 +68,25 @@ const Calendar = ({ userId }) => {
                 data: JSON.stringify(event)
             });
 
-            if (modalData.checkb == true) async () => {
-                // /schedule/<int:user_id>/task/<int:task_id>/new_study_plan
-                await axios.post(`http://localhost:5000/schedule/${userId}/task/${response.data.task_id}/new_study_plan`, {
-                    headers: {
-                        'Content-Type': 'application/json',
+            const handleModalClose = async (modalData) => {
+                setModalVisible(false);
+
+                if (modalData && modalData.checkb === true) {
+                    try {
+                        // Assuming userId and response.data.task_id are defined in your scope
+                        await axios.post(`http://localhost:5000/schedule/${userId}/task/${response.data.task_id}/new_study_plan`, {}, {
+                            headers: {
+                                'Content-Type': 'application/json',
+                            }
+                        });
+                        await getTasks(); // Assuming getTasks is an async function
+                    } catch (error) {
+                        console.error("Error while processing task:", error);
+                        // Handle error as needed
                     }
-                });
-            }
-            async () => await getTasks();
+                }
+                setSelectedTimeRange(null);
+            };
         };
     }
 
@@ -189,7 +201,7 @@ const Calendar = ({ userId }) => {
         setEvents(data);
 
     }, []);
-
+    //<h1><Welcome</h1>
 
     return (
         <div className={"container"}>
