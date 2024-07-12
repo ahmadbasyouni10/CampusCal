@@ -42,7 +42,7 @@ def login():
 
     username = data.get('username')
     password = data.get('password')
-
+    
     if not username or not password:
         return jsonify({'error': 'Username or password missing'}), 400
 
@@ -51,7 +51,7 @@ def login():
         return jsonify({'message': 'Invalid username or password'}), 401
 
     # Assuming you want to return some data upon successful login
-    return jsonify({'message': 'Login successful!', 'username': user.username})
+    return jsonify({'message': 'Login successful!', 'username': user.username, 'user_id': user.id})
 
 
 @bp.route('/add_assessment', methods=['POST', 'PUT'])
