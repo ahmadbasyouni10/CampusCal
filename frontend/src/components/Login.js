@@ -29,7 +29,7 @@ const LoginForm = ({ onLogin }) => {
   return (
     <div className="login-container2">
       <form onSubmit={handleSubmit}>
-      <h2 className="login-header">Campus Cal</h2>
+      <h2 className="register-header">Campus Cal</h2>
         <div className="form-group">
           <label>Username</label>
           <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />

@@ -72,7 +72,7 @@ const RegistrationForm = ({ onLogin }) => {
     <div className="form-container2">
       <form className = "form" onSubmit={handleSubmit}>
       <div>
-      <p className = "login-header"> Make a new Account</p>
+      <h2 className="login-header">Campus Cal</h2>
           <label htmlFor="username">Username:</label>
           <input
             type="text"
