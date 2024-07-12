@@ -4,80 +4,65 @@ import React, { useEffect, useRef, useState } from 'react';
 import { DayPilot, DayPilotCalendar, DayPilotMonth, DayPilotNavigator } from "@daypilot/daypilot-lite-react";
 import "./Calendar.css";
 
-
 const Calendar = ({ userId }) => {
   const [view, setView] = useState("Week");
   const [startDate, setStartDate] = useState(DayPilot.Date.today());
-  const [events, setEvents] = useState([]);
-  const dayViewRef = useRef(null);
-  const weekViewRef = useRef(null);
-  const monthViewRef = useRef(null);
+  const [tasks, setTasks] = useState([]);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      const response = await fetch(`http://localhost:5000/schedule/${userId}/events`);
-      const data = await response.json();
-      const formattedEvents = data.map(event => ({
-        id: event.id,
-        text: event.name,
-        start: `${event.date}T${event.start_time}`,
-        end: `${event.date}T${event.end_time}`,
-        backColor: event.priority === 'High' ? '#ff0000' : event.priority === 'Low' ? '#00ff00' : '#0000ff',
-      }));
-      setEvents(formattedEvents);
-    };
-
-    fetchEvents();
-  }, [userId]);
+  const [dayView, setDayView] = useState();
+  const [weekView, setWeekView] = useState();
+  const [monthView, setMonthView] = useState();
 
   const onTimeRangeSelected = async (args) => {
     const dp = args.control;
-    const eventName = await DayPilot.Modal.prompt("Create a new event:", "Event Name");
-    const eventPriority = await DayPilot.Modal.prompt("Priority:", "Normal");
+    const taskName = await DayPilot.Modal.prompt("Create a new task:", "Task Name");
+    const taskPriority = await DayPilot.Modal.prompt("Priority:", "Normal");
     dp.clearSelection();
-    if (eventName.canceled || eventPriority.canceled) {
+    if (taskName.canceled || taskPriority.canceled) {
       return;
     }
-    const e = {
+    const newTask = {
       start: args.start,
       end: args.end,
-      text: eventName.result,
-      priority: eventPriority.result,
+      text: taskName.result,
+      priority: taskPriority.result,
+      userId: userId
     };
-    setEvents([...events, e]);
-
-    const startDate = new Date(args.start);
-    const endDate = new Date(args.end);
-
-    const isoStartDate = startDate.toISOString();
-    const isoEndDate = endDate.toISOString(); 
-
-    const date = isoStartDate.substring(0, 10);
-
-
-    const start_time = isoStartDate.substring(11, 19);
-
-    const end_time = isoEndDate.substring(11, 19);
-
-    await fetch('http://localhost:5000/add_assessment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user_id: userId,
-        name: eventName.result,
-        priority: eventPriority.result,
-        date: date,
-        start_time: start_time,
-        end_time: end_time,
-      }),
-    });
+    setTasks([...tasks, newTask]);
   };
 
-  const handleCreateAssessment = () => {
-    // Define what happens when the button is clicked.
-    // If this function is unnecessary, remove the button reference from the render.
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const response = await fetch(`http://localhost:5000/schedule/${userId}>/events`);
+      const data = await response.json();
+      setTasks(data);
+    };
+
+    fetchTasks();
+  }, [userId]);
+
+  const handleCreateTask = async () => {
+    const form = [
+      { name: "Name", id: "name" },
+      { name: "Priority", id: "priority", type: "select", options: ["High", "Normal", "Low"], defaultValue: "Normal" },
+      { name: "Start Date and Time", id: "start", type: "datetime-local", dateFormat: "YYYY-MM-DDTHH:MM" },
+      { name: "End Date and Time", id: "end", type: "datetime-local", dateFormat: "YYYY-MM-DDTHH:MM" }
+    ];
+
+    const modal = await DayPilot.Modal.form(form, "Create New Task");
+    if (modal.canceled) return;
+
+    const { name, priority, start, end } = modal.result;
+
+    const newTask = {
+      start: start,
+      end: end,
+      text: name,
+      priority: priority,
+      userId: userId
+    };
+
+    setTasks(tasks => [...tasks, newTask]);
   };
 
   return (
@@ -88,9 +73,8 @@ const Calendar = ({ userId }) => {
           showMonths={1}
           skipMonths={1}
           onTimeRangeSelected={args => setStartDate(args.day)}
-          events={events}
         />
-        <button onClick={handleCreateAssessment} className="create-assessment-btn">Create Assessment</button>
+        <button onClick={handleCreateTask} className="create-task-btn">Create Task</button>
       </div>
       <div className={"content"}>
         <div className={"toolbar"}>
@@ -105,28 +89,28 @@ const Calendar = ({ userId }) => {
         <DayPilotCalendar
           viewType={"Day"}
           startDate={startDate}
-          events={events}
+          events={tasks}
           visible={view === "Day"}
           durationBarVisible={false}
           onTimeRangeSelected={onTimeRangeSelected}
-          ref={dayViewRef}
+          controlRef={setDayView}
         />
         <DayPilotCalendar
           viewType={"Week"}
           startDate={startDate}
-          events={events}
+          events={tasks}
           visible={view === "Week"}
           durationBarVisible={false}
           onTimeRangeSelected={onTimeRangeSelected}
-          ref={weekViewRef}
+          controlRef={setWeekView}
         />
         <DayPilotMonth
           startDate={startDate}
-          events={events}
+          events={tasks}
           visible={view === "Month"}
           eventBarVisible={false}
           onTimeRangeSelected={onTimeRangeSelected}
-          ref={monthViewRef}
+          controlRef={setMonthView}
         />
       </div>
     </div>

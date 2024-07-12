@@ -60,7 +60,7 @@ def adjust_study_plan_based_on_performance(user, performances):
             study_hours_per_day = user.study_hours_per_day
 
         for day in range(days_to_study):
-            study_date = (datetime.now() + datetime.timedelta(days=random.randint(0, days_until_due))).date().isoformat()
+            study_date = (datetime.now() + timedelta(days=random.randint(0, days_until_due))).date().isoformat()
             adjusted_plan.append({
                 'task': task.name,
                 'study_hours': study_hours_per_day,
