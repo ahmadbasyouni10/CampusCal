@@ -9,11 +9,15 @@ import "./CalendarStyles.css";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
+    const userId = localStorage.getItem('userId');
+    console.log("App UserId: ", userId);
+    if (token && userId) {
       setLoggedIn(true);
+      setUserId(userId);
     }
   }, []);
 
@@ -24,6 +28,7 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setLoggedIn(false);
+    setUserId(null);
   };
 
   return (
@@ -47,7 +52,7 @@ function App() {
           </nav>
         </header>
         <Routes>
-          <Route path="/" element={loggedIn ? <Calendar /> : <Navigate replace to="/login" />} />
+          <Route path="/" element={loggedIn ? <Calendar userId={localStorage.getItem('userId')} /> : <Navigate replace to="/login" />} />
           <Route path="/login" element={!loggedIn ? <LoginForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
           <Route path="/register" element={!loggedIn ? <RegistrationForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
         </Routes>

@@ -1,8 +1,8 @@
 import datetime
 import pandas as pd
 from collections import defaultdict
-from app.models import Task
-
+from app.models import Task, User
+'''
 def populate(user_id):
     # Query all tasks for the given user, ordered by start time
     allTasks = Task.query.filter_by(user_id=user_id).order_by(Task.start_time).all()
@@ -24,35 +24,44 @@ def populate(user_id):
         # Iterate over each task for the current date
         for i in range(len(response[key])):
             curr = response[key][i]  # Current task
-            
-            # Check if there is free time before the current task
-            if currentTime <= curr[0]:  # curr[0] is the start time of the task
-                # Append the free time slot to temp
-                temp.append((currentTime, curr[0], "Free", -1))
-            
+
             # Append the current task to temp
             temp.append(curr)
-            
-            # Update currentTime to the end time of the current task
-            currentTime = max(currentTime, curr[1])  # curr[1] is the end time of the task
-        
+                   
         # Check if there is free time after the last task until the end of the day
-        if currentTime < datetime.time(23, 59, 59):
-            # Append the free time slot to temp
-            temp.append((currentTime, datetime.time(23, 59, 59)))
         
         # Update the response dictionary with the processed time slots for the current date
         response[key] = temp
     
     # Return the final response dictionary with all time slots for each date
     return response
-    '''
+    
     Find all the tasks that correspond to the user's schedule
     sort them by date and time
     have a dict where the keys are dates and values are a list of time slots (open, task/event)
     return the dict
     
+    
+'''
+def populate(user_id):
+    allTasks = Task.query.filter_by(user_id=user_id).order_by(Task.start_time).all()
+    response = []
     '''
+    {
+        id: 1,
+        text: "Event 1",
+        start: DayPilot.Date.today().addHours(9),
+        end: DayPilot.Date.today().addHours(11),
+      },
+    '''
+    for task in allTasks:
+        response.append({
+            'id': task.id,
+            'text': task.name,
+            'start': datetime.datetime.combine(task.date, task.start_time).isoformat(),
+            'end': datetime.datetime.combine(task.date, task.end_time).isoformat()
+        })
+    return response
 
 def getFreeTimes(user_id, date):
     # Query all tasks for the given user and date, ordered by start time
@@ -139,3 +148,24 @@ def generate_study_plan(user, task):
             studyTime = totalStudy / remaining_days
     
     return studySessions
+
+def setSleep(user_id, sleep_hours):
+    sleepHours = sleep_hours
+    bedtime = datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0, 0))
+    wakeup = (bedtime + datetime.timedelta(hours=sleepHours)).time()
+    bedtime = bedtime.time()
+    n = 8 * 7 # defaults for 8 weeks
+    date = datetime.date.today()
+    sleeps = []
+    for i in range(n):
+        sleep = Task(
+            user_id=user_id,
+            name="Sleep",
+            task_type="Sleep",
+            priority=10,
+            date=date+datetime.timedelta(days=i),
+            start_time=bedtime,
+            end_time=wakeup
+        )
+        sleeps.append(sleep)
+    return sleeps

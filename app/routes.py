@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User, Task
 from datetime import datetime, timedelta
-from app.schedule import populate, generate_study_plan
+from app.schedule import populate, generate_study_plan, setSleep
 import random, requests
 from app import db
 
@@ -20,6 +20,9 @@ def register():
         preferred_study_time=data.get('preferred_study_time', 'morning')
     )
     db.session.add(new_user)
+    db.session.commit()
+    sleeps = setSleep(new_user.id, new_user.sleep_hours)
+    db.session.add_all(sleeps)
     db.session.commit()
     return jsonify({'message': 'New user created!'})
 
@@ -39,7 +42,7 @@ def login():
 
     username = data.get('username')
     password = data.get('password')
-
+    
     if not username or not password:
         return jsonify({'error': 'Username or password missing'}), 400
 
@@ -48,7 +51,7 @@ def login():
         return jsonify({'message': 'Invalid username or password'}), 401
 
     # Assuming you want to return some data upon successful login
-    return jsonify({'message': 'Login successful!', 'username': user.username})
+    return jsonify({'message': 'Login successful!', 'username': user.username, 'user_id': user.id})
 
 
 @bp.route('/add_assessment', methods=['POST', 'PUT'])

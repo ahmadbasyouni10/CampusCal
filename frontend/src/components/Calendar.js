@@ -5,7 +5,7 @@ import { DayPilot, DayPilotCalendar, DayPilotMonth, DayPilotNavigator } from "@d
 import "./Calendar.css";
 import axios from 'axios';
 
-const Calendar = () => {
+const Calendar = ({ userId }) => {
 
   const [view, setView] = useState("Week");
   const [startDate, setStartDate] = useState(DayPilot.Date.today());
@@ -31,6 +31,7 @@ const Calendar = () => {
     setEvents([...events, e]);
   };
 
+
   const fetchQuote = async () => {
     try {
         const response = await axios.get('http://localhost:5000/quotes');
@@ -41,7 +42,21 @@ const Calendar = () => {
   };
 
 
+
+  const getTasks = async () => {
+    try {
+        console.log("Calendar User ID: ", userId);
+      const response = await axios.get(`http://localhost:5000/schedule/${userId}`);
+      console.log(response)
+      setEvents(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  
+  }
   useEffect(() => {
+    getTasks();
+
     fetchQuote();
     const data = [
       {
@@ -118,6 +133,8 @@ const Calendar = () => {
       },
 
     ];
+    
+
 
     setEvents(data);
 
