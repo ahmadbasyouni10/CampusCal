@@ -7,7 +7,7 @@ import RegistrationForm from './components/Register';
 import 'react-calendar/dist/Calendar.css';
 import "./CalendarStyles.css";
 
-function App() {
+export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -52,8 +52,10 @@ function App() {
           <Route path="/register" element={!loggedIn ? <RegistrationForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
         </Routes>
       </div>
+      <div class="primary">
+                <h1>CampusCal </h1>
+                <Calendar/>
+            </div>
     </Router>
   );
 }
-
-export default App;

@@ -1,190 +1,192 @@
-import React from 'react'
-import Popup from './components/AddingOLay.css'
-import { ChakraProvider, CSSReset, Box, Container } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import {Button, Menu, MenuButton, 
-        MenuList, MenuItem, Radio,
-        RadioGroup, Popover, PopoverTrigger,
-        PopoverContent, PopoverHeader, PopoverBody,
-        PopoverFooter, PopoverArrow, PopoverCloseButton,  
-        PopoverAnchor, FormControl, FormLabel,
-        FormErrorMessage, FormHelperText,} from "@chakra-ui/react";
-import { ThemeProvider, CSSReset } from "@chakra-ui/core";
+import React, { useState, useRef } from 'react'
+import './AddingOLay.css'
+import {
+    Box, Button,
+    Modal, ModalOverlay, useRadio,
+    ModalContent, ModalHeader, useRadioGroup,
+    ModalBody, ModalCloseButton, FormControl,
+    FormLabel, FormErrorMessage, useDisclosure,
+    Input, HStack
+} from "@chakra-ui/react";
 import { Field, Form, Formik } from 'formik';
-import Rating from "./Rating";
 
 
-//should i take out the open popup
+//should the id match the dict value?
+
 function RadioCard(props) {
-	const { getInputProps, getRadioProps } = useRadio(props)
+    const { getInputProps, getRadioProps } = useRadio(props)
 
-	const input = getInputProps()
-	const checkbox = getRadioProps()
+    const input = getInputProps()
+    const checkbox = getRadioProps()
 
-	return (
-		<Box as='label'>
-			<input {...input} />
-			<Box
-				{...checkbox}
-				cursor='pointer'
-				borderWidth='1px'
-				borderRadius='md'
-				boxShadow='md'
-				_checked={{
-					bg: 'teal.600',
-					color: 'white',
-					borderColor: 'teal.600',
-				}}
-				_focus={{
-					boxShadow: 'outline',
-				}}
-				px={5}
-				py={3}
-			>
-				{props.children}
-			</Box>
-		</Box>
-	)
+    return (
+        <Box as='label'>
+            <input {...input} />
+            <Box
+                {...checkbox}
+                cursor='pointer'
+                borderWidth='1px'
+                borderRadius='md'
+                boxShadow='md'
+                _checked={{
+                    bg: 'teal.600',
+                    color: 'white',
+                    borderColor: 'teal.600',
+                }}
+                _focus={{
+                    boxShadow: 'outline',
+                }}
+                px={5}
+                py={3}
+            >
+                {props.children}
+            </Box>
+        </Box>
+    )
 }
 
 
-export default function Popup(props) {
-	const {getRootProps, getRadioProps} = useRadioGroup({
-		name: 'framework',
-	defaultValue: 'react',
-	onChange: console.log,
-})
+export default function OLay({ Id, trigger, onCloseModal }) {
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [selectedOption, setSelectedOption] = useState('');
+    const group = getRootProps()
 
-	const options = ['Class 1', 'Class 2', 'Class 3'] 
-	//here is where the course options would go.. need to select between the options below
+    const initRef = React.useRef()
 
-	const group = getRootProps()
-	const initRef = React.useRef()
+    const { getRootProps, getRadioProps } = useRadioGroup({
+        name: 'group',
+        defaultValue: selectedOption,
+        onChange: setSelectedOption,
+    })
 
-	function validateName(value) {
-		let error
-		if (!value) {
-			error = 'Name is required'
-		}
-		return error
-	}
-
-	return (props.trigger) ? (
-		<div className="popup">
-			<div className="popup-inner">
-				<button className="close-btn">Log</button>
-				{props.children}
-			</div>
-
-			<Popover closeOnBlur={false} placement='auto' initialFocusRef={initRef}>
-				{({ isOpen, onClose }) => (
-					<>
-						<Portal>
-							<PopoverContent>
-								<PopoverHeader>Event Details</PopoverHeader>
-								<PopoverCloseButton />
-								<PopoverBody>
-									<Box>
-										<Formik
-											onSubmit={(values, actions) => {
-												setTimeout(() => {
-													alert(JSON.stringify(values, null, 2))
-													actions.setSubmitting(false)
-												}, 1000)
-											}}
-										>
-											{(props) => (
-												<Form>
-													<Field name='name' validate={validateName}>
-														{({ field, form }) => (
-															<FormControl isInvalid={form.errors.name && form.touched.name}>
-																<br /><br />
-																<FormLabel>Activity Name</FormLabel>
-																<Input {...field} />
-																<FormErrorMessage>{form.errors.name}</FormErrorMessage>
-																<br />
-																<FormLabel>When should this be done by?</FormLabel>
-																<Input placeholder='Select Date and Time' size='md' type='datetime-local' />
-																<FormErrorMessage>{form.errors.name}</FormErrorMessage>
-																<br />
-																<FormLabel>What is the priority level?</FormLabel>
-																<ThemeProvider>
-																	<CSSReset />
-																	<Rating
-																		size={48}
-																		icon="star"
-																		scale={5}
-																		fillColor="gold"
-																		strokeColor="grey"
-																	/>
-																	</ThemeProvider>
-																<FormErrorMessage>{form.errors.name}</FormErrorMessage>
-																<br />
-																<FormLabel>How long do you want to work on it?</FormLabel>
-																<Input {...field} />
-																<FormErrorMessage>{form.errors.name}</FormErrorMessage>
+    const options = ['Class 1', 'Class 2', 'Class 3']
+    //here is where the course options would go.. need to select between the options below
 
 
 
-																
-
-															
-																<HStack {...group}>
-																	{options.map((value) => {
-																		const radio = getRadioProps({ value })
-																		return (
-																			<RadioCard key={value} {...radio}>
-																				{value}
-																			</RadioCard>
-																		)
-																	})}
-																</HStack>
-																
-															
-																<FormLabel>Assign to a group?</FormLabel>
-																<Select placeholder='Select Group'>
-																	<option>United Arab Emirates</option>
-																	<option>Nigeria</option>
-																</Select>
-															</FormControl>
-														)}
-													</Field>
-													<Button
-														mt={4}
-														colorScheme='teal'
-														isLoading={props.isSubmitting}
-														type='submit'
-													>
-														Submit
-													</Button>
-												</Form>
-											)}
-										</Formik>
-									</Box>
-									<Button
-										mt={4}
-										colorScheme='blue'
-										onClick={onClose}
-										ref={initRef}
-									>
-										Log
-									</Button>
-								</PopoverBody>
-							</PopoverContent>
-						</Portal>
-					</>
-				)}
-			</Popover>
-		</div>
-	) : "";
+    const Overlay = () => (
+        <ModalOverlay
+            bg="rgba(0, 0, 0, 0.3)"
+            backdropFilter="blur(10px)"
+            backdropBlur="10px"
+        />
+    )
+    
+    const [overlay, setOverlay] = React.useState(<Overlay />)
 
 
+    function validateName(value) {
+        let error
+        if (!value) {
+            error = 'Value is required';
+        }
+        return error
+    }
+
+    React.useEffect(() => {
+        if (trigger) {
+            onOpen();
+        }
+    }, [trigger, onOpen]);
+
+    const handleClose = () => {
+        onClose();
+        onCloseModal(selectedOption);
+    };
+
+    return (
+        <>
+            <div className="OLay">
+                <Modal isCentered isOpen={isOpen} onClose={handleClose}>
+                    {overlay}
+                    <ModalContent>
+                        <ModalHeader>{Id} Details</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
+                            <Formik
+                                initialValues={{ name: '', priority: '', hours: '' }}
+                                onSubmit={(values, actions) => {
+                                    setTimeout(() => {
+                                        alert(JSON.stringify(values, null, 2))
+                                        actions.setSubmitting(false)
+                                        setSelectedOption(values.select)
+                                        handleClose();
+                                    }, 1000)
+                                }}>
+                                {(props) => (
+                                    <Form>
+                                        < Field name='name' validate={validateName}>
+                                            {({ field, form }) => (
+                                                <FormControl isRequired>
+                                                    <FormLabel>Activity Name</FormLabel>
+                                                    <Input placeholder='name' {...field} />
+                                                    <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                                                    <br /><br />
+                                                </FormControl>
+                                            )}
+                                        </Field>
+                                        < Field name='date' validate={validateName}>
+                                            {({ field, form }) => (
+                                                <FormControl isRequired>
+                                                    <FormLabel>When should this be done by?</FormLabel>
+                                                    <Input placeholder='date' size='md' type='datetime-local' {...field} />
+                                                    <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                                                    <br /><br />
+                                                </FormControl>
+                                            )}
+                                        </Field>
+                                        < Field name='priority' validate={validateName}>
+                                            {({ field, form }) => (
+                                                <FormControl isRequired>
+                                                    <FormLabel>What is the priority level? (1-10)</FormLabel>
+                                                    <Input placeholder='Add a priority' type='number' {...field} min="1" max="10" />
+                                                    <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                                                    <br /><br />
+                                                </FormControl>
+                                            )}
+                                        </Field>
+                                        < Field name='hours' validate={validateName}>
+                                            {({ field, form }) => (
+                                                <FormControl isRequired>
+                                                    <FormLabel>How long do you want to work on it?</FormLabel>
+                                                    <Input placeholder='Add a number in hours' type='number' {...field} />
+                                                    <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                                                    <br /><br />
+                                                </FormControl>
+                                            )}
+                                        </Field>
+                                        < Field name='select'>
+                                            {({ field, form }) =>
+                                                <div>
+                                                    <FormLabel>Assign to a group?</FormLabel>
+                                                    <HStack {...group}>
+                                                        {options.map((option) => (
+                                                            <Box key={option}>
+                                                                <input type="radio" {...getRadioProps({ value: option })} />
+                                                                <label>{option}</label>
+                                                            </Box>
+                                                        ))}
+                                                    </HStack>
+                                                    <br/>
+                                                </div>
+                                            }
+                                        </Field>
+                                        <Button
+                                            mt={4}
+                                            colorScheme='teal'
+                                            isLoading={props.isSubmitting}
+                                            type='submit'
+                                            ref={initRef}
+                                        >
+                                            Submit
+                                        </Button>
+                                    </Form>
+                                )}
+                            </Formik>
+                        </ModalBody>
+                    </ModalContent>
+                </Modal>
+            </div >
+        </>
+    );
 }
-
-// probably have to differentiate between submit and log buttons... will see which works better for now
-// will also have to assign it to a group most likely
-
-// might instead wanna use <h2>Activity Name</h2> as the form label titles
-// the groups would need to be the values in the db
-
-// can do transitions later if desired
