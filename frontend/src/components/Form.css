@@ -1,16 +1,19 @@
 /* Extend existing styles for the registration form */
 
-.form-container {
+.form-container2 {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
+    background-color: #f4f4f4; 
+  }
+  .studyTime{
+    margin-bottom: 10px;
+  }
+  .formatting{
+    display:flex;
+    justify-content: center;
+    align-items: center;
   }
   
   .form-group {
