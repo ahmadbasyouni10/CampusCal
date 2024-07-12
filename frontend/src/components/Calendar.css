@@ -5,8 +5,6 @@
 body .calendar_default_event_inner {
     background: #a3c9f1;
     color: #000;
-    border: 1px solid #2e78d6;
-    border-radius: 5px;
     font-size: 10pt;
     padding: 5px;
     opacity: 0.8;
@@ -15,63 +13,286 @@ body .calendar_default_event_inner {
 body .month_default_event_inner {
     background: #a3c9f1;
     color: #000;
-    border: 1px solid #2e78d6;
-    border-radius: 5px;
     font-size: 10pt;
     padding: 5px;
     opacity: 0.8;
 }
 
-/* toolbar */
+/*monthly and overall calendar*/
 
 .container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
-.navigator {
+.tools {
+    display: flex;
+    flex-direction: row;
+    margin-left: 10px;
     margin-right: 10px;
+    margin-bottom: 0px;
+    padding-bottom: 0;
 }
 
 .content {
     flex-grow: 1;
 }
 
+.navigator {
+    margin-right: 10px;
+}
+
+.navigator_default_main{
+    background-color: transparent;
+    border: 0;
+}
+
+.navigator_default_dayother {
+    color: rgb(69, 65, 65);
+}
+
+.navigator_default_month {
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 12px;
+}
+
+.navigator_default_busy {
+    font-weight: bold;
+}
+
+.navigator_default_title,
+.navigator_default_titleright,
+.navigator_default_titleleft {
+    background-color: transparent;
+    font-family: "Google Sans", Roboto, Arial, sans-serif;
+    color: black;
+    border: 0;
+    font-weight: bold;
+}
+
+.create {
+    margin-right: auto;
+    margin-left: 15px;
+    box-sizing: border-box;
+}
+
+.css-1kfu8nn {
+    border: 0;
+    box-shadow: 0 5px 7px rgba(0, 0, 0, 0.80) !important;
+    text-shadow: none !important;
+
+}
+
+.chakra-modal__header {
+    -webkit-flex: 0;
+    -ms-flex: 0;
+    flex: 0;
+    -webkit-padding-start: var(--chakra-space-6);
+    padding-inline-start: var(--chakra-space-6);
+    -webkit-padding-end: var(--chakra-space-6);
+    padding-inline-end: var(--chakra-space-6);
+    padding-top: var(--chakra-space-4);
+    padding-bottom: var(--chakra-space-4);
+    font-size: var(--chakra-fontSizes-xl);
+    font-weight: var(--chakra-fontWeights-semibold);
+    background-color: #E07A5F;
+    color: var(--chakra-colors-white);
+}
+
+.chakra-modal__content {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    border-radius: var(--chakra-radii-md);
+    color: inherit;
+    margin-top: auto;
+    margin-bottom: auto;
+    -webkit-margin-start: auto;
+    margin-inline-start: auto;
+    -webkit-margin-end: auto;
+    margin-inline-end: auto;
+    z-index: var(--chakra-zIndices-modal);
+    --modal-bg: var(--chakra-colors-white);
+    --modal-shadow: var(--chakra-shadows-lg);
+    background: var(--modal-bg);
+    box-shadow: var(--modal-shadow);
+    max-width: var(--chakra-sizes-md);
+}
+
+.chakra-form__label {
+    display: block;
+    text-align: start;
+    font-size: var(--chakra-fontSizes-md);
+    -webkit-margin-end: var(--chakra-space-3);
+    margin-inline-end: var(--chakra-space-3);
+    margin-bottom: var(--chakra-space-2);
+    font-weight: var(--chakra-fontWeights-medium);
+    transition-property: var(--chakra-transition-property-common);
+    transition-duration: var(--chakra-transition-duration-normal);
+    opacity: 1;
+}
+
+.chakra-input {
+    width: 100%;
+    height: var(--input-height);
+    font-size: var(--input-font-size);
+    -webkit-padding-start: var(--input-padding);
+    padding-inline-start: var(--input-padding);
+    -webkit-padding-end: var(--input-padding);
+    padding-inline-end: var(--input-padding);
+    border-radius: var(--input-border-radius);
+    min-width: 0px;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    position: relative;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    transition-property: var(--chakra-transition-property-common);
+    transition-duration: var(--chakra-transition-duration-normal);
+    --input-font-size: var(--chakra-fontSizes-md);
+    --input-padding: var(--chakra-space-4);
+    --input-border-radius: var(--chakra-radii-md);
+    --input-height: var(--chakra-sizes-10);
+    border: 1px solid;
+    border-color: inherit;
+    background: inherit;
+}
+
+.chakra-stack {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.chakra-modal__body {
+    -webkit-padding-start: var(--chakra-space-6);
+    padding-inline-start: var(--chakra-space-6);
+    -webkit-padding-end: var(--chakra-space-6);
+    padding-inline-end: var(--chakra-space-6);
+    padding-top: var(--chakra-space-2);
+    padding-bottom: var(--chakra-space-2);
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+.chakra-modal__close-btn{
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-flex-shrink: 0;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    width: var(--close-button-size);
+    height: var(--close-button-size);
+    border-radius: var(--chakra-radii-md);
+    transition-property: var(--chakra-transition-property-common);
+    transition-duration: var(--chakra-transition-duration-normal);
+    background: var(--close-button-bg);
+    --close-button-size: var(--chakra-sizes-8);
+    font-size: var(--chakra-fontSizes-xs);
+    position: absolute;
+    top: var(--chakra-space-2);
+    right: var(--chakra-space-3);
+}
+
+.chakra-form__required-indicator {
+    -webkit-margin-start: var(--chakra-space-1);
+    margin-inline-start: var(--chakra-space-1);
+    --form-control-color: var(--chakra-colors-red-500);
+    color: var(--form-control-color);
+}
+
 /* toolbar */
 .toolbar {
-    margin-bottom: 10px;
     display: flex;
+    margin-bottom: 10px;
     align-items: center;
-    justify-content: space-between;
+    flex-direction: row-reverse;
+
 }
 
 .toolbar-group {
     display: inline-flex;
 }
 
+.toolbargroups {
+    margin-right: auto;
+}
+
+.titleee {
+    position: absolute; left: 50%; transform: translate(-50%, -50%); text-align: center;
+    font-size: 4xl;
+    font-weight: bold;
+    color: #2A2D44;
+}
+
+
 .toolbar button {
-    background-color: #3c78d8;
-    color: white;
+    color: rgb(10, 10, 11);
     border: 0;
     padding: .5rem 1rem;
-    width: 80px;
+    width: auto;
+    height: 40px;
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;
-    margin-right: 1px;
     transition: all 0.2s;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.08);
     box-sizing: border-box;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
 }
 
 .toolbar button.selected {
-    background-color: #1c4587;
-    box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+    background-color: #F2CC8F;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
 }
+
+.toolbar .toolbar-group button:first-child,
+.toolbar .toolbar-group button:last-child,
+.toolbar .toolbar-group button:nth-last-child(1),
+.toolbar button.standalone {
+    width: 80px;
+    background-color: #f5deb9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+    margin-left: auto;
+    margin-right: 1px;
+}
+
 
 .toolbar .toolbar-group button:first-child {
     border-top-left-radius: 30px;
     border-bottom-left-radius: 30px;
+    flex-grow: 1;
 }
 
 .toolbar .toolbar-group button:last-child {
@@ -81,20 +302,110 @@ body .month_default_event_inner {
 
 .toolbar button.standalone {
     border-radius: 30px;
-    margin-left: 10px; /* Adds space between standalone and other buttons */
-    margin-right: auto; /* Reset margin-right for standalone button */
+    margin-left: 10px;
+    /* Adds space between standalone and other buttons */
+    margin-right: 10px;
+    /* Reset margin-right for standalone button */
 }
 
 .toolbar button:hover {
-    background-color: #2f66c4;
-    box-shadow: 0 5px 7px rgba(0,0,0,0.1);
+    background-color: #E07A5F;
+    box-shadow: 0 5px 7px rgba(0, 0, 0, 0.1);
 }
 
 .toolbar button:active {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.quotes .quote-item{
+.calendar_default_main {
+    background-color: transparent;
+    border: 0;
+    font-family: "Google Sans", Roboto, Arial, sans-serif;
+}
+
+.calendar_default_corner_inner {
+    background-color: transparent;
+    background: transparent;
+    border: 0;
+}
+
+.calendar_default_cell_inner {
+    background: transparent;
+}
+
+.calendar_default_cell_business .calendar_default_cell_inner {
+    background-color: transparent;
+}
+
+.calendar_default_rowheader_inner {
+    background-color: transparent;
+    border: 0;
+}
+
+.calendar_default_colheader_inner {
+    color: black(69, 65, 65);
+    background-color: transparent;
+    border: 0;
+    font-size: 15px;
+}
+
+/*
+.create-assessment-btn {
+    display: block;  // Ensure the button is a block-level element to fit the full width 
+    margin: 10px auto;  // Center the button and add some margin 
+    padding: 16px 32px;  // Add some padding for better appearance 
+    background-color: #007bff; //Example background color 
+    color: white;  // Text color 
+    border: none;
+    border-radius: 4px;  // Rounded corners
+    cursor: pointer;
+  }
+  */
+
+  .chakra-button{
+    display: -webkit-inline-box;
+    display: -webkit-inline-flex;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    position: relative;
+    white-space: nowrap;
+    vertical-align: middle;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    line-height: 1.2;
+    border-radius: var(--chakra-radii-md);
+    font-weight: var(--chakra-fontWeights-semibold);
+    transition-property: var(--chakra-transition-property-common);
+    transition-duration: var(--chakra-transition-duration-normal);
+    height: var(--chakra-sizes-10);
+    min-width: var(--chakra-sizes-10);
+    font-size: var(--chakra-fontSizes-md);
+    -webkit-padding-start: var(--chakra-space-4);
+    padding-inline-start: var(--chakra-space-4);
+    -webkit-padding-end: var(--chakra-space-4);
+    padding-inline-end: var(--chakra-space-4);
+    background: #E07A5F;
+    color: var(--chakra-colors-white);
+    margin-top: var(--chakra-space-4);
+  }
+
+  .quotes .quote-item{
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-size: 16px;
     float: right;
@@ -109,13 +420,11 @@ body .month_default_event_inner {
     margin-right: 20px;
     width: 300px;
 }
-.create-assessment-btn {
-    display: block; /* Ensure the button is a block-level element to fit the full width */
-    margin: 10px auto; /* Center the button and add some margin */
-    padding: 16px 32px; /* Add some padding for better appearance */
-    background-color: #007bff; /* Example background color */
-    color: white; /* Text color */
-    border: none;
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer;
-  }
+.top {
+    display: flex;
+    flex-direction: row;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    padding-bottom: 0;
+}

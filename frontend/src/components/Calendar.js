@@ -26,7 +26,7 @@ const Calendar = ({ userId }) => {
             type: 'text',
             },
             {
-                name: 'Priority',
+                name: 'Priority Low/Medium/High',
                 id: 'priority',
                 type: 'text',
             },
@@ -85,18 +85,34 @@ const Calendar = ({ userId }) => {
 
   const getTasks = async () => {
     try {
-        // console.log("Calendar User ID: ", userId);
       const response = await axios.get(`http://localhost:5000/schedule/${userId}`);
-      // console.log(response)
-      setEvents(response.data);
+      console.log("Tasks from backend: ", response.data);
+      const tasksWithColors = response.data.map((task) => {
+        // Debugging: Log the priority value received from the backend
+        console.log("Priority from backend:", task.priority);
+        
+        const priorityColorMap = {
+          "High": 'red',
+          "Medium": 'orange',
+          "Low": 'green'
+        };
+        // Ensure case-insensitive comparison and trim spaces
+        const color = priorityColorMap[task.priority] || 'rgba(173, 216, 230, 0.5)';
+        return {
+          ...task,
+          backColor: color
+        };
+      });
+      console.log("Tasks with colors: ", tasksWithColors);
+      setEvents(tasksWithColors);
     } catch (error) {
       console.error(error);
     }
-  
-  }
+  };
+
+
   useEffect(() => {
     getTasks();
-
     fetchQuote();
 
   }, []);
@@ -106,11 +122,15 @@ const Calendar = ({ userId }) => {
     if (modal.canceled) {
       return;
     }
-  
-    // Use DayPilot.Date.today() to get the current date and format it in ISO 8601 format
+
+    const now = new DayPilot.Date();
     const start = new DayPilot.Date(DayPilot.Date.today()).toString("yyyy-MM-ddTHH:mm:ss");
-    // Add 2 hours to the start time for the end time and format it
     const end = new DayPilot.Date(start).addHours(2).toString("yyyy-MM-ddTHH:mm:ss");
+
+    if (start < now.String("yyyy-MM-ddTHH:mm:ss")) {
+      alert("Cannot create an event in the past");
+      return;
+    }
   
     const newEvent = {
       start: start,
@@ -123,18 +143,11 @@ const Calendar = ({ userId }) => {
 
   return (
     <div className={"container"}>
-      <div className={"navigator"}>
-        <DayPilotNavigator
-          selectMode={view}
-          showMonths={1}
-          skipMonths={1}
-          onTimeRangeSelected={args => setStartDate(args.day)}
-          events={events}
-        />
-        <button onClick={handleCreateAssessment} className="create-assessment-btn">Create Assessment</button>
-      </div>
+      
       <div className={"content"}>
         <div className={"toolbar"}>
+        <h1 className='titleee'>CampusCal</h1>
+          <div className={"toolbargroups"}>
           <div className={"toolbar-group"}>
             <button onClick={() => setView("Day")} className={view === "Day" ? "selected" : ""}>Day</button>
             <button onClick={() => setView("Week")} className={view === "Week" ? "selected" : ""}>Week</button>
@@ -150,6 +163,18 @@ const Calendar = ({ userId }) => {
             )}
             </div>
         </div>
+      </div>
+
+      <div className='top'>
+      <div className={"navigator"}>
+        <DayPilotNavigator
+          selectMode={view}
+          showMonths={1}
+          skipMonths={1}
+          onTimeRangeSelected={args => setStartDate(args.day)}
+          events={events}
+        />
+      </div>
 
         <DayPilotCalendar
           viewType={"Day"}
@@ -177,6 +202,7 @@ const Calendar = ({ userId }) => {
           onTimeRangeSelected={onTimeRangeSelected}
           controlRef={setMonthView}
         />
+      </div>
       </div>
     </div>
   );

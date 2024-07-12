@@ -21,6 +21,10 @@ const RegistrationForm = ({ onLogin }) => {
     const userData = {
       username,
       password,
+      sleepHours,
+      studyHoursPerDay,
+      otherCommitments,
+      preferredStudyTime
     };
 
     try {
@@ -53,10 +57,11 @@ const RegistrationForm = ({ onLogin }) => {
       const loginData = await loginResponse.json();
       // Store the token/session data as needed, e.g., in localStorage
       localStorage.setItem("userToken", loginData.token);
+      localStorage.setItem("userId", loginData.user_id);
       onLogin(); // Notify parent component (e.g., App.js) about successful login
 
       // Redirect to homepage using navigate
-      navigate("/"); // Adjust the path as per your routing setup
+     //navigate("/"); // Adjust the path as per your routing setup
     } catch (error) {
       console.error("Registration or login failed:", error);
       // Handle error scenario (e.g., displaying an error message)

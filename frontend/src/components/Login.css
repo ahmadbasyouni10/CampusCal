@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .login-container2 {
     display: flex;
     justify-content: center;
@@ -60,3 +61,49 @@
   form button:hover {
     background-color: #3e8e41;
   }
+=======
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 400px;
+  /* Adjust width as needed */
+  margin: 0 auto;
+  /* Center horizontally */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+form label {
+  margin-bottom: 5px;
+}
+
+form input {
+  padding: 10px;
+  font-size: 16px;
+}
+
+form button {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #50985b;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #3e8e41;
+}
+>>>>>>> ahmad
