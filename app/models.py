@@ -26,8 +26,8 @@ class Task(db.Model):
     performance = db.Column(db.Float, nullable=True)
     start_time = db.Column(db.Time, nullable=True)
     end_time = db.Column(db.Time, nullable=True)
-    # parent_id = db.Column(db.Integer, db.ForeignKey('task.id'))
-    # children = db.relationship('Task')
+    parent_id = db.Column(db.Integer, db.ForeignKey('task.id'))
+    children = db.relationship('Task')
 
     def __repr__(self):
         return f"Task('{self.name}', '{self.date}')"

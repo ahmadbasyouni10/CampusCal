@@ -85,7 +85,7 @@ def add_assessment():
         # Consider adding updates for date, start_time, and end_time as well
 
     db.session.commit()
-    return jsonify({'message': 'New assessment updated or added!'})
+    return jsonify({'message': 'New assessment updated or added!', "task_id": new_task.id if request.method == 'POST' else task_id})
 
 @bp.route('/schedule/<int:user_id>/classes', methods=['POST'])
 def add_classes(user_id):
@@ -104,6 +104,7 @@ def add_classes(user_id):
         classTasks.append(clas)
     db.session.add_all(classTasks) 
     db.session.commit()
+
 @bp.route('/schedule/<int:user_id>/task/<int:task_id>/remove', methods=['post'])
 def remove_task(user_id, task_id):
     task = Task.query.get(task_id)

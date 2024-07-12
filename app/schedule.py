@@ -115,7 +115,7 @@ def generate_study_plan(user, task):
     else:
         days = max(days // 3, 1)  # Ensure at least one day
 
-    totalStudy = task.study_time
+    totalStudy = user.study_hours_per_day * days
     studyTime = totalStudy / days
 
     studySessions = []
@@ -142,7 +142,7 @@ def generate_study_plan(user, task):
                 studySessions.append(study)
                 break
         
-        today = (today + datetime.timedelta(days=1)).date()
+        today = (today + datetime.timedelta(days=1))
         if missed:
             remaining_days = max((future - today).days, 1)  # Ensure at least one day
             studyTime = totalStudy / remaining_days

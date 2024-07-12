@@ -17,30 +17,60 @@ const Calendar = ({ userId }) => {
   const [monthView, setMonthView] = useState();
 
   const onTimeRangeSelected = async (args) => {
-    const dp = args.control;
-    const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
-    dp.clearSelection();
-    if (modal.canceled) {
-      return;
-    }
+    try {
+        const dp = args.control;
+        const form = [
+            {
+            name: 'Event Name',
+            id: 'name',
+            type: 'text',
+            },
+            {
+                name: 'Priority',
+                id: 'priority',
+                type: 'text',
+            },
+            {
+            type: 'checkbox',
+            id: 'plan',
+            name: 'Would you like to create a study plan?',
+            }
+        ];
+        const modal = await DayPilot.Modal.form(form)
+        dp.clearSelection();
+        if (modal.canceled) {
+        return;
+        }
 
-    const e = {
-      user_id: userId,
-      name: modal.result,
-      priority: 1,
-      date: args.start.toString("yyyy-MM-dd"),
-      start: args.start,
-      end: args.end,
-      performance: null
-    };
-    await axios('http://localhost:5000/add_assessment', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        data: JSON.stringify(e)
-    })
-    await getTasks();
+        const e = {
+        user_id: userId,
+        name: modal.result.name,
+        priority: modal.result.priority,
+        date: args.start.toString("yyyy-MM-dd"),
+        start: args.start,
+        end: args.end,
+        performance: null
+        };
+        const response = await axios('http://localhost:5000/add_assessment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify(e)
+        });
+
+        if (modal.result.plan == true) {
+            // /schedule/<int:user_id>/task/<int:task_id>/new_study_plan
+            await axios.post(`http://localhost:5000/schedule/${userId}/task/${response.data.task_id}/new_study_plan`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+        });
+        }
+        await getTasks();
+    } catch (e) {
+        console.error("In onTimeRangeSelected Error: ", e);
+    }
   };
 
 
