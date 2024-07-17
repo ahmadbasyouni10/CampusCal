@@ -110,6 +110,65 @@ const Calendar = ({ userId }) => {
     }
   };
 
+  const createClass = async () => {
+    const form = [
+        {name: "Class Name", id: "name", required: true, type: 'text'},
+        {name: "Starting Time", id: "startTime", required: true, timeFormat: "HH:mm",  type: 'time'},
+        {name: "Ending Time", id: "endTime", required: true, timeFormat: "HH:mm",  type: 'time'},
+        {name: "Start Date", id: "start", required: true, dateFormat: "MM/dd/yyyy", type: "date"},
+        {name: "End Date", id: "end", required: true, dateFormat: "MM/dd/yyyy", type: "date"},
+        {name: "Monday", id: 'monday', type: 'checkbox'},
+        {name: "Tuesday", id: 'tuesday', type: 'checkbox'},
+        {name: "Wednesday", id: 'wednesday', type: 'checkbox'},
+        {name: "Thursday", id: 'thursday', type: 'checkbox'},
+        {name: "Friday", id: 'friday', type: 'checkbox'},
+    ]
+    const modal = await DayPilot.Modal.form(form);
+    console.log("Modal:", modal);
+    if (modal.canceled) {
+      return;
+    }
+    try {
+
+
+        // Use DayPilot.Date.today() to get the current date and format it in ISO 8601 format
+        const startDate = new DayPilot.Date(modal.result.start, "MM/dd/yyyy").toString("yyyy-MM-dd");
+        // Add 2 hours to the start time for the end time and format it
+        const endDate = new DayPilot.Date(modal.result.end, "MM/dd/yyyy").toString("yyyy-MM-dd");
+
+        const startTime = new DayPilot.Date(modal.result.startTime, "HH:mm:ss").toString("HH:mm:ss");
+        const endTime = new DayPilot.Date(modal.result.endTime, "HH:mm:ss").toString("HH:mm:ss");
+
+        const newEvent = {
+            name: modal.result.name,
+            userId: userId,
+            start: startTime,
+            end: endTime,
+            startDate: startDate,
+            endDate: endDate,
+            days: {
+                monday: modal.result.monday,
+                tuesday: modal.result.tuesday,
+                wednesday: modal.result.wednesday,
+                thursday: modal.result.thursday,
+                friday: modal.result.friday
+            }
+        };
+
+        const response = await axios(`http://localhost:5000/schedule/${userid}/classes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify(e)
+        });
+
+        await getTasks();
+    } catch (error) {
+        console.log(error);
+    }
+  };
+
 
   useEffect(() => {
     getTasks();
@@ -174,6 +233,7 @@ const Calendar = ({ userId }) => {
           onTimeRangeSelected={args => setStartDate(args.day)}
           events={events}
         />
+        <button onClick={createClass} className="create-class-btn">Create Class</button>
       </div>
 
         <DayPilotCalendar
