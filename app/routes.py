@@ -90,20 +90,77 @@ def add_assessment():
 @bp.route('/schedule/<int:user_id>/classes', methods=['POST'])
 def add_classes(user_id):
     data = request.get_json()
-    classes = data # would be all of the inputed classes
+    # would be all of the inputed classes
     classTasks = []
-    for cl in classes:
-        clas = Task(
+    initialClass = Task(
+        user_id=user_id,
+        name=data['name'],
+        task_type='class',
+        date=datetime.strptime(data['startDate'], '%Y-%m-%d').date(),
+        start_time=datetime.strptime(data['start'], '%Y-%m-%dT%H:%M:%S').time() if data.get('start') else None,
+        end_time=datetime.strptime(data['end'], '%Y-%m-%dT%H:%M:%S').time() if data.get('end') else None
+        )
+    classTasks.append(initialClass)
+    print("In add_classes")
+    # This gets all of the days that the class is on
+    daysToDatetime = {
+        'monday': 0,
+        'tuesday': 1,
+        'wednesday': 2,
+        'thursday': 3,
+        'friday': 4,
+        'saturday': 5,
+        'sunday': 6
+    } # This is to convert the days to datetime integers
+    
+    # This gets all of the days that the class is on
+    daysOfTheWeek = [daysToDatetime[day] for day, isSelected in data['days'].items() if isSelected]
+    daysOfTheWeek.sort() # gets it in order monday to sunday
+    n = len(daysOfTheWeek)
+    if initialClass.date.weekday() in daysOfTheWeek:
+        n-= 1
+        daysOfTheWeek.remove(initialClass.date.weekday())
+    else:
+        initialClass.date = initialClass.date + timedelta(days=(daysOfTheWeek[0] - initialClass.date.weekday()))
+        n-= 1
+        daysOfTheWeek.pop(0)
+    classTasks.append(initialClass)
+    initalClasses = [initialClass]
+
+    for i in range(n):
+        newClass = Task(
             user_id=user_id,
-            name=cl['className'],
-            task_type="Class",
-            start_time=datetime.strptime(cl['startTimeHour']+":"+cl['startTimeMinute']+":"+cl['startTimeAmPm'], "%%I:%M:%p").time(),
-            end_time=datetime.strptime(cl['endTimeHour']+":"+cl['endTimeMinute']+":"+cl['endTimeAmPm'], "%%I:%M:%p").time(),
-            date=cl['date'] # don't think the date is set currently
-        ) # will need to update later once the front end is properly configured this likely doesn't work
-        classTasks.append(clas)
+            name=data['name'],
+            task_type='class',
+            date=initialClass.date + timedelta(days=(daysOfTheWeek[i]-initialClass.date.weekday())),
+            start_time=initialClass.start_time,
+            end_time=initialClass.end_time,
+            parent_id=initialClass.id
+        )
+        classTasks.append(newClass)
+        initalClasses.append(newClass)
+
+    currentDate = initialClass.date + timedelta(days=7)
+    i = 0
+    # Classes on Monday, Wednesday, Friday
+    # Start on Monday, then move currentDate to Wednesday, then to Friday, then to Monday
+    while currentDate <= datetime.strptime(data['endDate'], '%Y-%m-%d').date():
+        print("In while loop in add_classes currendate: "+ currentDate.strftime("%Y-%m-%d"))
+        if currentDate.weekday() in daysOfTheWeek:
+            newClass = Task(
+                user_id=user_id,
+                name=data['name'],
+                task_type='class',
+                date=currentDate,
+                start_time=initialClass.start_time,
+                end_time=initialClass.end_time
+            )
+            classTasks.append(newClass)
+        i+= 1
+        currentDate = currentDate +timedelta(days= abs(initalClasses[i % len(initalClasses)].date.weekday() - currentDate.weekday()))
     db.session.add_all(classTasks) 
     db.session.commit()
+    return jsonify({'message': 'Classes added!'})
 
 @bp.route('/schedule/<int:user_id>/task/<int:task_id>/remove', methods=['post'])
 def remove_task(user_id, task_id):

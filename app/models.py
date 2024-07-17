@@ -21,7 +21,7 @@ class Task(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     task_type = db.Column(db.String(50), nullable=True)  # e.g., class, exam, activity
-    priority = db.Column(db.String(100), nullable=False)  # Priority LOW/MEDIUM/HIGH
+    priority = db.Column(db.String(100), nullable=True)  # Priority LOW/MEDIUM/HIGH
     date = db.Column(db.Date, nullable=False)
     performance = db.Column(db.Float, nullable=True)
     start_time = db.Column(db.Time, nullable=True)

@@ -117,11 +117,13 @@ const Calendar = ({ userId }) => {
         {name: "Ending Time", id: "endTime", required: true, timeFormat: "HH:mm",  type: 'time'},
         {name: "Start Date", id: "start", required: true, dateFormat: "MM/dd/yyyy", type: "date"},
         {name: "End Date", id: "end", required: true, dateFormat: "MM/dd/yyyy", type: "date"},
+        {name: "Sunday", id: 'sunday', type: 'checkbox'},
         {name: "Monday", id: 'monday', type: 'checkbox'},
         {name: "Tuesday", id: 'tuesday', type: 'checkbox'},
         {name: "Wednesday", id: 'wednesday', type: 'checkbox'},
         {name: "Thursday", id: 'thursday', type: 'checkbox'},
         {name: "Friday", id: 'friday', type: 'checkbox'},
+        {name: "Saturday", id: 'saturday', type: 'checkbox'},
     ]
     const modal = await DayPilot.Modal.form(form);
     console.log("Modal:", modal);
@@ -136,36 +138,42 @@ const Calendar = ({ userId }) => {
         // Add 2 hours to the start time for the end time and format it
         const endDate = new DayPilot.Date(modal.result.end, "MM/dd/yyyy").toString("yyyy-MM-dd");
 
-        const startTime = new DayPilot.Date(modal.result.startTime, "HH:mm:ss").toString("HH:mm:ss");
-        const endTime = new DayPilot.Date(modal.result.endTime, "HH:mm:ss").toString("HH:mm:ss");
+        const startDateTime = `${startDate}T${modal.result.startTime}:00`;
+        const endDateTime = `${endDate}T${modal.result.endTime}:00`;
+
+        // const startTime = new DayPilot.Date(startDateTime, "HH:mm").toString("HH:mm:ss");
+        // const endTime = new DayPilot.Date(endDateTime, "HH:mm").toString("HH:mm:ss");
 
         const newEvent = {
             name: modal.result.name,
             userId: userId,
-            start: startTime,
-            end: endTime,
+            start: startDateTime,
+            end: endDateTime,
             startDate: startDate,
             endDate: endDate,
             days: {
+                sunday: modal.result.sunday,
                 monday: modal.result.monday,
                 tuesday: modal.result.tuesday,
                 wednesday: modal.result.wednesday,
                 thursday: modal.result.thursday,
-                friday: modal.result.friday
+                friday: modal.result.friday,
+                saturday: modal.result.saturday
             }
         };
+        console.log(newEvent)
 
-        const response = await axios(`http://localhost:5000/schedule/${userid}/classes`, {
+        const response = await axios(`http://localhost:5000/schedule/${userId}/classes`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            data: JSON.stringify(e)
+            data: JSON.stringify(newEvent)
         });
-
+        console.log("Class Created!")
         await getTasks();
     } catch (error) {
-        console.log(error);
+        console.log("Error in Creating class" + error);
     }
   };
 
