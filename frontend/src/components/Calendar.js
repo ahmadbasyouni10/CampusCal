@@ -92,9 +92,9 @@ const Calendar = ({ userId }) => {
         console.log("Priority from backend:", task.priority);
         
         const priorityColorMap = {
-          "High": 'red',
-          "Medium": 'orange',
-          "Low": 'green'
+          "High": '#ff6b6b', // Soft Red
+          "Medium": '#f0a500', // Gold
+          "Low": '#4caf50' // Soft Green
         };
         // Ensure case-insensitive comparison and trim spaces
         const color = priorityColorMap[task.priority] || 'rgba(173, 216, 230, 0.5)';
