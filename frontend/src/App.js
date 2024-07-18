@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Calendar from './components/Calendar';
 import LoginForm from './components/Login';
 import RegistrationForm from './components/Register';
+import Performance from './components/Performance';
 import 'react-calendar/dist/Calendar.css';
 import "./CalendarStyles.css";
 
@@ -14,6 +15,7 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
+    // console.log("App UserId: ", userId);
     if (token && userId) {
       setLoggedIn(true);
       setUserId(userId);
@@ -39,6 +41,7 @@ function App() {
               {loggedIn ? (
                 <>
                   <li><Link to="/">Home</Link></li>
+                  <li><Link to="/performance">Performance</Link></li>
                   <li><Link to="/" onClick={handleLogout} className='logout-button'>Logout</Link></li>
                 </>
               ) : (
@@ -50,13 +53,12 @@ function App() {
             </ul>
           </nav>
         </header>
-        <main>
-          <Routes>
-            <Route path="/" element={loggedIn ? <Calendar userId={localStorage.getItem('userId')} /> : <Navigate replace to="/login" />} />
-            <Route path="/login" element={!loggedIn ? <LoginForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
-            <Route path="/register" element={!loggedIn ? <RegistrationForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
-          </Routes>
-        </main>
+        <Routes>
+          <Route path="/" element={loggedIn ? <Calendar userId={localStorage.getItem('userId')} /> : <Navigate replace to="/login" />} />
+          <Route path="/performance" element={loggedIn ? <Performance userId={localStorage.getItem('userId')} /> : <Navigate replace to="/login" />} />
+          <Route path="/login" element={!loggedIn ? <LoginForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
+          <Route path="/register" element={!loggedIn ? <RegistrationForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
+        </Routes>
       </div>
     </Router>
   );
