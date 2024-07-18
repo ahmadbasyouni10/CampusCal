@@ -14,7 +14,6 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
-    // console.log("App UserId: ", userId);
     if (token && userId) {
       setLoggedIn(true);
       setUserId(userId);
@@ -51,11 +50,13 @@ function App() {
             </ul>
           </nav>
         </header>
-        <Routes>
-          <Route path="/" element={loggedIn ? <Calendar userId={localStorage.getItem('userId')} /> : <Navigate replace to="/login" />} />
-          <Route path="/login" element={!loggedIn ? <LoginForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
-          <Route path="/register" element={!loggedIn ? <RegistrationForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
-        </Routes>
+        <main>
+          <Routes>
+            <Route path="/" element={loggedIn ? <Calendar userId={localStorage.getItem('userId')} /> : <Navigate replace to="/login" />} />
+            <Route path="/login" element={!loggedIn ? <LoginForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
+            <Route path="/register" element={!loggedIn ? <RegistrationForm onLogin={handleLogin} /> : <Navigate replace to="/" />} />
+          </Routes>
+        </main>
       </div>
     </Router>
   );
