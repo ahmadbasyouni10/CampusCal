@@ -2,10 +2,11 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS  # Import CORS
 import os
+from dotenv import load_dotenv
 
 # Initialize SQLAlchemy
 db = SQLAlchemy()
-
+load_dotenv()
 def create_app():
     app = Flask(__name__)
     app.config['DEBUG'] = True 

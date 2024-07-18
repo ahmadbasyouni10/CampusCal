@@ -13,3 +13,4 @@ pycodestyle
 pytest
 Werkzeug==2.3.6
 requests==2.31.0
+python-dotenv==1.0.1
