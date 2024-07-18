@@ -12,24 +12,26 @@
 
 /* Navbar specific styles */
 header {
-  background-color: #50985b; /* Adjust the color as needed */
-  width: 100%;
+  background-color: #2c3e50; /* Changed the color to a darker shade */
+  width: 80%; /* Adjusted the width to fill the middle part of the screen */
   height: 60px; /* Adjust the height as needed */
-  margin-bottom: 20px;
+  margin: 20px auto; /* Center the navbar horizontally */
+  border-radius: 8px; /* Added border radius for a rounded corner effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Added a shadow for depth */
   display: flex;
   justify-content: center; /* Center navbar content horizontally */
   align-items: center; /* Center navbar content vertically */
-  width: 100%; /* Take full width of the viewport */
-  position: absolute;
+  position: fixed; /* Fixed position */
   top: 0; /* Align to the top of the viewport */
-  left: 0; /* Align to the left of the viewport */
+  left: 50%; /* Align to the left of the viewport */
+  transform: translateX(-50%); /* Center the navbar */
 }
 
 nav ul {
   list-style-type: none; /* Remove bullet points */
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  display: flex;
 }
 
 label {
@@ -37,19 +39,22 @@ label {
 }
 
 nav ul li {
-  float: left; /* Align the links to the left */
+  margin-right: 20px; /* Add spacing between links */
 }
 
 nav ul li a {
   display: block;
-  color: white; /* Adjust text color as needed */
+  color: #ecf0f1; /* Adjust text color to a lighter shade */
   text-align: center;
-  padding: 14px 16px; /* Adjust padding as needed */
+  padding: 14px 20px; /* Adjust padding for more space */
   text-decoration: none;
+  font-size: 16px; /* Increase font size */
+  font-weight: bold; /* Make text bold */
 }
 
 nav ul li a:hover {
-  background-color: #3e8e41; /* Adjust hover background color as needed */
+  background-color: #34495e; /* Adjust hover background color */
+  border-radius: 4px; /* Add rounded corners to hover effect */
 }
 
 /* Existing styles for other elements */
@@ -80,6 +85,7 @@ nav ul li a:hover {
 
 .App {
   margin-top: 70px;
+  padding-top: 20px; /* Add padding to create space below the navbar */
 }
 
 @keyframes App-logo-spin {
