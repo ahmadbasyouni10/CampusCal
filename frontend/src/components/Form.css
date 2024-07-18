@@ -1,49 +1,43 @@
-/* Extend existing styles for the registration form */
-
-
 .form-container2 {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 400px;
-  /* Adjust width as needed */
   margin: 0 auto;
-  /* Center horizontally */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 
-
 form {
   display: flex;
   flex-direction: column;
   width: 300px;
+  gap: 20px; /* Adds space between form elements */
 }
 
 h3 {
   color: #50985b;
+  margin-bottom: 20px; /* Adds space below the heading */
 }
 
 form label {
   font-size: large;
   font-weight: bold;
   color: #2a2d44;
+  margin-bottom: 5px; /* Ensures space between label and input/textarea */
 }
 
 form input, textarea {
   padding: 10px;
-  font-size: 16px;
   width: 100%;
   height: var(--input-height);
-  font-size: var(--input-font-size);
   -webkit-padding-start: var(--input-padding);
   padding-inline-start: var(--input-padding);
   -webkit-padding-end: var(--input-padding);
   padding-inline-end: var(--input-padding);
   border-radius: var(--input-border-radius);
-  min-width: 0px;
   outline: 2px solid transparent;
   outline-offset: 2px;
   position: relative;
@@ -59,17 +53,19 @@ form input, textarea {
   --input-height: var(--chakra-sizes-10);
   border: 1px solid;
   border-radius: 5px;
+  margin-bottom: 5px; /* Adds space below each input/textarea */
 }
 
 form button {
   padding: 10px;
   font-size: 16px;
-  background-color: #50985b;
+  background-color: #2c3e50;
   color: white;
   border: none;
   cursor: pointer;
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
 form button:hover {
-  background-color: #3e8e41;
+  background-color: #34495e;
 }
