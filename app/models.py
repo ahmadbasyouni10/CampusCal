@@ -1,4 +1,3 @@
-# models.py
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_login import UserMixin
@@ -14,7 +13,7 @@ class User(db.Model, UserMixin):
     preferred_study_time = db.Column(db.String(20), default="morning")  # 'morning' or 'night'
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}')"
+        return f"User('{self.username}')"
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,3 +30,12 @@ class Task(db.Model):
 
     def __repr__(self):
         return f"Task('{self.name}', '{self.date}')"
+
+class Performance(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
+    score = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f"Performance(User ID: {self.user_id}, Task ID: {self.task_id}, Score: {self.score})"
