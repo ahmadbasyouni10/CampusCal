@@ -9,14 +9,14 @@ const Performance = ({ userId }) => {
   const [taskRatings, setTaskRatings] = useState({});
   const [studyRatings, setStudyRatings] = useState({});
   const [feelings, setFeelings] = useState({});
-
+  const url = window.location.protocol +"//" + window.location.hostname;
   useEffect(() => {
     fetchTasks();
   }, []);
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/schedule/${userId}`);
+      const response = await axios.get(`${url}:5000/schedule/${userId}`);
       setTasks(response.data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -45,7 +45,7 @@ const Performance = ({ userId }) => {
     };
 
     try {
-      await axios.post('http://localhost:5000/update_performance', ratingData);
+      await axios.post(`${url}:5000/update_performance`, ratingData);
       alert("Performance updated successfully!");
     } catch (error) {
       console.error("Error updating performance:", error);

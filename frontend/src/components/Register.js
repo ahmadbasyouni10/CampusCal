@@ -10,13 +10,14 @@ const RegistrationForm = ({ onLogin }) => {
   const [studyHoursPerDay, setStudyHoursPerDay] = useState("");
   const [otherCommitments, setOtherCommitments] = useState("");
   const [preferredStudyTime, setPreferredStudyTime] = useState("morning");
+  const url = window.location.protocol +"//" + window.location.hostname;
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     // Assuming you have an API endpoint for registration and login
-    const registrationUrl = "http://localhost:5000/register";
-    const loginUrl = "http://localhost:5000/login";
+    const registrationUrl = `${url}:5000/register`;
+    const loginUrl = `${url}:5000/login`;
     const userData = {
       username,
       password,
