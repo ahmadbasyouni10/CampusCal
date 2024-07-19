@@ -19,5 +19,8 @@ jobs:
         - name: Install other tools
           run: pip install -r requirements.txt
 
+        - name: Install pandas
+          run: pip install pandas
+
         - name: Test with unittest
           run: python3 -m unittest app.tests
