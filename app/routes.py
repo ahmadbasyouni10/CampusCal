@@ -105,16 +105,17 @@ def add_classes(user_id):
     db.session.add_all(classTasks) 
     db.session.commit()
 
-@bp.route('/schedule/<int:user_id>/task/<int:task_id>/remove', methods=['post'])
+@bp.route('/schedule/<int:user_id>/task/<int:task_id>/remove', methods=['DELETE'])
 def remove_task(user_id, task_id):
     task = Task.query.get(task_id)
+    print(task)
     if not task:
         return jsonify({'message': 'Task not found'}), 404
     if task.children:
         child_task = task.children
         for child in child_task:
-            db.session.remove(child)
-    db.session.remove(task)
+            db.session.delete(child)
+    db.session.delete(task)
     db.session.commit()
     return jsonify({'message': 'Task and all related child tasks removed'})
 

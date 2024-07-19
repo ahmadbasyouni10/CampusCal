@@ -112,6 +112,27 @@ const Calendar = ({ userId }) => {
     }
   };
 
+  const deleteTask = async (args) => {
+    console.log("Delete Task Args: ", args.e.data);
+    const modal = await DayPilot.Modal.confirm("Would you like to delete this task? This action cannot be undone. If a study plan was created for this task then all study sessions will also be removed");
+    if (modal.canceled) {
+        return;
+    }
+
+    try {
+        const response = await axios.delete(`${url}:5000/schedule/${userId}/task/${args.e.data.id}/remove`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        console.log(response)
+        await getTasks();
+    } catch (error) {
+        console.error("Error deleting task:", error);
+    }
+  };
+
 
   useEffect(() => {
     getTasks();
@@ -185,6 +206,7 @@ const Calendar = ({ userId }) => {
           visible={view === "Day"}
           durationBarVisible={false}
           onTimeRangeSelected={onTimeRangeSelected}
+          onEventClick={deleteTask}
           controlRef={setDayView}
         />
         <DayPilotCalendar
@@ -194,6 +216,7 @@ const Calendar = ({ userId }) => {
           visible={view === "Week"}
           durationBarVisible={false}
           onTimeRangeSelected={onTimeRangeSelected}
+          onEventClick={deleteTask}
           controlRef={setWeekView}
         />
         <DayPilotMonth
@@ -202,6 +225,7 @@ const Calendar = ({ userId }) => {
           visible={view === "Month"}
           eventBarVisible={false}
           onTimeRangeSelected={onTimeRangeSelected}
+          onEventClick={deleteTask}
           controlRef={setMonthView}
         />
       </div>
