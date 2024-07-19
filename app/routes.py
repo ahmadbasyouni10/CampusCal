@@ -92,6 +92,7 @@ def add_classes(user_id):
     data = request.get_json()
     # would be all of the inputed classes
     classTasks = []
+    # gets the first class
     initialClass = Task(
         user_id=user_id,
         name=data['name'],
@@ -126,7 +127,7 @@ def add_classes(user_id):
         daysOfTheWeek.pop(0)
     classTasks.append(initialClass)
     initalClasses = [initialClass]
-
+    # this gets all of the inital classes for the first week of classes
     for i in range(n):
         newClass = Task(
             user_id=user_id,
@@ -140,13 +141,16 @@ def add_classes(user_id):
         classTasks.append(newClass)
         initalClasses.append(newClass)
     daysOfTheWeek.append(initialClass.date.weekday())
+
     dates = [c.date +timedelta(days=7) for c in initalClasses]
+
     currentDate = dates[0]
     i = 0
     # Classes on Monday, Wednesday, Friday
     # Start on Monday, then move currentDate to Wednesday, then to Friday, then to Monday
+    # repeatily adds classes until the end date, making sure to only add on days that the user has classes
     while currentDate <= datetime.strptime(data['endDate'], '%Y-%m-%d').date():
-        print("In while loop in add_classes currendate: "+ currentDate.strftime("%Y-%m-%d"))
+        # print("In while loop in add_classes currendate: "+ currentDate.strftime("%Y-%m-%d"))
         newClass = Task(
             user_id=user_id,
             name=data['name'],
@@ -160,8 +164,7 @@ def add_classes(user_id):
         i+= 1
         currentDate = dates[i % len(dates)]
         # initialClasses = [firstClass (Monday - 0), secondClass (Wednesday - 2), thirdClass (Friday- 4]
-        # 
-        # currentDate = currentDate + timedelta(days= abs(initalClasses[i % len(initalClasses)].date.weekday() - currentDate.weekday()))
+
     db.session.add_all(classTasks) 
     db.session.commit()
     return jsonify({'message': 'Classes added!'})
