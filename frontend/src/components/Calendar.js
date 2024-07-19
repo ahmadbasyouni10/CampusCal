@@ -36,7 +36,19 @@ const Calendar = ({ userId }) => {
             name: 'Would you like to create a study plan?',
             }
         ];
-        const modal = await DayPilot.Modal.form(form)
+
+        const data = {
+            name: "Assessment",
+            priority: "Low",
+            plan: false
+        }
+        // modal_custom css file is in frontend/src/themes/modal_custom.css
+        const properties = {
+            theme: "modal_custom",
+            okText: "Submit",
+            cancelText: "Cancel"
+        }
+        const modal = await DayPilot.Modal.form(form, data, properties)
         dp.clearSelection();
         if (modal.canceled) {
         return;
@@ -112,21 +124,40 @@ const Calendar = ({ userId }) => {
 
   const createClass = async () => {
     const form = [
-        {name: "Class Name", id: "name", required: true, type: 'text'},
-        {name: "Starting Time", id: "startTime", required: true, timeFormat: "HH:mm",  type: 'time'},
-        {name: "Ending Time", id: "endTime", required: true, timeFormat: "HH:mm",  type: 'time'},
-        {name: "Start Date", id: "start", required: true, dateFormat: "MM/dd/yyyy", type: "date"},
-        {name: "End Date", id: "end", required: true, dateFormat: "MM/dd/yyyy", type: "date"},
-        {name: "Sunday", id: 'sunday', type: 'checkbox'},
-        {name: "Monday", id: 'monday', type: 'checkbox'},
-        {name: "Tuesday", id: 'tuesday', type: 'checkbox'},
-        {name: "Wednesday", id: 'wednesday', type: 'checkbox'},
-        {name: "Thursday", id: 'thursday', type: 'checkbox'},
-        {name: "Friday", id: 'friday', type: 'checkbox'},
-        {name: "Saturday", id: 'saturday', type: 'checkbox'},
+        {name: "Class Name", id: "name", required: true, type: 'text', cssClass: 'form-input'},
+        {name: "Starting Time", id: "startTime", required: true, timeFormat: "HH:mm",  type: 'time', cssClass: 'form-input'},
+        {name: "Ending Time", id: "endTime", required: true, timeFormat: "HH:mm",  type: 'time', cssClass: 'form-input'},
+        {name: "Start Date", id: "start", required: true, dateFormat: "MM/dd/yyyy", type: "date", cssClass: 'form-input'},
+        {name: "End Date", id: "end", required: true, dateFormat: "MM/dd/yyyy", type: "date", cssClass: 'form-input'},
+        {name: "Sunday", id: 'sunday', type: 'checkbox', cssClass: 'form-checkbox'},
+        {name: "Monday", id: 'monday', type: 'checkbox', cssClass: 'form-checkbox'},
+        {name: "Tuesday", id: 'tuesday', type: 'checkbox', cssClass: 'form-checkbox'},
+        {name: "Wednesday", id: 'wednesday', type: 'checkbox', cssClass: 'form-checkbox'},
+        {name: "Thursday", id: 'thursday', type: 'checkbox', cssClass: 'form-checkbox'},
+        {name: "Friday", id: 'friday', type: 'checkbox', cssClass: 'form-checkbox'},
+        {name: "Saturday", id: 'saturday', type: 'checkbox', cssClass: 'form-checkbox'},
     ]
-    const modal = await DayPilot.Modal.form(form);
-    console.log("Modal:", modal);
+    const data = {
+        name: "Linear Algebra",
+        startTime: "08:30",
+        endTime: "10:00",
+        start: "2024-09-06",
+        end: "2024-12-18",
+        sunday: false,
+        monday: true,
+        tuesday: false,
+        wednesday: true,
+        thursday: false,
+        friday: false,
+        saturday: false
+    }
+    const properties = {
+        name: "Create Class",
+        theme: "modal_custom",
+        okText: "Submit",
+        cancelText: "Cancel"
+    }
+    const modal = await DayPilot.Modal.form(form, data, properties);
     if (modal.canceled) {
       return;
     }
