@@ -68,6 +68,13 @@
     cursor: default;
 }
 
+/* Arrange the checkboxes in a row */
+.modal_custom_form_item_checkbox {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
 
 /* Style the submit button */
 .modal_custom_buttons {
@@ -77,7 +84,6 @@
     border: none;
     cursor: pointer;
 }
-
 
 .modal_custom_ok, .modal_custom_cancel{
     padding: 10px;

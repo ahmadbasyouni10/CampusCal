@@ -10,7 +10,6 @@ const RegistrationForm = ({ onLogin }) => {
   const [studyHoursPerDay, setStudyHoursPerDay] = useState("");
   const [otherCommitments, setOtherCommitments] = useState("");
   const [preferredStudyTime, setPreferredStudyTime] = useState("morning");
-
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
