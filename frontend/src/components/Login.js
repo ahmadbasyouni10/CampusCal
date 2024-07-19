@@ -6,11 +6,11 @@ const LoginForm = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
+  const url = window.location.protocol +"//" + window.location.hostname;
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/login', { username, password }, {
+      const response = await axios.post(`${url}:5000/login`, { username, password }, {
         headers: {
           'Content-Type': 'application/json',
         },
