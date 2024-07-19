@@ -17,4 +17,4 @@ jobs:
                --upgrade pip pytest
  
         - name: Test with unittest
-          run: python3 -m unittest tests.py
+          run: python3 -m unittest app.tests
