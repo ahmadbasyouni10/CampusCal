@@ -172,7 +172,7 @@ def add_classes(user_id):
 @bp.route('/schedule/<int:user_id>/task/<int:task_id>/remove', methods=['DELETE'])
 def remove_task(user_id, task_id):
     task = Task.query.get(task_id)
-    print(task)
+    # print(task)
     if not task:
         return jsonify({'message': 'Task not found'}), 404
     if task.children:
@@ -182,6 +182,23 @@ def remove_task(user_id, task_id):
     db.session.delete(task)
     db.session.commit()
     return jsonify({'message': 'Task and all related child tasks removed'})
+
+@bp.route('/schedule/<int:user_id>/task/<int:task_id>/update', methods=['PUT'])
+def update_task(user_id, task_id):
+    data = request.get_json()
+    # print(data)
+    task = Task.query.get(task_id)
+    if not task:
+        return jsonify({'message': 'Task not found'}), 404
+    if 'start' in data:
+        print("Start: ", data['start'])
+        task.start_time = datetime.strptime(data['start'], '%Y-%m-%dT%H:%M:%S').time()
+        task.date = datetime.strptime(data['start'], '%Y-%m-%dT%H:%M:%S').date()
+    if 'end' in data:
+        task.end_time = datetime.strptime(data['end'], '%Y-%m-%dT%H:%M:%S').time()
+    # print(task)
+    db.session.commit()
+    return jsonify({'message': 'Task updated!'}), 200
 
 @bp.route('/schedule/<int:user_id>', methods=['GET'])
 def get_schedule(user_id):

@@ -125,7 +125,7 @@ const Calendar = ({ userId }) => {
   };
 
   const deleteTask = async (args) => {
-    console.log("Delete Task Args: ", args.e.data);
+    // console.log("Delete Task Args: ", args.e.data);
     const modal = await DayPilot.Modal.confirm("Would you like to delete this task? This action cannot be undone. If a study plan was created for this task then all study sessions will also be removed",
         {theme: "modal_custom"}
     );
@@ -264,6 +264,29 @@ const Calendar = ({ userId }) => {
     setEvents(events => [...events, newEvent]);
   };
 
+  const handleEventMove = async (args) => {
+    // console.log("Event moved: ", args.e.data);
+
+    const updateEvent = {
+        id: args.e.data.id,
+        start: args.newStart.toString("yyyy-MM-ddTHH:mm:ss"),
+        end: args.newEnd.toString("yyyy-MM-ddTHH:mm:ss")
+    }
+    try {
+        const response = await axios(`${url}:5000/schedule/${userId}/task/${args.e.data.id}/update`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify(updateEvent)
+        });
+        console.log(response);
+        // await getTasks();
+    } catch (error) {
+        console.error("Error moving event:", error);
+    }
+  };
+
   return (
     <div className={"container"}>
       
@@ -309,6 +332,7 @@ const Calendar = ({ userId }) => {
           onTimeRangeSelected={onTimeRangeSelected}
           onEventClick={deleteTask}
           controlRef={setDayView}
+          onEventMove={handleEventMove}
         />
         <DayPilotCalendar
           viewType={"Week"}
@@ -319,6 +343,7 @@ const Calendar = ({ userId }) => {
           onTimeRangeSelected={onTimeRangeSelected}
           onEventClick={deleteTask}
           controlRef={setWeekView}
+          onEventMove={handleEventMove}
         />
         <DayPilotMonth
           startDate={startDate}
@@ -328,6 +353,7 @@ const Calendar = ({ userId }) => {
           onTimeRangeSelected={onTimeRangeSelected}
           onEventClick={deleteTask}
           controlRef={setMonthView}
+          onEventMove={handleEventMove}
         />
       </div>
       </div>
