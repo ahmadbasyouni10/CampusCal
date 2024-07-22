@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import User, Task
+from app.models import User, Task, Performance
 from datetime import datetime, timedelta
 from app.schedule import populate, generate_study_plan, setSleep
 import random, requests
 from app import db
+
 
 bp = Blueprint('routes', __name__)
 
@@ -118,6 +119,7 @@ def remove_task(user_id, task_id):
     db.session.commit()
     return jsonify({'message': 'Task and all related child tasks removed'})
 
+# returns the schedule for the user WITH ALL THE TASKS
 @bp.route('/schedule/<int:user_id>', methods=['GET'])
 def get_schedule(user_id):
     user = User.query.get(user_id)
@@ -162,11 +164,7 @@ def update_performance():
     
     db.session.commit()
     
-    user = User.query.get(user_id)
-    performances = Performance.query.filter_by(user_id=user_id).all()
-    adjusted_study_plan = adjust_study_plan_based_on_performance(user, performances)
-    
-    return jsonify({'message': 'Performance updated!', 'adjusted_study_plan': adjusted_study_plan})
+    return jsonify({'message': 'Performance updated!'})
 
 def adjust_study_plan_based_on_performance(user, performances):
     adjusted_plan = []
@@ -209,4 +207,3 @@ def quotes():
         return jsonify({"quote": data["quoteText"], "author": data["quoteAuthor"] if data['quoteAuthor'] else "Unknown"})
     else:
         return jsonify({"error": "Failed to fetch quote"}), response.status_code
-    

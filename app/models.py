@@ -31,3 +31,12 @@ class Task(db.Model):
 
     def __repr__(self):
         return f"Task('{self.name}', '{self.date}')"
+
+class Performance(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
+    score = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f"Performance(User ID: {self.user_id}, Task ID: {self.task_id}, Score: {self.score})"
