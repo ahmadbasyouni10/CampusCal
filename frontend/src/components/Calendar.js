@@ -100,10 +100,10 @@ const Calendar = ({ userId }) => {
   const getTasks = async () => {
     try {
       const response = await axios.get(`${url}:5000/schedule/${userId}`);
-      console.log("Tasks from backend: ", response.data);
+      // console.log("Tasks from backend: ", response.data);
       const tasksWithColors = response.data.map((task) => {
         // Debugging: Log the priority value received from the backend
-        console.log("Priority from backend:", task.priority);
+        // console.log("Priority from backend:", task.priority);
         
         const priorityColorMap = {
           "High": '#ff6b6b', // Soft Red
@@ -117,7 +117,7 @@ const Calendar = ({ userId }) => {
           backColor: color
         };
       });
-      console.log("Tasks with colors: ", tasksWithColors);
+      // console.log("Tasks with colors: ", tasksWithColors);
       setEvents(tasksWithColors);
     } catch (error) {
       console.error(error);

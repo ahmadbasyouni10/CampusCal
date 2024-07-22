@@ -2,47 +2,7 @@ import datetime
 import pandas as pd
 from collections import defaultdict
 from app.models import Task, User
-'''
-def populate(user_id):
-    # Query all tasks for the given user, ordered by start time
-    allTasks = Task.query.filter_by(user_id=user_id).order_by(Task.start_time).all()
-    
-    # Initialize a dictionary to hold tasks by date
-    response = defaultdict(list)
-    
-    # Populate the dictionary with tasks grouped by their date
-    for task in allTasks:
-        response[task.date].append((task.start_time, task.end_time, task.name, task.id))
-    
-    # Iterate over each date in the response dictionary
-    for key in response:
-        # Initialize currentTime to the start of the day
-        currentTime = datetime.time(0, 0, 0)
-        # Temporary list to hold time slots for the current date
-        temp = []
-        
-        # Iterate over each task for the current date
-        for i in range(len(response[key])):
-            curr = response[key][i]  # Current task
 
-            # Append the current task to temp
-            temp.append(curr)
-                   
-        # Check if there is free time after the last task until the end of the day
-        
-        # Update the response dictionary with the processed time slots for the current date
-        response[key] = temp
-    
-    # Return the final response dictionary with all time slots for each date
-    return response
-    
-    Find all the tasks that correspond to the user's schedule
-    sort them by date and time
-    have a dict where the keys are dates and values are a list of time slots (open, task/event)
-    return the dict
-    
-    
-'''
 def populate(user_id):
     allTasks = Task.query.filter_by(user_id=user_id).order_by(Task.start_time).all()
     response = []
