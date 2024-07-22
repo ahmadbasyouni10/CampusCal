@@ -16,8 +16,8 @@ const RegistrationForm = ({ onLogin }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     // Assuming you have an API endpoint for registration and login
-    const registrationUrl = `${url}:5000/register`;
-    const loginUrl = `${url}:5000/login`;
+    const registrationUrl = `${url}:8000/register`;
+    const loginUrl = `${url}:8000/login`;
     const userData = {
       username,
       password,

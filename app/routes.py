@@ -297,4 +297,42 @@ def quotes():
         return jsonify({"quote": data["quoteText"], "author": data["quoteAuthor"] if data['quoteAuthor'] else "Unknown"})
     else:
         return jsonify({"error": "Failed to fetch quote"}), response.status_code
+
+# Existing route for fetching performance tasks
+@bp.route('/get_performance_tasks/<int:user_id>', methods=['GET'])
+def get_performance_tasks(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
     
+    tasks = Task.query.filter(Task.user_id == user_id, Task.name != 'Sleep').all()
+    task_data = [
+        {
+            "id": task.id,
+            "name": task.name,
+            "start": task.start_time.isoformat() if task.start_time else None,
+            "end": task.end_time.isoformat() if task.end_time else None
+        } 
+        for task in tasks
+    ]
+    return jsonify(task_data)
+
+# New route for fetching task hours
+@bp.route('/get_task_hours/<int:user_id>', methods=['GET'])
+def get_task_hours(user_id):
+    tasks = Task.query.filter_by(user_id=user_id).all()
+    main_tasks = {task.id: task for task in tasks if not task.name.startswith('Study for')}
+    study_sessions = [task for task in tasks if task.name.startswith('Study for')]
+
+    task_hours = {}
+    for session in study_sessions:
+        main_task_name = session.name[len('Study for '):]
+        main_task = next((t for t in main_tasks.values() if t.name == main_task_name), None)
+        if main_task:
+            if main_task.id not in task_hours:
+                task_hours[main_task.id] = 0
+            duration = ((session.end_time - session.start_time).seconds) / 3600
+            task_hours[main_task.id] += duration
+
+    result = [{"task_name": main_tasks[id].name, "total_study_hours": hours} for id, hours in task_hours.items()]
+    return jsonify(result)
