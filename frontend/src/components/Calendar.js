@@ -126,7 +126,9 @@ const Calendar = ({ userId }) => {
 
   const deleteTask = async (args) => {
     console.log("Delete Task Args: ", args.e.data);
-    const modal = await DayPilot.Modal.confirm("Would you like to delete this task? This action cannot be undone. If a study plan was created for this task then all study sessions will also be removed");
+    const modal = await DayPilot.Modal.confirm("Would you like to delete this task? This action cannot be undone. If a study plan was created for this task then all study sessions will also be removed",
+        {theme: "modal_custom"}
+    );
     if (modal.canceled) {
         return;
     }
