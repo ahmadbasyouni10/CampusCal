@@ -158,7 +158,8 @@ body .calendar_default_event_inner, body .month_default_event_inner {
     display: flex;
     align-items: center;
     justify-content: center;
-    white-space: nowrap;
+    white-space: normal;
+    text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
 }
