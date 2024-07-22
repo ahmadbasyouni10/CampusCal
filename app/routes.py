@@ -3,8 +3,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User, Task
 from datetime import datetime, timedelta
 from app.schedule import populate, generate_study_plan, setSleep
-import random, requests
+import random, requests, json
 from app import db
+from requests.exceptions import JSONDecodeError
 
 bp = Blueprint('routes', __name__)
 
@@ -287,7 +288,12 @@ def quotes():
     }
     response = requests.get(url, params=params)
     if response.status_code == 200:
-        data = response.json()
+        try:
+            data = response.json()
+        except JSONDecodeError:
+            # Attempting to fix an error that comes up
+            fixed_json = response.text.replace('\\', '\\\\')
+            data = json.loads(fixed_json)
         return jsonify({"quote": data["quoteText"], "author": data["quoteAuthor"] if data['quoteAuthor'] else "Unknown"})
     else:
         return jsonify({"error": "Failed to fetch quote"}), response.status_code
