@@ -264,7 +264,7 @@ const Calendar = ({ userId }) => {
     setEvents(events => [...events, newEvent]);
   };
 
-  const handleEventMove = async (args) => {
+  const handleEventChange = async (args) => {
     // console.log("Event moved: ", args.e.data);
 
     const updateEvent = {
@@ -332,7 +332,8 @@ const Calendar = ({ userId }) => {
           onTimeRangeSelected={onTimeRangeSelected}
           onEventClick={deleteTask}
           controlRef={setDayView}
-          onEventMove={handleEventMove}
+          onEventMove={handleEventChange}
+          onEventResized={handleEventChange}
         />
         <DayPilotCalendar
           viewType={"Week"}
@@ -343,7 +344,8 @@ const Calendar = ({ userId }) => {
           onTimeRangeSelected={onTimeRangeSelected}
           onEventClick={deleteTask}
           controlRef={setWeekView}
-          onEventMove={handleEventMove}
+          onEventMove={handleEventChange}
+          onEventResized={handleEventChange}
         />
         <DayPilotMonth
           startDate={startDate}
@@ -353,7 +355,8 @@ const Calendar = ({ userId }) => {
           onTimeRangeSelected={onTimeRangeSelected}
           onEventClick={deleteTask}
           controlRef={setMonthView}
-          onEventMove={handleEventMove}
+          onEventMove={handleEventChange}
+          onEventResized={handleEventChange}
         />
       </div>
       </div>
