@@ -173,11 +173,11 @@ body {
 
 /* Events */
 body .calendar_default_event_inner, body .month_default_event_inner {
-    background: #a3c9f1;
-    color: #000;
+    background: rgba(163, 201, 241, .7);
+    color: #000000;
     font-size: 12pt;
+    opacity: .7;
     padding: 5px;
-    opacity: 0.8;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     display: flex;
@@ -189,12 +189,13 @@ body .calendar_default_event_inner, body .month_default_event_inner {
 }
 
 /* Priority Colors */
+/* pretty sure this doesn't do anything bc its assigned in getTasks*/
 .calendar_default_event_inner[data-priority="High"] {
     background-color: #C13333;
 }
 
 .calendar_default_event_inner[data-priority="Medium"] {
-    background-color: #F1A80B;
+    background: #F1A80B;
 }
 
 .calendar_default_event_inner[data-priority="Low"] {
