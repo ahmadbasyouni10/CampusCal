@@ -16,7 +16,7 @@ const Calendar = ({ userId }) => {
   const [weekView, setWeekView] = useState();
   const [monthView, setMonthView] = useState();
 
-  const url = window.location.protocol +"//" + window.location.hostname;
+  const url = "https://campuscal-v0ss.onrender.com";
 
   const onTimeRangeSelected = async (args) => {
     try {
@@ -65,7 +65,7 @@ const Calendar = ({ userId }) => {
         end: args.end,
         performance: null
         };
-        const response = await axios(`${url}:8000/add_assessment`, {
+        const response = await axios(`${url}/add_assessment`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ const Calendar = ({ userId }) => {
         console.log(response);
         if (modal.result.plan == true) {
             // /schedule/<int:user_id>/task/<int:task_id>/new_study_plan
-            const response2 = await axios.post(`${url}:8000/schedule/${userId}/task/${response.data.task_id}/new_study_plan`, {
+            const response2 = await axios.post(`${url}/schedule/${userId}/task/${response.data.task_id}/new_study_plan`, {
                 headers: {
                     'Content-Type': 'application/json',
                 }
@@ -91,7 +91,7 @@ const Calendar = ({ userId }) => {
 
   const fetchQuote = async () => {
     try {
-        const response = await axios.get(`${url}:8000/quotes`);
+        const response = await axios.get(`${url}/quotes`);
         setQuote(response.data)
     } catch (error) {
         console.error('Error fetching quotes:', error);
@@ -100,7 +100,7 @@ const Calendar = ({ userId }) => {
 
   const getTasks = async () => {
     try {
-      const response = await axios.get(`${url}:8000/schedule/${userId}`);
+      const response = await axios.get(`${url}/schedule/${userId}`);
       console.log("Tasks from backend: ", response.data);
       const tasksWithColors = response.data.map((task) => {
         // Debugging: Log the priority value received from the backend
@@ -140,7 +140,7 @@ const Calendar = ({ userId }) => {
     }
 
     try {
-        const response = await axios.delete(`${url}:8000/schedule/${userId}/task/${args.e.data.id}/remove`, {
+        const response = await axios.delete(`${url}/schedule/${userId}/task/${args.e.data.id}/remove`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -234,7 +234,7 @@ const Calendar = ({ userId }) => {
         };
         console.log(newEvent)
 
-        const response = await axios(`http://localhost:8000/schedule/${userId}/classes`, {
+        const response = await axios(`${url}/schedule/${userId}/classes`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

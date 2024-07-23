@@ -10,14 +10,14 @@ const RegistrationForm = ({ onLogin }) => {
   const [studyHoursPerDay, setStudyHoursPerDay] = useState("");
   const [otherCommitments, setOtherCommitments] = useState("");
   const [preferredStudyTime, setPreferredStudyTime] = useState("morning");
-  const url = window.location.protocol +"//" + window.location.hostname;
+  const url = "https://campuscal-v0ss.onrender.com";
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     // Assuming you have an API endpoint for registration and login
-    const registrationUrl = `${url}:8000/register`;
-    const loginUrl = `${url}:8000/login`;
+    const registrationUrl = `${url}/register`;
+    const loginUrl = `${url}/login`;
     const userData = {
       username,
       password,
