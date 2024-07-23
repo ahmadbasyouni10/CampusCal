@@ -281,7 +281,8 @@ const Calendar = ({ userId }) => {
                         </div>
                         <button onClick={() => setStartDate(DayPilot.Date.today())} className={"standalone"}>Today</button>
                     </div>
-                    <h1 className='titleee'> CampusCal</h1>
+                    <h1 className='titleee'> CampusCal {' '}</h1>
+                    <span class="slogan">  - Optimize Learning</span>
                     <div className={"quotes"}>
                         {quote && (
                             <div className="quote-item">

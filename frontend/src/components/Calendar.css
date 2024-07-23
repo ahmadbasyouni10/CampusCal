@@ -28,12 +28,21 @@ body {
 }
 
 .toolbar .titleee {
-    left: 50%;
-    text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     font-size: 2.5rem;
     font-weight: bold;
     color: #2A2D44;
-    margin: 0;
+    margin-left: 5vh;
+    margin-right: 10px;
+}
+
+.slogan{
+    font-size: 2rem;
+    font-weight: normal;
+    color: #2A2D44;
+    margin-right: auto;
 }
 
 .toolbar-group {
@@ -43,7 +52,6 @@ body {
 .toolbargroups {
     display: flex;
     align-items: center;
-    margin-right: auto;
 }
 
 .toolbar button {
