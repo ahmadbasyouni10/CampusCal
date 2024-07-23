@@ -16,7 +16,7 @@ const Calendar = ({ userId }) => {
   const [weekView, setWeekView] = useState();
   const [monthView, setMonthView] = useState();
 
-  const url = "https://campuscal-v0ss.onrender.com";
+  const url = process.env.REACT_APP_API_URL;
 
   const onTimeRangeSelected = async (args) => {
     try {

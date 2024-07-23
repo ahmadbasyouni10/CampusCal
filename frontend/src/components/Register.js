@@ -10,7 +10,7 @@ const RegistrationForm = ({ onLogin }) => {
   const [studyHoursPerDay, setStudyHoursPerDay] = useState("");
   const [otherCommitments, setOtherCommitments] = useState("");
   const [preferredStudyTime, setPreferredStudyTime] = useState("morning");
-  const url = "https://campuscal-v0ss.onrender.com";
+  const url = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
