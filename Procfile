@@ -1,1 +1,1 @@
-web: gunicorn app:__init__
+web: cd app && gunicorn __init__:app
