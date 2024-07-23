@@ -15,7 +15,6 @@
     width: 100%;
     gap: 20px;
     position: fixed;
-    transform: translate(0%, 60%);
 }
 
 .modal_custom_content {
