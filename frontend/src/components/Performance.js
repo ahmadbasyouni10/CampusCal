@@ -9,7 +9,7 @@ const Performance = ({ userId }) => {
   const [taskRatings, setTaskRatings] = useState({});
   const [studyRatings, setStudyRatings] = useState({});
   const [feelings, setFeelings] = useState({});
-  const url = "https://campuscal-v0ss.onrender.com";
+  const url = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchTasks();
