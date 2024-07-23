@@ -7,7 +7,7 @@ Clone this repository in your development folder.
 git clone <repo_url> 
 ```
 ### Development Setup Instructions
-The following instructions are taioled for OSX(Mac) users. However, Linux/Windows should have very similar commands.  
+The following instructions are for OSX(Mac) users. However, Linux/Windows should have very similar commands.  
 
 To start our frontend, from the root directory:
 
