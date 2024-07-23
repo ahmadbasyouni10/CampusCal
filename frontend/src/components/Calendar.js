@@ -124,6 +124,33 @@ const Calendar = ({ userId }) => {
         }
     };
 
+    // whenever getTasks is called needs to call agenda too (in case)
+    const [tasksWithColors, setTasksWithColors] = useState([]);
+
+    const agenda = async () => {
+        try {
+            const response = await axios.get(`${url}:8000/schedule/${userId}`);
+            console.log("Tasks from backend: ", response.data);
+    
+            const priorityColorMap = {
+                "High": '#C13333', // Soft Red
+                "Medium": '#F1A80B', // Gold
+                "Low": '#0A600E' // Soft Green
+            };
+    
+            // Transform tasks into string representations including their colors
+           const tasksWithColorsStr = response.data.map((task) => {
+                const color = priorityColorMap[task.priority] || 'rgba(173, 216, 230, 0.5)';
+                return `Task: ${task.name}, Priority: ${task.priority}, Color: ${color}`;
+            });
+
+            setTasksWithColors(tasksWithColorsStr);
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const deleteTask = async (args) => {
         console.log("Delete Task Args: ", args.e.data);
         const modal = await DayPilot.Modal.confirm("Would you like to delete this task? This action cannot be undone. If a study plan was created for this task then all study sessions will also be removed",
@@ -237,7 +264,7 @@ const Calendar = ({ userId }) => {
     useEffect(() => {
         getTasks();
         fetchQuote();
-
+        agenda();
     }, []);
 
     const handleCreateAssessment = async () => {
@@ -304,6 +331,11 @@ const Calendar = ({ userId }) => {
                             events={events}
                         />
                         <button onClick={createClass} className="create-class-btn">Create Class</button>
+                        <div>
+                            {tasksWithColors.map((taskStr, index) => (
+                                <div key={index}>{taskStr}</div>
+                            ))}
+                        </div>
                     </div>
 
                     <DayPilotCalendar
