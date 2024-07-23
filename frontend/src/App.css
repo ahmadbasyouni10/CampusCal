@@ -52,9 +52,11 @@ nav ul li a:hover {
 
 /* Main content styles */
 .App {
-  padding-top: 80px; /* Space for the fixed header */
-  height: 100vh;
-  overflow-y: auto;
+    display: flex;
+    height: 100vh;
+    overflow-y: auto;
+    background-color: #fafeff;
+    padding-top: 40px; /* Space for the fixed header */
 }
 
 .calendar-container {

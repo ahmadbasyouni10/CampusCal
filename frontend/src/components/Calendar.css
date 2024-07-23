@@ -10,12 +10,13 @@ body {
 /* Container */
 .container {
     display: flex;
-    flex-direction: column;
     padding: 20px;
+    flex-direction: column;
     border-radius: 10px;
-    background-color: #f0f0f5;
+    background-color: #fafeff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 20px;
+    height:82%;
+    margin: 40px 20px 20px;
 }
 
 /* Toolbar */
@@ -28,9 +29,7 @@ body {
 }
 
 .toolbar .titleee {
-    position: absolute;
     left: 50%;
-    transform: translateX(-50%);
     text-align: center;
     font-size: 2.5rem;
     font-weight: bold;
@@ -89,6 +88,7 @@ body {
 .navigator_default_main {
     background-color: transparent;
     border: 0;
+
 }
 
 .navigator_default_dayother {
@@ -112,9 +112,16 @@ body {
 }
 
 /* Calendar */
+.calendar_default_main{
+    height: 40% !important;
+    background: rgb(255, 255, 255);
+    border: none;
+    border-radius: 5px;
+}
+
 .calendar_default_cell_inner {
     background: transparent;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #f9f9f9;
     border-radius: 5px;
     padding: 5px;
 }
@@ -122,15 +129,17 @@ body {
 .calendar_default_rowheader_inner, .calendar_default_colheader_inner {
     background-color: #2A2D44;
     color: #fff;
-    border-radius: 5px;
+    border-color: #2A2D44;
+    border-radius: 10px;
     padding: 5px;
     font-size: 14px;
     font-weight: bold;
 }
 
 .calendar_default_corner_inner {
-    background-color: #2A2D44;
-    color: #fff;
+    background-color: transparent;
+    color: transparent;
+    border-color: transparent;
     border-radius: 5px;
     padding: 5px;
     font-size: 14px;
@@ -288,7 +297,9 @@ body .calendar_default_event_inner, body .month_default_event_inner {
     margin-right: 10px;
     margin-bottom: 0px;
     padding-bottom: 0;
+    height: 60%;
 }
+
 /* Forms */
 .create-class-btn {
     display: block;  /* Ensure the button is a block-level element to fit the full width */
