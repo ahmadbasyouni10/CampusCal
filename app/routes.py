@@ -309,7 +309,7 @@ def get_performance_tasks(user_id):
     if not user:
         return jsonify({'message': 'User not found'}), 404
     
-    tasks = Task.query.filter(Task.user_id == user_id, Task.name != 'Sleep').all()
+    tasks = Task.query.filter(Task.user_id == user_id, Task.name != 'Sleep', Task.task_type != 'class').all()
     task_data = [
         {
             "id": task.id,
