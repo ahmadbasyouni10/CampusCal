@@ -226,7 +226,7 @@ def create_study_plan(user_id, task_id):
     db.session.add_all(allStudySessions)
     db.session.commit()
 
-    return jsonify(populate(user.id))
+    return jsonify({'message': f'Study plan for {task.name} created!'}), 200
 
 
 @bp.route('/update_performance', methods=['POST'])

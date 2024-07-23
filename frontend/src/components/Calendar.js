@@ -72,14 +72,15 @@ const Calendar = ({ userId }) => {
             },
             data: JSON.stringify(e)
         });
-
+        console.log(response);
         if (modal.result.plan == true) {
             // /schedule/<int:user_id>/task/<int:task_id>/new_study_plan
-            await axios.post(`${url}:8000/schedule/${userId}/task/${response.data.task_id}/new_study_plan`, {
+            const response2 = await axios.post(`${url}:8000/schedule/${userId}/task/${response.data.task_id}/new_study_plan`, {
                 headers: {
                     'Content-Type': 'application/json',
                 }
         });
+            console.log(response2);
         }
         await getTasks();
     } catch (e) {
@@ -100,7 +101,7 @@ const Calendar = ({ userId }) => {
   const getTasks = async () => {
     try {
       const response = await axios.get(`${url}:8000/schedule/${userId}`);
-      // console.log("Tasks from backend: ", response.data);
+      console.log("Tasks from backend: ", response.data);
       const tasksWithColors = response.data.map((task) => {
         // Debugging: Log the priority value received from the backend
         // console.log("Priority from backend:", task.priority);
@@ -120,7 +121,7 @@ const Calendar = ({ userId }) => {
       // console.log("Tasks with colors: ", tasksWithColors);
       setEvents(tasksWithColors);
     } catch (error) {
-      console.error(error);
+      console.error("Get Tasks error: ", error);
     }
   };
 

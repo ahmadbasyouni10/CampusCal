@@ -62,16 +62,21 @@ def generate_study_plan(user, task):
     
     # Adjust the frequency of study based on priority
     study_interval = 1  # Default to studying every day
-    if task.priority == "High":
+    if task.priority.lower() == "high":
         study_interval = 1
-    elif task.priority == "Medium":
-        study_interval = max(days // 5, 1)  # Study less frequently for medium priority
-    elif task.priority == "Low":
-        study_interval = max(days // 3, 1)  # Study even less frequently for low priority
+    elif task.priority.lower() == "medium":
+        study_interval = 2  # Study less frequently for medium priority
+    elif task.priority.lower() == "low":
+        study_interval = 3  # Study even less frequently for low priority
 
     totalStudy = user.study_hours_per_day * (days // study_interval)
     studyTime = user.study_hours_per_day
-
+    """ print("Study Plan Stuff: ", {
+        "study_interval": study_interval,
+        "totalStudy": totalStudy,
+        "studyTime": studyTime,
+        "days": days
+    }) """
     studySessions = []
     study_day_counter = 0  # Counter to track when to schedule the next study session based on priority
 
@@ -80,8 +85,8 @@ def generate_study_plan(user, task):
             freeTimes = getFreeTimes(user.id, today)
             for times in freeTimes:
                 length = (datetime.datetime.combine(datetime.date.min, times[1]) - datetime.datetime.combine(datetime.date.min, times[0])).seconds / 3600
-                if studyTime <= length:
-                    totalStudy -= studyTime
+                if studyTime <= length or (today == future and times[1] <= task.start_time and studyTime <= length):
+                    # totalStudy -= studyTime
                     start_time = times[0]
                     end_time = (datetime.datetime.combine(datetime.date.min, times[0]) + datetime.timedelta(hours=studyTime)).time()
                     study = Task(
@@ -94,14 +99,15 @@ def generate_study_plan(user, task):
                         end_time=end_time,
                         parent_id=task.id
                     )
+                    print(study)
                     studySessions.append(study)
                     break  # Break after scheduling a study session for the day
 
         today += datetime.timedelta(days=1)
         study_day_counter += 1
-        remaining_days = max((future - today).days, 1)  # Ensure at least one day
-        if remaining_days < days:  # Adjust study time if we're closer to the task date
-            studyTime = totalStudy / remaining_days
+        # remaining_days = max((future - today).days, 1)  # Ensure at least one day
+        """ if remaining_days < days:  # Adjust study time if we're closer to the task date
+            studyTime = totalStudy / remaining_days """
 
     return studySessions
 
