@@ -107,9 +107,14 @@ const Calendar = ({ userId }) => {
         // console.log("Priority from backend:", task.priority);
         
         const priorityColorMap = {
-          "High": '#ff6b6b', // Soft Red
-          "Medium": '#f0a500', // Gold
-          "Low": '#4caf50' // Soft Green
+            "High": '#ff6b6b', // Soft Red
+            "Medium": '#f0a500', // Gold
+            "Low": '#4caf50', // Soft Green
+            "blue": '#63ace5',
+            "purple": '#b48ead',
+            "pink": '#ff9ff3',
+            "yellow": '#ffcc29',
+            "grey": '#bdc3c7'
         };
         // Ensure case-insensitive comparison and trim spaces
         const color = priorityColorMap[task.priority] || 'rgba(173, 216, 230, 0.5)';
@@ -150,19 +155,26 @@ const Calendar = ({ userId }) => {
 
   const createClass = async () => {
     const form = [
-        {name: "Class Name", id: "name", required: true, type: 'text', cssClass: 'form-input'},
-        {name: "Starting Time", id: "startTime", required: true, timeFormat: "HH:mm",  type: 'time', cssClass: 'form-input'},
-        {name: "Ending Time", id: "endTime", required: true, timeFormat: "HH:mm",  type: 'time', cssClass: 'form-input'},
-        {name: "Start Date", id: "start", required: true, dateFormat: "MM/dd/yyyy", type: "date", cssClass: 'form-input'},
-        {name: "End Date", id: "end", required: true, dateFormat: "MM/dd/yyyy", type: "date", cssClass: 'form-input'},
-        {name: "Sunday", id: 'sunday', type: 'checkbox', cssClass: 'form-checkbox'},
-        {name: "Monday", id: 'monday', type: 'checkbox', cssClass: 'form-checkbox'},
-        {name: "Tuesday", id: 'tuesday', type: 'checkbox', cssClass: 'form-checkbox'},
-        {name: "Wednesday", id: 'wednesday', type: 'checkbox', cssClass: 'form-checkbox'},
-        {name: "Thursday", id: 'thursday', type: 'checkbox', cssClass: 'form-checkbox'},
-        {name: "Friday", id: 'friday', type: 'checkbox', cssClass: 'form-checkbox'},
-        {name: "Saturday", id: 'saturday', type: 'checkbox', cssClass: 'form-checkbox'},
-    ]
+        {name: "Class Name", id: "name", required: true, type: 'text', cssClass: 'form-input form-left'},
+        {name: "Starting Time", id: "startTime", required: true, timeFormat: "HH:mm", type: 'time', cssClass: 'form-input form-left'},
+        {name: "Ending Time", id: "endTime", required: true, timeFormat: "HH:mm", type: 'time', cssClass: 'form-input form-left'},
+        {name: "Start Date", id: "start", required: true, dateFormat: "MM/dd/yyyy", type: "date", cssClass: 'form-input form-left'},
+        {name: "End Date", id: "end", required: true, dateFormat: "MM/dd/yyyy", type: "date", cssClass: 'form-input form-left'},
+        {name: "Color", id: "color", type: 'select', cssClass: 'form-input form-left', options: [
+            {name: "Blue", id: "blue"},
+            {name: "Purple", id: "purple"},
+            {name: "Pink", id: "pink"},
+            {name: "Yellow", id: "yellow"},
+            {name: "Grey", id: "grey"},
+        ]},
+        {name: "Sunday", id: 'sunday', type: 'checkbox', cssClass: 'form-checkbox form-right'},
+        {name: "Monday", id: 'monday', type: 'checkbox', cssClass: 'form-checkbox form-right'},
+        {name: "Tuesday", id: 'tuesday', type: 'checkbox', cssClass: 'form-checkbox form-right'},
+        {name: "Wednesday", id: 'wednesday', type: 'checkbox', cssClass: 'form-checkbox form-right'},
+        {name: "Thursday", id: 'thursday', type: 'checkbox', cssClass: 'form-checkbox form-right'},
+        {name: "Friday", id: 'friday', type: 'checkbox', cssClass: 'form-checkbox form-right'},
+        {name: "Saturday", id: 'saturday', type: 'checkbox', cssClass: 'form-checkbox form-right'}
+    ];
     const data = {
         name: "Linear Algebra",
         startTime: "08:30",
@@ -175,7 +187,8 @@ const Calendar = ({ userId }) => {
         wednesday: true,
         thursday: false,
         friday: false,
-        saturday: false
+        saturday: false,
+        color: "blue"
     }
     const properties = {
         name: "Create Class",
@@ -216,7 +229,8 @@ const Calendar = ({ userId }) => {
                 thursday: modal.result.thursday,
                 friday: modal.result.friday,
                 saturday: modal.result.saturday
-            }
+            },
+            color: modal.result.color
         };
         console.log(newEvent)
 

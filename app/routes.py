@@ -100,7 +100,8 @@ def add_classes(user_id):
         task_type='class',
         date=datetime.strptime(data['startDate'], '%Y-%m-%d').date(),
         start_time=datetime.strptime(data['start'], '%Y-%m-%dT%H:%M:%S').time() if data.get('start') else None,
-        end_time=datetime.strptime(data['end'], '%Y-%m-%dT%H:%M:%S').time() if data.get('end') else None
+        end_time=datetime.strptime(data['end'], '%Y-%m-%dT%H:%M:%S').time() if data.get('end') else None,
+        priority=data['color']
         )
     classTasks.append(initialClass)
     print("In add_classes")
@@ -137,7 +138,8 @@ def add_classes(user_id):
             date=initialClass.date + timedelta(days=(daysOfTheWeek[i]-initialClass.date.weekday())),
             start_time=initialClass.start_time,
             end_time=initialClass.end_time,
-            parent_id=initialClass.id
+            parent_id=initialClass.id,
+            priority=initialClass.priority
         )
         classTasks.append(newClass)
         initalClasses.append(newClass)
@@ -158,7 +160,9 @@ def add_classes(user_id):
             task_type='class',
             date=currentDate,
             start_time=initialClass.start_time,
-            end_time=initialClass.end_time
+            end_time=initialClass.end_time,
+            priority=initialClass.priority,
+            parent_id=initialClass.id
         )
         classTasks.append(newClass)
         dates[i % len(dates)] = currentDate + timedelta(days=7)
