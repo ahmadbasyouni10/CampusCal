@@ -2,13 +2,12 @@
 
 College students involve themselves in a variety of activities, whether that be academic, extracurricular, or otherwise. Too many college students overwhelm their schedules without taking a look at how realistic their commitments are, which leads to stress and burnout. Through CampusCal, college students will be much less overwhelmed about their time management skills, which will lead to an increase in overall well-being and academic performance. 
 ## Getting Started
-1. Clone this repository in your development folder.
+Clone this repository in your development folder.
 ```bash
 git clone <repo_url> 
 ```
-2. 
 ### Development Setup Instructions
-The following instructions are taioled for OSX(Mac) users. However, Linux/Windows should have very similar commands.  
+The following instructions are for OSX(Mac) users. However, Linux/Windows should have very similar commands.  
 
 To start our frontend, from the root directory:
 
@@ -29,7 +28,7 @@ pip install pandas
 pip install requests
 virtualenv test
 source test/bin/activate
-flask --app __init__ run --reload
+flask --app __init__ run -p 8000 --reload
 ```
 ## How to run locally
 
@@ -42,7 +41,7 @@ npm start
 
 Backend:
 ```bash
-flask --app __init__ run --reload
+flask --app __init__ run -p 8000 --reload
 ```
 
 ## Style
