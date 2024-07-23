@@ -54,7 +54,7 @@ nav ul li a:hover {
 .App {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 94vh;
     overflow-y: auto;
     background-color: #fafeff;
     padding-top: 40px; /* Space for the fixed header */
