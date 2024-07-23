@@ -16,12 +16,8 @@ const Performance = ({ userId }) => {
 
   const fetchTasks = async () => {
     try {
-<<<<<<< HEAD
       const response = await axios.get(`${url}:8000/get_performance_tasks/${userId}`);
       console.log("Fetched tasks:", response.data);
-=======
-      const response = await axios.get(`${url}:5000/schedule/${userId}`);
->>>>>>> parent of 93d44c1 (Feature performance Page and pie chart)
       setTasks(response.data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
