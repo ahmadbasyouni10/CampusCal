@@ -106,9 +106,9 @@ const Calendar = ({ userId }) => {
                 console.log("Priority from backend:", task.priority);
 
                 const priorityColorMap = {
-                    "High": '#ff6b6b', // Soft Red
-                    "Medium": '#f0a500', // Gold
-                    "Low": '#4caf50' // Soft Green
+                    "High": '#C13333', // Soft Red #ff6b6b
+                    "Medium": '#F1A80B', // Gold #f0a500
+                    "Low": '#0A600E' // Soft Green
                 };
                 // Ensure case-insensitive comparison and trim spaces
                 const color = priorityColorMap[task.priority] || 'rgba(173, 216, 230, 0.5)';
@@ -264,6 +264,10 @@ const Calendar = ({ userId }) => {
         setEvents(events => [...events, newEvent]);
     };
 
+    const onBeforeHeaderRender = (args) => {
+        args.header.html = args.column.start.toString("dddd");
+    };
+
     return (
         <div className={"container"}>
 
@@ -320,6 +324,7 @@ const Calendar = ({ userId }) => {
                         onTimeRangeSelected={onTimeRangeSelected}
                         onEventClick={deleteTask}
                         controlRef={setWeekView}
+                        onBeforeHeaderRender={onBeforeHeaderRender}
                     />
                     <DayPilotMonth
                         startDate={startDate}

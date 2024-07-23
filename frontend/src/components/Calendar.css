@@ -88,7 +88,7 @@ body {
 .navigator_default_main {
     background-color: transparent;
     border: 0;
-
+    position: unset !important;
 }
 
 .navigator_default_dayother {
@@ -105,17 +105,22 @@ body {
 .navigator_default_title, .navigator_default_titleright, .navigator_default_titleleft {
     background-color: transparent;
     font-family: "Google Sans", Roboto, Arial, sans-serif;
-    color: #2A2D44;
+    color: #2c3e51;
     border: 0;
     font-weight: bold;
     font-size: 18px;
 }
 
 /* Calendar */
+.calendar_default_main > div{
+    overflow: scroll;
+    height: 100vh; 
+}
+
 .calendar_default_main{
-    height: 40% !important;
+    height: 80% !important;
     background: rgb(255, 255, 255);
-    border: none;
+    border: 0px solid rgb(192, 192, 192);
     border-radius: 5px;
 }
 
@@ -127,9 +132,9 @@ body {
 }
 
 .calendar_default_rowheader_inner, .calendar_default_colheader_inner {
-    background-color: #2A2D44;
-    color: #fff;
-    border-color: #2A2D44;
+    background-color: transparent;
+    color: #2c3e51;
+    border-color: transparent;
     border-radius: 10px;
     padding: 5px;
     font-size: 14px;
@@ -148,11 +153,15 @@ body {
 
 .calendar_default_monthheader_inner {
     background-color: #2A2D44;
-    color: #fff;
+    color: transparent;
     border-radius: 5px;
     padding: 5px;
     font-size: 14px;
     font-weight: bold;
+}
+
+.calendar_default_cell_business .calendar_default_cell_inner {
+    background: transparent;
 }
 
 /* Events */
@@ -174,15 +183,15 @@ body .calendar_default_event_inner, body .month_default_event_inner {
 
 /* Priority Colors */
 .calendar_default_event_inner[data-priority="High"] {
-    background-color: #ff6b6b;
+    background-color: #C13333;
 }
 
 .calendar_default_event_inner[data-priority="Medium"] {
-    background-color: #f0a500;
+    background-color: #F1A80B;
 }
 
 .calendar_default_event_inner[data-priority="Low"] {
-    background-color: #4caf50;
+    background-color: #0A600E;
 }
 
 /* Modal */
