@@ -347,14 +347,13 @@ const Calendar = ({ userId }) => {
                         />
                         <button onClick={createClass} className="create-class-btn">Create Class</button>
                         <div className="planner">
-                            <br/>
-                            <h2>Today's Agenda</h2>
+                            <h2 className='agendaTitle'>Today's Agenda</h2>
                             <div className={"agenda"}>
                                 {tasksWithColors.length > 0 ? (
                                     tasksWithColors.map((taskstr, index) => (
                                         <div key={index}>
-                                            <div>{taskstr.start} - {taskstr.end}</div>
-                                            <div>{taskstr.task}</div>
+                                            <div className='dates'>{taskstr.start} - {taskstr.end}</div>
+                                            <div className='task'>{taskstr.task}</div>
                                             <br />
                                         </div>
                                     ))
