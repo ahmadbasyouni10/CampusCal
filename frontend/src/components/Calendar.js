@@ -133,25 +133,33 @@ const Calendar = ({ userId }) => {
             const currentDate = new DayPilot.Date(startDate)
 
             const priorityColorMap = {
-                "High": '#C13333', // Soft Red
-                "Medium": '#F1A80B', // Gold
-                "Low": '#0A600E' // Soft Green
+                "High": '#C13333', 
+                "Medium": '#F1A80B',
+                "Low": '#0A600E'
             };
 
             const tasksWithColorsStr = response.data
                 .filter(task => {
-                    const taskDate = new DayPilot.Date(task.startTime); // Adjust this line based on your actual data structure
+                    const taskDate = new DayPilot.Date(task.startTime); 
                     return taskDate.toString("M/d/yyyy") === currentDate.toString("M/d/yyyy") && task.id > 88;
                 })
                 .map((task) => {
                     const color = priorityColorMap[task.priority] || 'rgba(173, 216, 230, 0.5)';
                     const startTimeFormatted = new DayPilot.Date(task.startTime).toString("hh:mm tt");
                     const endTimeFormatted = new DayPilot.Date(task.endTime).toString("hh:mm tt");
-                    return `Task: ${task.text}, Priority: ${task.priority}, Color: ${color}, Start: ${startTimeFormatted}, End: ${endTimeFormatted}`;
+
+                    console.log(startTimeFormatted, endTimeFormatted );
+                    return {
+                        task: task.text,
+                        priority: task.priority,
+                        color: color,
+                        start: startTimeFormatted,
+                        end: endTimeFormatted
+                    };
                 });
 
             //debugging to make sure it sends the correct tasks
-            console.log(tasksWithColorsStr);
+            console.log("startDate:", startDate, "tasks:", tasksWithColorsStr);
             setTasksWithColors(tasksWithColorsStr);
 
         } catch (error) {
@@ -339,13 +347,15 @@ const Calendar = ({ userId }) => {
                         />
                         <button onClick={createClass} className="create-class-btn">Create Class</button>
                         <div className="planner">
+                            <br/>
                             <h2>Today's Agenda</h2>
                             <div className={"agenda"}>
                                 {tasksWithColors.length > 0 ? (
                                     tasksWithColors.map((taskstr, index) => (
                                         <div key={index}>
-                                            <div>{taskstr.startTimeFormatted} - {taskstr.endTimeFormatted}</div>
-                                            <div><strong>{taskstr.name}</strong></div>
+                                            <div>{taskstr.start} - {taskstr.end}</div>
+                                            <div>{taskstr.task}</div>
+                                            <br />
                                         </div>
                                     ))
                                 ) : (
