@@ -133,14 +133,14 @@ const Calendar = ({ userId }) => {
             const currentDate = new DayPilot.Date(startDate)
 
             const priorityColorMap = {
-                "High": '#C13333', 
+                "High": '#C13333',
                 "Medium": '#F1A80B',
                 "Low": '#0A600E'
             };
 
             const tasksWithColorsStr = response.data
                 .filter(task => {
-                    const taskDate = new DayPilot.Date(task.start); 
+                    const taskDate = new DayPilot.Date(task.start);
                     return taskDate.toString("M/d/yyyy") === currentDate.toString("M/d/yyyy") && task.id > 88;
                 })
                 .map((task) => {
@@ -148,7 +148,7 @@ const Calendar = ({ userId }) => {
                     const startTimeFormatted = new DayPilot.Date(task.start).toString("hh:mm tt");
                     const endTimeFormatted = new DayPilot.Date(task.end).toString("hh:mm tt");
 
-                    console.log(task.start, task.end );
+                    console.log(task.start, task.end);
                     return {
                         task: task.text,
                         priority: task.priority,
@@ -352,7 +352,10 @@ const Calendar = ({ userId }) => {
                                 {tasksWithColors.length > 0 ? (
                                     tasksWithColors.map((taskstr, index) => (
                                         <div key={index}>
-                                            <div className='dates'>{taskstr.start} - {taskstr.end}</div>
+                                            <div className="prior">
+                                                <span className="task-circle" style={{ backgroundColor: taskstr.backColor }}></span>
+                                                <div className='dates'>{taskstr.start} - {taskstr.end}</div>
+                                            </div>
                                             <div className='task'>{taskstr.task}</div>
                                             <br />
                                         </div>

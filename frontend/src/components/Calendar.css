@@ -143,12 +143,12 @@ body {
 .agenda{
     display: flex;
     flex-direction: column;
-    margin-left: 20px;
     flex-grow: 1;
     flex-shrink: 1;
     overflow-y: auto;
     overflow-x: hidden;
     box-sizing: border-box;
+    height: 25vh;
     max-height: 25vh;
 }
 
@@ -160,6 +160,23 @@ body {
 .task{
     font-size: .9em;
     font-weight: bold;
+    margin-left: 30px;
+}
+
+.task-circle {
+    display: flex;
+    height: 10px; 
+    width: 10px; 
+    border-radius: 50%; 
+    margin-right: 5%; 
+    background-color: rgba(173, 216, 230, 0.5);
+}
+
+.prior{
+    display: flex;
+    flex-direction: row;
+    margin-left: 10px;
+    align-items: center;
 }
 
 /* Calendar */
@@ -265,7 +282,6 @@ body .calendar_default_event_inner, body .month_default_event_inner {
     outline: 2px solid transparent;
     outline-offset: 2px;
     border-radius: var(--chakra-radii-md);
-    color: inherit;
     margin: auto;
     z-index: var(--chakra-zIndices-modal);
     background: var(--modal-bg);
@@ -334,6 +350,18 @@ body .calendar_default_event_inner, body .month_default_event_inner {
     margin-right: 10px;
     position: relative;
 }
+
+/* to limit the size for the headers;
+    inside quotes quotesitem -- 
+    font-size: clamp(1em, 1.5vw, 1.2em); /* Adjusted for more dynamic resizing 
+    position: relative;
+    overflow: hidden;
+
+    inside quotes quoteitem p
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+*/
 
 .quotes .quote-item p {
     margin: 0;
