@@ -353,7 +353,7 @@ const Calendar = ({ userId }) => {
                                     tasksWithColors.map((taskstr, index) => (
                                         <div key={index}>
                                             <div className="prior">
-                                                <span className="task-circle" style={{ backgroundColor: taskstr.backColor }}></span>
+                                                <span className="task-circle" style={{ backgroundColor: taskstr.color }}></span>
                                                 <div className='dates'>{taskstr.start} - {taskstr.end}</div>
                                             </div>
                                             <div className='task'>{taskstr.task}</div>
