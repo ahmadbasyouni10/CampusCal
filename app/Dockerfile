@@ -7,14 +7,14 @@ RUN apt-get update && apt-get install -y build-essential cython
 WORKDIR /app
 
 # Copy requirements file
-COPY requirements.txt .
+COPY app/requirements.txt .
 
 # Install Python dependencies
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
-COPY . .
+COPY app/ .
 
 # Run the application
 CMD ["gunicorn", "wsgi:app"] 
