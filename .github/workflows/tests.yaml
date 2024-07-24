@@ -1,8 +1,8 @@
-name: Tests
+name: Unit and Integration Tests
 on: push
 
 jobs:
-  check-style:
+  unit-and-integration-tests:
     runs-on: ubuntu-latest
     steps:
         - uses: actions/checkout@v3
