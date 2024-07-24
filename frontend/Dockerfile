@@ -5,16 +5,18 @@ FROM node:18
 WORKDIR /frontend
 
 # Copy package.json and package-lock.json
-COPY frontend/package*.json ./
+COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
 # Copy the rest of your React code into the container
-COPY frontend/ .
+COPY . .
 
 # Build the React application
 RUN npm run build
 
+RUN npm install -g serve
+
 # Serve the application
-CMD ["serve", "-s", "build", "-l", "5000"]
+CMD ["serve", "-s", "build"]
