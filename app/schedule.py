@@ -1,27 +1,23 @@
 import datetime
 import pandas as pd
 from collections import defaultdict
-from app.models import Task, User
+from app.models import Task, User, Performance
+from ml_model import optimize_study_plan
 
 def populate(user_id):
     allTasks = Task.query.filter_by(user_id=user_id).order_by(Task.start_time).all()
+    completed_tasks = Performance.query.filter_by(user_id=user_id).with_entities(Performance.task_id).all()
+    completed_task_ids = [t.task_id for t in completed_tasks]
+    
     response = []
-    '''
-    {
-        id: 1,
-        text: "Event 1",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(11),
-      },
-    '''
     for task in allTasks:
         response.append({
             'id': task.id,
             'text': task.name,
             'start': datetime.datetime.combine(task.date, task.start_time).isoformat(),
             'end': datetime.datetime.combine(task.date, task.end_time).isoformat(),
-            'priority': task.priority
-
+            'priority': task.priority,
+            'completed': task.id in completed_task_ids
         })
     return response
 
@@ -68,6 +64,8 @@ def getFreeTimes(user_id, date, preferred_study_time):
     # Return the list of free time slots for the given date
     return response
 
+
+
 def generate_study_plan(user, task):
     today = datetime.datetime.now().date()
     future = task.date
@@ -75,65 +73,51 @@ def generate_study_plan(user, task):
     if days <= 0:
         days = 1  # Minimum one day to handle short time frames
     
-    # Adjust the frequency of study based on priority
-    study_interval = 1  # Default to studying every day
+    # Adjust the frequency and duration of study based on priority
     if task.priority.lower() == "high":
         study_interval = 1
+        study_duration = 2  # 2 hours for high priority
     elif task.priority.lower() == "medium":
-        study_interval = 2  # Study less frequently for medium priority
-    elif task.priority.lower() == "low":
-        study_interval = 3  # Study even less frequently for low priority
+        study_interval = 2
+        study_duration = 1.5  # 1.5 hours for medium priority
+    else:  # Low priority
+        study_interval = 3
+        study_duration = 1  # 1 hour for low priority
 
-    totalStudy = user.study_hours_per_day * (days // study_interval)
-    studyTime = user.study_hours_per_day
-    """ print("Study Plan Stuff: ", {
-        "study_interval": study_interval,
-        "totalStudy": totalStudy,
-        "studyTime": studyTime,
-        "days": days
-    }) """
     studySessions = []
     preferred_study_time = user.preferred_study_time.lower()
-    study_day_counter = 0  # Counter to track when to schedule the next study session based on priority
 
-    while today <= future:
-        if study_day_counter % study_interval == 0:  # Check if it's a day to schedule study based on priority
-            freeTimes = getFreeTimes(user.id, today, 'morning')
-            if preferred_study_time == "night":
-                freeTimes.reverse()
-            for times in freeTimes:
-                length = (datetime.datetime.combine(datetime.date.min, times[1]) - datetime.datetime.combine(datetime.date.min, times[0])).seconds / 3600
-                if studyTime <= length:
-                    cond1 = preferred_study_time == "morning" and times[1] <= task.start_time
-                    cond2 = preferred_study_time == "night" and times[0] <= task.start_time
-                    if today == future and (not cond1 and not cond2):
-                        continue
-                    # totalStudy -= studyTime
+    for day in range(days):
+        if day % study_interval == 0:  # Check if it's a day to schedule study based on priority
+            study_date = today + datetime.timedelta(days=day)
+            freeTimes = getFreeTimes(user.id, study_date, preferred_study_time)
+            
+            for start_time, end_time in freeTimes:
+                slot_duration = (datetime.datetime.combine(datetime.date.min, end_time) - 
+                                 datetime.datetime.combine(datetime.date.min, start_time)).seconds / 3600
+                
+                if slot_duration >= study_duration:
                     if preferred_study_time == "morning":
-                        start_time = times[0]
-                        end_time = (datetime.datetime.combine(datetime.date.min, times[0]) + datetime.timedelta(hours=studyTime)).time()
+                        session_start = start_time
+                        session_end = (datetime.datetime.combine(datetime.date.min, start_time) + 
+                                       datetime.timedelta(hours=study_duration)).time()
                     else:
-                        start_time = (datetime.datetime.combine(datetime.date.min, times[1]) - datetime.timedelta(hours=studyTime)).time()
-                        end_time = times[1]
+                        session_end = end_time
+                        session_start = (datetime.datetime.combine(datetime.date.min, end_time) - 
+                                         datetime.timedelta(hours=study_duration)).time()
+                    
                     study = Task(
                         user_id=user.id, 
                         name="Study for " + task.name, 
                         task_type="Study", 
                         priority=task.priority,
-                        date=today, 
-                        start_time=start_time, 
-                        end_time=end_time,
+                        date=study_date, 
+                        start_time=session_start, 
+                        end_time=session_end,
                         parent_id=task.id
                     )
-                    # print(study)
                     studySessions.append(study)
                     break  # Break after scheduling a study session for the day
-
-        today += datetime.timedelta(days=1)
-        study_day_counter += 1
-        # remaining_days = max((future - today).days, 1)  # Ensure at least one day
-        """ if remaining_days < days:  # Adjust study time if we're closer to the task date
-            studyTime = totalStudy / remaining_days """
 
     return studySessions
 
