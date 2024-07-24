@@ -2,7 +2,7 @@ import datetime
 import pandas as pd
 from collections import defaultdict
 from app.models import Task, User, Performance
-from backend.ml_model import optimize_study_plan
+from ml_model import optimize_study_plan
 
 def populate(user_id):
     allTasks = Task.query.filter_by(user_id=user_id).order_by(Task.start_time).all()
