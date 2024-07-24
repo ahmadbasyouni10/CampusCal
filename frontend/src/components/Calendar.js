@@ -120,7 +120,9 @@ const Calendar = ({ userId }) => {
         const color = priorityColorMap[task.priority] || 'rgba(173, 216, 230, 0.5)';
         return {
           ...task,
-          backColor: color
+          backColor: task.completed ? 'rgba(0, 255, 0, 0.3)' : color, // Green tint for completed tasks
+          fontColor: task.completed ? 'green' : 'black',
+          text: task.completed ? `✓ ${task.text}` : task.text
         };
       });
       // console.log("Tasks with colors: ", tasksWithColors);
@@ -131,7 +133,6 @@ const Calendar = ({ userId }) => {
   };
 
   const deleteTask = async (args) => {
-    // console.log("Delete Task Args: ", args.e.data);
     const modal = await DayPilot.Modal.confirm("Would you like to delete this task? This action cannot be undone. If a study plan was created for this task then all study sessions will also be removed",
         {theme: "modal_custom"}
     );
@@ -151,7 +152,7 @@ const Calendar = ({ userId }) => {
     } catch (error) {
         console.error("Error deleting task:", error);
     }
-  };
+};
 
   const createClass = async () => {
     const form = [

@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
 from app.models import Performance, Task, User
+from datetime import datetime, timedelta
 from app import db
 
 def prepare_data():
@@ -80,47 +81,30 @@ def predict_performance(model, scaler, feature_names, user, task, study_duration
     return model.predict(features_scaled)[0]
 
 def optimize_study_plan(user, task):
-    perf_model, study_model, scaler, feature_names = train_model()
+    days_until_task = (task.date - datetime.now().date()).days
     
-    if scaler is None:
-        print("No performance data available. Generating default study plan.")
-        return [{'days_before': 3, 'day_of_week': 0, 'hour': 14, 'duration': 2}]
-    
+    # Define number of sessions and duration based on priority
+    if task.priority.lower() == "high":
+        num_sessions = min(5, days_until_task)
+        duration = 2
+    elif task.priority.lower() == "medium":
+        num_sessions = min(3, days_until_task)
+        duration = 1.5
+    else:  # Low priority
+        num_sessions = min(2, days_until_task)
+        duration = 1
+
     best_plans = []
     
-    for session_count in range(1, 4):  # Generate 1 to 3 study sessions
-        best_performance = 0
-        best_plan = None
+    for i in range(num_sessions):
+        days_before = max(1, days_until_task - i * (days_until_task // num_sessions))
+        hour = user.preferred_study_time.lower() == "morning" and 9 or 19  # 9 AM for morning, 7 PM for evening
         
-        for days_before in range(1, 8):  # 1 to 7 days before
-            for day_of_week in range(7):  # 0-6 for Monday-Sunday
-                for hour in range(24):  # 0-23 hours
-                    for duration in range(1, 5):  # 1 to 4 hours of study
-                        try:
-                            predicted_performance = predict_performance(
-                                perf_model, scaler, feature_names, user, task,
-                                duration, days_before, day_of_week, hour
-                            )
-                            predicted_study_score = predict_performance(
-                                study_model, scaler, feature_names, user, task,
-                                duration, days_before, day_of_week, hour
-                            )
-                        except Exception as e:
-                            print(f"Error predicting performance: {e}")
-                            continue
-                        
-                        overall_score = (predicted_performance + predicted_study_score) / 2
-                        
-                        if overall_score > best_performance:
-                            best_performance = overall_score
-                            best_plan = {
-                                'days_before': days_before,
-                                'day_of_week': day_of_week,
-                                'hour': hour,
-                                'duration': duration,
-                            }
-        
-        if best_plan:
-            best_plans.append(best_plan)
+        best_plans.append({
+            'days_before': days_before,
+            'day_of_week': (datetime.now().date() + timedelta(days=days_before)).weekday(),
+            'hour': hour,
+            'duration': duration
+        })
     
-    return best_plans if best_plans else [{'days_before': 3, 'day_of_week': 0, 'hour': 14, 'duration': 2}]
+    return best_plans
