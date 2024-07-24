@@ -7,7 +7,7 @@ import random, requests, json
 from app import db
 from requests.exceptions import JSONDecodeError
 from sqlalchemy.exc import SQLAlchemyError
-from ml_model import optimize_study_plan
+from backend.ml_model import optimize_study_plan
 
 bp = Blueprint('routes', __name__)
 

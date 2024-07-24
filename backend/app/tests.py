@@ -2,7 +2,8 @@ import unittest
 from unittest.mock import patch, MagicMock
 import datetime
 from flask import Flask
-from app import create_app, db
+from app import create_app
+from app import db
 from app.models import Task, User
 from app.schedule import populate, getFreeTimes, generate_study_plan, setSleep
 
