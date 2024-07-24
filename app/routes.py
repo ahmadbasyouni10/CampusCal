@@ -6,6 +6,7 @@ from app.schedule import populate, generate_study_plan, setSleep
 import random, requests, json
 from app import db
 from requests.exceptions import JSONDecodeError
+from ml_model import optimize_study_plan
 
 bp = Blueprint('routes', __name__)
 
@@ -66,8 +67,7 @@ def add_assessment():
             priority=data['priority'],
             date=datetime.strptime(data['date'], '%Y-%m-%d').date(),
             start_time=datetime.strptime(data['start'], '%Y-%m-%dT%H:%M:%S').time() if data.get('start') else None,
-            end_time=datetime.strptime(data['end'], '%Y-%m-%dT%H:%M:%S').time() if data.get('end') else None,
-            performance=data.get('performance', None)  # Corrected line
+            end_time=datetime.strptime(data['end'], '%Y-%m-%dT%H:%M:%S').time() if data.get('end') else None
         )
         db.session.add(new_task)
     else:
@@ -81,8 +81,6 @@ def add_assessment():
             task.name = data['name']
         if 'priority' in data:
             task.priority = data['priority']
-        if 'performance' in data:
-            task.performance = data['performance']
         # Consider adding updates for date, start_time, and end_time as well
 
     db.session.commit()
@@ -226,61 +224,18 @@ def create_study_plan(user_id, task_id):
     if not task:
         return jsonify({'message': 'Task not found'}), 404
     
-    allStudySessions = generate_study_plan(user, task)
+    best_plans = optimize_study_plan(user, task)
+    allStudySessions = generate_study_plan(user, task, best_plans)
     db.session.add_all(allStudySessions)
     db.session.commit()
 
-    return jsonify({'message': f'Study plan for {task.name} created!'}), 200
+    # Fetch updated schedule
+    updated_schedule = populate(user.id)
 
-
-@bp.route('/update_performance', methods=['POST'])
-def update_performance():
-    data = request.get_json()
-    user_id = data['user_id']
-    task_id = data['task_id']
-    score = data['score']
-    
-    performance = Performance.query.filter_by(user_id=user_id, task_id=task_id).first()
-    if performance:
-        performance.score = score
-    else:
-        new_performance = Performance(user_id=user_id, task_id=task_id, score=score)
-        db.session.add(new_performance)
-    
-    db.session.commit()
-    
-    user = User.query.get(user_id)
-    performances = Performance.query.filter_by(user_id=user_id).all()
-    adjusted_study_plan = adjust_study_plan_based_on_performance(user, performances)
-    
-    return jsonify({'message': 'Performance updated!', 'adjusted_study_plan': adjusted_study_plan})
-
-def adjust_study_plan_based_on_performance(user, performances):
-    adjusted_plan = []
-    
-    for performance in performances:
-        task = Task.query.get(performance.task_id)
-        days_until_due = (task.date - datetime.now().date()).days
-        
-        if performance.score < 6:
-            days_to_study = days_until_due
-            study_hours_per_day = user.study_hours_per_day + 1
-        elif performance.score >= 8:
-            days_to_study = days_until_due // 2
-            study_hours_per_day = user.study_hours_per_day - 1
-        else:
-            days_to_study = days_until_due // 3
-            study_hours_per_day = user.study_hours_per_day
-
-        for day in range(days_to_study):
-            study_date = (datetime.now() + timedelta(days=random.randint(0, days_until_due))).date().isoformat()
-            adjusted_plan.append({
-                'task': task.name,
-                'study_hours': study_hours_per_day,
-                'date': study_date
-            })
-    
-    return adjusted_plan
+    return jsonify({
+        'message': f'Study plan for {task.name} created!',
+        'updated_schedule': updated_schedule
+    }), 200
 
 @bp.route('/quotes', methods=['GET'])
 def quotes():
@@ -320,6 +275,28 @@ def get_performance_tasks(user_id):
         for task in tasks
     ]
     return jsonify(task_data)
+
+@bp.route('/update_performance', methods=['POST'])
+def update_performance():
+    data = request.get_json()
+    
+    performance = Performance(
+        user_id=data['user_id'],
+        task_id=data['task_id'],
+        performance_score=data['performance_score'],
+        study_score=data['study_score'],
+        feeling=data['feeling'],
+        study_duration=data['study_duration'],
+        time_before_task=data['time_before_task'],
+        day_of_week=data['day_of_week'],
+        time_of_day=data['time_of_day']
+    )
+    
+    db.session.add(performance)
+    db.session.commit()
+    
+    return jsonify({'message': 'Performance updated successfully!'}), 200
+
 
 # New route for fetching task hours
 @bp.route('/get_task_hours/<int:user_id>', methods=['GET'])

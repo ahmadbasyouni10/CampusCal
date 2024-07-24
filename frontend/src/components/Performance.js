@@ -19,7 +19,10 @@ const Performance = ({ userId }) => {
     try {
       const response = await axios.get(`${url}/get_performance_tasks/${userId}`);
       console.log("Fetched tasks:", response.data);
-      setTasks(response.data);
+      setTasks(response.data.map(task => ({
+        ...task,
+        date: new Date(task.date)
+    })));
     } catch (error) {
       console.error("Error fetching tasks for performance:", error);
     }
@@ -38,19 +41,42 @@ const Performance = ({ userId }) => {
   };
 
   const handleSubmit = async (taskId) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) {
+      console.error("Task not found");
+      return;
+    }
+  
+    const startTime = new Date(task.start);
+    const endTime = new Date(task.end);
+    if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+      console.error("Invalid start or end time");
+      return;
+    }
+  
     const ratingData = {
       user_id: userId,
       task_id: taskId,
-      score: taskRatings[taskId],
-      study_score: studyRatings[taskId],
-      feeling: feelings[taskId],
+      performance_score: parseFloat(taskRatings[taskId]) || 0,
+      study_score: parseFloat(studyRatings[taskId]) || 0,
+      feeling: feelings[taskId] || '',
+      study_duration: (endTime - startTime) / (1000 * 60 * 60), // in hours
+      time_before_task: (task.date - startTime) / (1000 * 60 * 60 * 24), // in days
+      day_of_week: startTime.getDay(),
+      time_of_day: startTime.getHours() + startTime.getMinutes() / 60, // 0-24 format
     };
-
+  
     try {
       await axios.post(`${url}/update_performance`, ratingData);
       alert("Performance updated successfully!");
+      // Optionally, reset the form or refresh the tasks
+      setTaskRatings(prev => ({ ...prev, [taskId]: "" }));
+      setStudyRatings(prev => ({ ...prev, [taskId]: "" }));
+      setFeelings(prev => ({ ...prev, [taskId]: "" }));
+      fetchTasks(); // Refresh the tasks
     } catch (error) {
       console.error("Error updating performance:", error);
+      alert("Failed to update performance. Please try again.");
     }
   };
 
@@ -161,6 +187,7 @@ const Performance = ({ userId }) => {
                 max="10"
                 value={studyRatings[task.id] || ""}
                 onChange={(e) => handleStudyRatingChange(task.id, e.target.value)}
+                required
               />
             </label>
             <label>
