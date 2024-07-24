@@ -28,7 +28,7 @@ class Task(db.Model):
     end_time = db.Column(db.Time, nullable=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=True)
     children = db.relationship('Task', backref=db.backref('parent', remote_side=[id]))
-    performances = db.relationship('Performance', backref='task', lazy=True)
+    performances = db.relationship('Performance', backref='task', lazy=True, cascade="delete, delete-orphan")
 
     def __repr__(self):
         return f"Task('{self.name}', '{self.date}')"

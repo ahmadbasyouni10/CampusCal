@@ -185,12 +185,12 @@ def remove_task(user_id, task_id):
         task = Task.query.filter_by(id=task_id, user_id=user_id).first()
         if not task:
             return jsonify({'message': 'Task not found or does not belong to the user'}), 404
-
+        '''
         # Remove related performance records
         performances = Performance.query.filter_by(task_id=task_id).all()
         for performance in performances:
             db.session.delete(performance)
-
+        '''
         # Remove related child tasks
         if task.children:
             for child in task.children:
