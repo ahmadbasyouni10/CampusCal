@@ -140,15 +140,15 @@ const Calendar = ({ userId }) => {
 
             const tasksWithColorsStr = response.data
                 .filter(task => {
-                    const taskDate = new DayPilot.Date(task.startTime); 
+                    const taskDate = new DayPilot.Date(task.start); 
                     return taskDate.toString("M/d/yyyy") === currentDate.toString("M/d/yyyy") && task.id > 88;
                 })
                 .map((task) => {
                     const color = priorityColorMap[task.priority] || 'rgba(173, 216, 230, 0.5)';
-                    const startTimeFormatted = new DayPilot.Date(task.startTime).toString("hh:mm tt");
-                    const endTimeFormatted = new DayPilot.Date(task.endTime).toString("hh:mm tt");
+                    const startTimeFormatted = new DayPilot.Date(task.start).toString("hh:mm tt");
+                    const endTimeFormatted = new DayPilot.Date(task.end).toString("hh:mm tt");
 
-                    console.log(startTimeFormatted, endTimeFormatted );
+                    console.log(task.start, task.end );
                     return {
                         task: task.text,
                         priority: task.priority,
