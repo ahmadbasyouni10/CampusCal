@@ -125,6 +125,7 @@ const Calendar = ({ userId }) => {
       });
       // console.log("Tasks with colors: ", tasksWithColors);
       setEvents(tasksWithColors);
+      await daily();
     } catch (error) {
       console.error("Get Tasks error: ", error);
     }
