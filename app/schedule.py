@@ -1,27 +1,23 @@
 import datetime
 import pandas as pd
 from collections import defaultdict
-from app.models import Task, User
+from app.models import Task, User, Performance
+from ml_model import optimize_study_plan
 
 def populate(user_id):
     allTasks = Task.query.filter_by(user_id=user_id).order_by(Task.start_time).all()
+    completed_tasks = Performance.query.filter_by(user_id=user_id).with_entities(Performance.task_id).all()
+    completed_task_ids = [t.task_id for t in completed_tasks]
+    
     response = []
-    '''
-    {
-        id: 1,
-        text: "Event 1",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(11),
-      },
-    '''
     for task in allTasks:
         response.append({
             'id': task.id,
             'text': task.name,
             'start': datetime.datetime.combine(task.date, task.start_time).isoformat(),
             'end': datetime.datetime.combine(task.date, task.end_time).isoformat(),
-            'priority': task.priority
-
+            'priority': task.priority,
+            'completed': task.id in completed_task_ids
         })
     return response
 
@@ -68,25 +64,61 @@ def getFreeTimes(user_id, date, preferred_study_time):
     # Return the list of free time slots for the given date
     return response
 
-def generate_study_plan(user, task, best_plans):
-    studySessions = []
-    for plan in best_plans:
-        study_date = task.date - datetime.timedelta(days=plan['days_before'])
-        study_start = datetime.datetime.combine(study_date, datetime.time(plan['hour'], 0))
-        study_end = study_start + datetime.timedelta(hours=plan['duration'])
-        
-        study = Task(
-            user_id=user.id, 
-            name="Study for " + task.name, 
-            task_type="Study", 
-            priority=task.priority,
-            date=study_date, 
-            start_time=study_start.time(), 
-            end_time=study_end.time(),
-            parent_id=task.id
-        )
-        studySessions.append(study)
+
+
+def generate_study_plan(user, task):
+    today = datetime.datetime.now().date()
+    future = task.date
+    days = (future - today).days
+    if days <= 0:
+        days = 1  # Minimum one day to handle short time frames
     
+    # Adjust the frequency and duration of study based on priority
+    if task.priority.lower() == "high":
+        study_interval = 1
+        study_duration = 2  # 2 hours for high priority
+    elif task.priority.lower() == "medium":
+        study_interval = 2
+        study_duration = 1.5  # 1.5 hours for medium priority
+    else:  # Low priority
+        study_interval = 3
+        study_duration = 1  # 1 hour for low priority
+
+    studySessions = []
+    preferred_study_time = user.preferred_study_time.lower()
+
+    for day in range(days):
+        if day % study_interval == 0:  # Check if it's a day to schedule study based on priority
+            study_date = today + datetime.timedelta(days=day)
+            freeTimes = getFreeTimes(user.id, study_date, preferred_study_time)
+            
+            for start_time, end_time in freeTimes:
+                slot_duration = (datetime.datetime.combine(datetime.date.min, end_time) - 
+                                 datetime.datetime.combine(datetime.date.min, start_time)).seconds / 3600
+                
+                if slot_duration >= study_duration:
+                    if preferred_study_time == "morning":
+                        session_start = start_time
+                        session_end = (datetime.datetime.combine(datetime.date.min, start_time) + 
+                                       datetime.timedelta(hours=study_duration)).time()
+                    else:
+                        session_end = end_time
+                        session_start = (datetime.datetime.combine(datetime.date.min, end_time) - 
+                                         datetime.timedelta(hours=study_duration)).time()
+                    
+                    study = Task(
+                        user_id=user.id, 
+                        name="Study for " + task.name, 
+                        task_type="Study", 
+                        priority=task.priority,
+                        date=study_date, 
+                        start_time=session_start, 
+                        end_time=session_end,
+                        parent_id=task.id
+                    )
+                    studySessions.append(study)
+                    break  # Break after scheduling a study session for the day
+
     return studySessions
 
 def setSleep(user_id, sleep_hours):
