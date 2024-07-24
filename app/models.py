@@ -37,13 +37,13 @@ class Performance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
-    performance_score = db.Column(db.Float, nullable=False)
+    performance_score = db.Column(db.Float, nullable=True)  # Change this to nullable=True
     study_score = db.Column(db.Float, nullable=False)
     feeling = db.Column(db.String(20), nullable=True)
-    study_duration = db.Column(db.Float, nullable=False)  # in hours
-    time_before_task = db.Column(db.Float, nullable=False)  # in days
-    day_of_week = db.Column(db.Integer, nullable=False)  # 0-6 for Monday-Sunday
-    time_of_day = db.Column(db.Float, nullable=False)  # 0-24 hour format
+    study_duration = db.Column(db.Float, nullable=False)
+    time_before_task = db.Column(db.Float, nullable=False)
+    day_of_week = db.Column(db.Integer, nullable=False)
+    time_of_day = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
