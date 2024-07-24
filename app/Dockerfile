@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 # Install build dependencies
-RUN apt-get update && apt-get install -y build-essential cython
+RUN apt-get update && apt-get install -y build-essential && pip install cython
 
 # Set work directory
 WORKDIR /app
