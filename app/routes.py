@@ -1,11 +1,12 @@
 from flask import Blueprint, request, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import User, Task
+from app.models import User, Task, Performance
 from datetime import datetime, timedelta
 from app.schedule import populate, generate_study_plan, setSleep
 import random, requests, json
 from app import db
 from requests.exceptions import JSONDecodeError
+from sqlalchemy.exc import SQLAlchemyError
 from ml_model import optimize_study_plan
 
 bp = Blueprint('routes', __name__)
@@ -172,20 +173,38 @@ def add_classes(user_id):
     db.session.commit()
     return jsonify({'message': 'Classes added!'})
 
+@bp.route('/get_completed_tasks/<int:user_id>', methods=['GET'])
+def get_completed_tasks(user_id):
+    completed_tasks = Performance.query.filter_by(user_id=user_id).all()
+    completed_task_ids = list(set([p.task_id for p in completed_tasks]))  # Use set to remove duplicates
+    return jsonify(completed_task_ids)
+
 @bp.route('/schedule/<int:user_id>/task/<int:task_id>/remove', methods=['DELETE'])
 def remove_task(user_id, task_id):
-    task = Task.query.get(task_id)
-    # print(task)
-    if not task:
-        return jsonify({'message': 'Task not found'}), 404
-    if task.children:
-        child_task = task.children
-        for child in child_task:
-            db.session.delete(child)
-    db.session.delete(task)
-    db.session.commit()
-    return jsonify({'message': 'Task and all related child tasks removed'})
+    try:
+        task = Task.query.filter_by(id=task_id, user_id=user_id).first()
+        if not task:
+            return jsonify({'message': 'Task not found or does not belong to the user'}), 404
 
+        # Remove related performance records
+        performances = Performance.query.filter_by(task_id=task_id).all()
+        for performance in performances:
+            db.session.delete(performance)
+
+        # Remove related child tasks
+        if task.children:
+            for child in task.children:
+                db.session.delete(child)
+
+        # Remove the main task
+        db.session.delete(task)
+        db.session.commit()
+        return jsonify({'message': 'Task and all related child tasks removed'})
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting task: {str(e)}")
+        return jsonify({'message': 'Error deleting task', 'error': str(e)}), 500
+    
 @bp.route('/schedule/<int:user_id>/task/<int:task_id>/update', methods=['PUT'])
 def update_task(user_id, task_id):
     data = request.get_json()
@@ -224,8 +243,7 @@ def create_study_plan(user_id, task_id):
     if not task:
         return jsonify({'message': 'Task not found'}), 404
     
-    best_plans = optimize_study_plan(user, task)
-    allStudySessions = generate_study_plan(user, task, best_plans)
+    allStudySessions = generate_study_plan(user, task)
     db.session.add_all(allStudySessions)
     db.session.commit()
 
@@ -269,8 +287,9 @@ def get_performance_tasks(user_id):
         {
             "id": task.id,
             "name": task.name,
-            "start": task.start_time.isoformat() if task.start_time else None,
-            "end": task.end_time.isoformat() if task.end_time else None
+            "date": task.date.isoformat(),
+            "start": datetime.combine(task.date, task.start_time).isoformat() if task.start_time else None,
+            "end": datetime.combine(task.date, task.end_time).isoformat() if task.end_time else None
         } 
         for task in tasks
     ]
@@ -283,7 +302,7 @@ def update_performance():
     performance = Performance(
         user_id=data['user_id'],
         task_id=data['task_id'],
-        performance_score=data['performance_score'],
+        performance_score=data.get('performance_score'),  # This will be None for study sessions
         study_score=data['study_score'],
         feeling=data['feeling'],
         study_duration=data['study_duration'],
@@ -292,11 +311,14 @@ def update_performance():
         time_of_day=data['time_of_day']
     )
     
-    db.session.add(performance)
-    db.session.commit()
-    
-    return jsonify({'message': 'Performance updated successfully!'}), 200
-
+    try:
+        db.session.add(performance)
+        db.session.commit()
+        return jsonify({'message': 'Performance updated successfully!'}), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating performance: {str(e)}")
+        return jsonify({'message': 'Error updating performance', 'error': str(e)}), 500
 
 # New route for fetching task hours
 @bp.route('/get_task_hours/<int:user_id>', methods=['GET'])
