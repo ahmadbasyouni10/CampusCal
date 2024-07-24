@@ -1,5 +1,3 @@
-// source: https://code.daypilot.org/27556/react-day-week-month-calendar
-
 import React, { useEffect, useRef, useState } from 'react';
 import { DayPilot, DayPilotCalendar, DayPilotMonth, DayPilotNavigator } from "@daypilot/daypilot-lite-react";
 import "./Calendar.css";
@@ -7,54 +5,54 @@ import axios from 'axios';
 
 const Calendar = ({ userId }) => {
 
-  const [view, setView] = useState("Week");
-  const [startDate, setStartDate] = useState(DayPilot.Date.today());
-  const [events, setEvents] = useState([]);
-  const [quote, setQuote] = useState([]);
+    const [view, setView] = useState("Week");
+    const [startDate, setStartDate] = useState(DayPilot.Date.today());
+    const [events, setEvents] = useState([]);
+    const [quote, setQuote] = useState([]);
 
-  const [dayView, setDayView] = useState();
-  const [weekView, setWeekView] = useState();
-  const [monthView, setMonthView] = useState();
+    const [dayView, setDayView] = useState();
+    const [weekView, setWeekView] = useState();
+    const [monthView, setMonthView] = useState();
 
   const url = process.env.REACT_APP_API_URL;
 
-  const onTimeRangeSelected = async (args) => {
-    try {
-        const dp = args.control;
-        const form = [
-            {
-            name: 'Event Name',
-            id: 'name',
-            type: 'text',
-            },
-            {
-                name: 'Priority Low/Medium/High',
-                id: 'priority',
-                type: 'text',
-            },
-            {
-            type: 'checkbox',
-            id: 'plan',
-            name: 'Would you like to create a study plan?',
-            }
-        ];
+    const onTimeRangeSelected = async (args) => {
+        try {
+            const dp = args.control;
+            const form = [
+                {
+                    name: 'Event Name',
+                    id: 'name',
+                    type: 'text',
+                },
+                {
+                    name: 'Priority Low/Medium/High',
+                    id: 'priority',
+                    type: 'text',
+                },
+                {
+                    type: 'checkbox',
+                    id: 'plan',
+                    name: 'Would you like to create a study plan?',
+                }
+            ];
 
-        const data = {
-            name: "Assessment",
-            priority: "Low",
-            plan: false
-        }
-        // modal_custom css file is in frontend/src/themes/modal_custom.css
-        const properties = {
-            theme: "modal_custom",
-            okText: "Submit",
-            cancelText: "Cancel"
-        }
-        const modal = await DayPilot.Modal.form(form, data, properties)
-        dp.clearSelection();
-        if (modal.canceled) {
-        return;
-        }
+            const data = {
+                name: "Assessment",
+                priority: "Low",
+                plan: false
+            }
+            // modal_custom css file is in frontend/src/themes/modal_custom.css
+            const properties = {
+                theme: "modal_custom",
+                okText: "Submit",
+                cancelText: "Cancel"
+            }
+            const modal = await DayPilot.Modal.form(form, data, properties)
+            dp.clearSelection();
+            if (modal.canceled) {
+                return;
+            }
 
         const e = {
         user_id: userId,
@@ -132,6 +130,49 @@ const Calendar = ({ userId }) => {
     }
   };
 
+  const [tasksWithColors, setTasksWithColors] = useState([]);
+
+    const daily = async () => {
+        try {
+            const response = await axios.get(`${url}/schedule/${userId}`);
+
+            const currentDate = new DayPilot.Date(startDate)
+
+            const priorityColorMap = {
+                "High": '#C13333',
+                "Medium": '#F1A80B',
+                "Low": '#0A600E'
+            };
+
+            const tasksWithColorsStr = response.data
+                .filter(task => {
+                    const taskDate = new DayPilot.Date(task.start);
+                    return taskDate.toString("M/d/yyyy") === currentDate.toString("M/d/yyyy") && task.id > 88;
+                })
+                .map((task) => {
+                    const color = priorityColorMap[task.priority] || 'rgba(173, 216, 230, 0.5)';
+                    const startTimeFormatted = new DayPilot.Date(task.start).toString("hh:mm tt");
+                    const endTimeFormatted = new DayPilot.Date(task.end).toString("hh:mm tt");
+
+                    console.log(task.start, task.end);
+                    return {
+                        task: task.text,
+                        priority: task.priority,
+                        color: color,
+                        start: startTimeFormatted,
+                        end: endTimeFormatted
+                    };
+                });
+
+            //debugging to make sure it sends the correct tasks
+            console.log("startDate:", startDate, "tasks:", tasksWithColorsStr);
+            setTasksWithColors(tasksWithColorsStr);
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
   const deleteTask = async (args) => {
     const modal = await DayPilot.Modal.confirm("Would you like to delete this task? This action cannot be undone. If a study plan was created for this task then all study sessions will also be removed",
         {theme: "modal_custom"}
@@ -204,16 +245,16 @@ const Calendar = ({ userId }) => {
     try {
 
 
-        // Use DayPilot.Date.today() to get the current date and format it in ISO 8601 format
-        const startDate = new DayPilot.Date(modal.result.start, "MM/dd/yyyy").toString("yyyy-MM-dd");
-        // Add 2 hours to the start time for the end time and format it
-        const endDate = new DayPilot.Date(modal.result.end, "MM/dd/yyyy").toString("yyyy-MM-dd");
+            // Use DayPilot.Date.today() to get the current date and format it in ISO 8601 format
+            const startDate = new DayPilot.Date(modal.result.start, "MM/dd/yyyy").toString("yyyy-MM-dd");
+            // Add 2 hours to the start time for the end time and format it
+            const endDate = new DayPilot.Date(modal.result.end, "MM/dd/yyyy").toString("yyyy-MM-dd");
 
-        const startDateTime = `${startDate}T${modal.result.startTime}:00`;
-        const endDateTime = `${endDate}T${modal.result.endTime}:00`;
+            const startDateTime = `${startDate}T${modal.result.startTime}:00`;
+            const endDateTime = `${endDate}T${modal.result.endTime}:00`;
 
-        // const startTime = new DayPilot.Date(startDateTime, "HH:mm").toString("HH:mm:ss");
-        // const endTime = new DayPilot.Date(endDateTime, "HH:mm").toString("HH:mm:ss");
+            // const startTime = new DayPilot.Date(startDateTime, "HH:mm").toString("HH:mm:ss");
+            // const endTime = new DayPilot.Date(endDateTime, "HH:mm").toString("HH:mm:ss");
 
         const newEvent = {
             name: modal.result.name,
@@ -250,35 +291,35 @@ const Calendar = ({ userId }) => {
   };
 
 
-  useEffect(() => {
-    getTasks();
-    fetchQuote();
+    useEffect(() => {
+        getTasks();
+        fetchQuote();
+        daily();
+    }, []);
 
-  }, []);
+    const handleCreateAssessment = async () => {
+        const modal = await DayPilot.Modal.prompt("Create a new assessment:", "Assessment Name");
+        if (modal.canceled) {
+            return;
+        }
 
-  const handleCreateAssessment = async () => {
-    const modal = await DayPilot.Modal.prompt("Create a new assessment:", "Assessment Name");
-    if (modal.canceled) {
-      return;
-    }
+        const now = new DayPilot.Date();
+        const start = new DayPilot.Date(DayPilot.Date.today()).toString("yyyy-MM-ddTHH:mm:ss");
+        const end = new DayPilot.Date(start).addHours(2).toString("yyyy-MM-ddTHH:mm:ss");
 
-    const now = new DayPilot.Date();
-    const start = new DayPilot.Date(DayPilot.Date.today()).toString("yyyy-MM-ddTHH:mm:ss");
-    const end = new DayPilot.Date(start).addHours(2).toString("yyyy-MM-ddTHH:mm:ss");
+        if (start < now.String("yyyy-MM-ddTHH:mm:ss")) {
+            alert("Cannot create an event in the past");
+            return;
+        }
 
-    if (start < now.String("yyyy-MM-ddTHH:mm:ss")) {
-      alert("Cannot create an event in the past");
-      return;
-    }
-  
-    const newEvent = {
-      start: start,
-      end: end,
-      text: modal.result
+        const newEvent = {
+            start: start,
+            end: end,
+            text: modal.result
+        };
+
+        setEvents(events => [...events, newEvent]);
     };
-  
-    setEvents(events => [...events, newEvent]);
-  };
 
   const handleEventChange = async (args) => {
     // console.log("Event moved: ", args.e.data);
@@ -289,7 +330,7 @@ const Calendar = ({ userId }) => {
         end: args.newEnd.toString("yyyy-MM-ddTHH:mm:ss")
     }
     try {
-        const response = await axios(`${url}:5000/schedule/${userId}/task/${args.e.data.id}/update`, {
+        const response = await axios(`${url}/schedule/${userId}/task/${args.e.data.id}/update`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -303,41 +344,65 @@ const Calendar = ({ userId }) => {
     }
   };
 
-  return (
-    <div className={"container"}>
-      
-      <div className={"content"}>
-        <div className={"toolbar"}>
-        <h1 className='titleee'>CampusCal</h1>
-          <div className={"toolbargroups"}>
-          <div className={"toolbar-group"}>
-            <button onClick={() => setView("Day")} className={view === "Day" ? "selected" : ""}>Day</button>
-            <button onClick={() => setView("Week")} className={view === "Week" ? "selected" : ""}>Week</button>
-            <button onClick={() => setView("Month")} className={view === "Month" ? "selected" : ""}>Month</button>
-          </div>
-          <button onClick={() => setStartDate(DayPilot.Date.today())} className={"standalone"}>Today</button>
-          <div className={"quotes"}>
-            {quote && (
-                <div className="quote-item">
-                    <p>{quote.quote}</p>
-                    <p>- {quote.author}</p>
-                </div>
-            )}
-            </div>
-        </div>
-      </div>
+    const onBeforeHeaderRender = (args) => {
+        args.header.html = args.column.start.toString("dddd");
+    };
 
-      <div className='top'>
-      <div className={"navigator"}>
-        <DayPilotNavigator
-          selectMode={view}
-          showMonths={1}
-          skipMonths={1}
-          onTimeRangeSelected={args => setStartDate(args.day)}
-          events={events}
-        />
-        <button onClick={createClass} className="create-class-btn">Create Class</button>
-      </div>
+    return (
+        <div className={"container"}>
+
+            <div className={"content"}>
+                <div className={"toolbar"}>
+                    <div className={"toolbargroups"}>
+                        <div className={"toolbar-group"}>
+                            <button onClick={() => setView("Day")} className={view === "Day" ? "selected" : ""}>Day</button>
+                            <button onClick={() => setView("Week")} className={view === "Week" ? "selected" : ""}>Week</button>
+                            <button onClick={() => setView("Month")} className={view === "Month" ? "selected" : ""}>Month</button>
+                        </div>
+                        <button onClick={() => setStartDate(DayPilot.Date.today())} className={"standalone"}>Today</button>
+                    </div>
+                    <h1 className='titleee'> CampusCal</h1>
+                    <span className="slogan">  - Optimize Learning</span>
+                    <div className={"quotes"}>
+                        {quote && (
+                            <div className="quote-item">
+                                <p>{quote.quote}</p>
+                                <p>- {quote.author}</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className='top'>
+                    <div className={"navigator"}>
+                        <DayPilotNavigator
+                            selectMode={view}
+                            showMonths={1}
+                            skipMonths={1}
+                            onTimeRangeSelected={args => setStartDate(args.day)}
+                            events={events}
+                        />
+                        <button onClick={createClass} className="create-class-btn">Create Class</button>
+                        <div className="planner">
+                            <h2 className='agendaTitle'>Today's Agenda</h2>
+                            <div className={"agenda"}>
+                                {tasksWithColors.length > 0 ? (
+                                    tasksWithColors.map((taskstr, index) => (
+                                        <div key={index}>
+                                            <div className="prior">
+                                                <span className="task-circle" style={{ backgroundColor: taskstr.color }}></span>
+                                                <div className='dates'>{taskstr.start} - {taskstr.end}</div>
+                                            </div>
+                                            <div className='task'>{taskstr.task}</div>
+                                            <br />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div> No plans for today! </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
 
         <DayPilotCalendar
           viewType={"Day"}
