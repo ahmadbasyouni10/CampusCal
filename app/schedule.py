@@ -98,7 +98,9 @@ def generate_study_plan(user, task):
 
     while today <= future:
         if study_day_counter % study_interval == 0:  # Check if it's a day to schedule study based on priority
-            freeTimes = getFreeTimes(user.id, today, preferred_study_time)
+            freeTimes = getFreeTimes(user.id, today, 'morning')
+            if preferred_study_time == "night":
+                freeTimes.reverse()
             for times in freeTimes:
                 length = (datetime.datetime.combine(datetime.date.min, times[1]) - datetime.datetime.combine(datetime.date.min, times[0])).seconds / 3600
                 if studyTime <= length:
