@@ -1,4 +1,3 @@
-# models.py
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_login import UserMixin
@@ -12,22 +11,40 @@ class User(db.Model, UserMixin):
     other_commitments = db.Column(db.Text)
     study_hours_per_day = db.Column(db.Integer, default=2)
     preferred_study_time = db.Column(db.String(20), default="morning")  # 'morning' or 'night'
+    tasks = db.relationship('Task', backref='user', lazy=True)
+    performances = db.relationship('Performance', backref='user', lazy=True)
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}')"
+        return f"User('{self.username}')"
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
-    task_type = db.Column(db.String(50), nullable=True)  # e.g., class, exam, activity
-    priority = db.Column(db.String(100), default="None")  # Priority LOW/MEDIUM/HIGH
+    task_type = db.Column(db.String(50), nullable=True)  # e.g., class, exam, activity, study
+    priority = db.Column(db.String(20), default="Medium")  # Priority LOW/MEDIUM/HIGH
     date = db.Column(db.Date, nullable=False)
-    performance = db.Column(db.Float, nullable=True)
     start_time = db.Column(db.Time, nullable=True)
     end_time = db.Column(db.Time, nullable=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=True)
-    children = db.relationship('Task')
+    children = db.relationship('Task', backref=db.backref('parent', remote_side=[id]))
+    performances = db.relationship('Performance', backref='task', lazy=True)
 
     def __repr__(self):
         return f"Task('{self.name}', '{self.date}')"
+
+class Performance(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
+    performance_score = db.Column(db.Float, nullable=False)
+    study_score = db.Column(db.Float, nullable=False)
+    feeling = db.Column(db.String(20), nullable=True)
+    study_duration = db.Column(db.Float, nullable=False)  # in hours
+    time_before_task = db.Column(db.Float, nullable=False)  # in days
+    day_of_week = db.Column(db.Integer, nullable=False)  # 0-6 for Monday-Sunday
+    time_of_day = db.Column(db.Float, nullable=False)  # 0-24 hour format
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"Performance(Task: '{self.task_id}', Score: '{self.performance_score}')"
