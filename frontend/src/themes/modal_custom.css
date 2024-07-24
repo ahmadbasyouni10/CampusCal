@@ -1,22 +1,23 @@
 /* Custom styling for the DayPilot modal form */
 .modal_custom_background {
-    opacity: 0.5;
-    background-color: rgb(0, 0, 0);
+    background-color: rgb(0, 0, 0, .5);
+    backdrop-filter: blur(5px);
+    position: fixed;
 }
 
 .modal_custom_main {
     border: 5px solid #ccc;
     border-radius: 10px;
     border-color: #2c3e50;
-    max-width: 35%;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+    max-width: 60%; /* Adjusted width */
+    display: grid; /* Use CSS Grid */
+    grid-template-columns: 1fr 1fr; /* Two columns of equal width */
     gap: 20px;
+    position: fixed;
 }
+
 .modal_custom_content {
     padding: 10px 0px;
-    
 }
 .modal_custom_inner {
     padding: 20px;
@@ -30,21 +31,17 @@
     margin-bottom: 5px; /* Ensures space between label and input/textarea */
 }
 
-.modal_custom_form_item_text, .modal_custom_form_item_time, .modal_custom_form_item_date, .modal_custom_form_item_checkbox {
-    padding: 10px;
+.modal_custom_form_item_text,
+.modal_custom_form_item_time,
+.modal_custom_form_item_date,
+.modal_custom_form_item_checkbox,
+.modal_custom_form_item_select {
+    padding: 8px;
     width: 100%;
     height: var(--input-height);
-    -webkit-padding-start: var(--input-padding);
-    padding-inline-start: var(--input-padding);
-    -webkit-padding-end: var(--input-padding);
-    padding-inline-end: var(--input-padding);
     border-radius: var(--input-border-radius);
     outline: 2px solid transparent;
     outline-offset: 2px;
-    position: relative;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    -ms-appearance: none;
     appearance: none;
     transition-property: var(--chakra-transition-property-common);
     transition-duration: var(--chakra-transition-duration-normal);
@@ -52,7 +49,7 @@
     --input-padding: var(--chakra-space-4);
     --input-border-radius: var(--chakra-radii-md);
     --input-height: var(--chakra-sizes-10);
-    margin-bottom: 5px; /* Adds space below each input/textarea */
+    margin-bottom: 5px;
 }
 
 .modal_custom_form_item_time_list {
@@ -95,6 +92,6 @@
     transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
-.modal_custom_ok:hover, .modal_custom_cancel:hover{
+.modal_custom_ok:hover, .modal_custom_cancel:hover {
     background-color: #34495e;
 }

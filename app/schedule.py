@@ -1,97 +1,70 @@
 import datetime
 import pandas as pd
 from collections import defaultdict
-from app.models import Task, User
-'''
-def populate(user_id):
-    # Query all tasks for the given user, ordered by start time
-    allTasks = Task.query.filter_by(user_id=user_id).order_by(Task.start_time).all()
-    
-    # Initialize a dictionary to hold tasks by date
-    response = defaultdict(list)
-    
-    # Populate the dictionary with tasks grouped by their date
-    for task in allTasks:
-        response[task.date].append((task.start_time, task.end_time, task.name, task.id))
-    
-    # Iterate over each date in the response dictionary
-    for key in response:
-        # Initialize currentTime to the start of the day
-        currentTime = datetime.time(0, 0, 0)
-        # Temporary list to hold time slots for the current date
-        temp = []
-        
-        # Iterate over each task for the current date
-        for i in range(len(response[key])):
-            curr = response[key][i]  # Current task
+from app.models import Task, User, Performance
+from ml_model import optimize_study_plan
 
-            # Append the current task to temp
-            temp.append(curr)
-                   
-        # Check if there is free time after the last task until the end of the day
-        
-        # Update the response dictionary with the processed time slots for the current date
-        response[key] = temp
-    
-    # Return the final response dictionary with all time slots for each date
-    return response
-    
-    Find all the tasks that correspond to the user's schedule
-    sort them by date and time
-    have a dict where the keys are dates and values are a list of time slots (open, task/event)
-    return the dict
-    
-    
-'''
 def populate(user_id):
     allTasks = Task.query.filter_by(user_id=user_id).order_by(Task.start_time).all()
+    completed_tasks = Performance.query.filter_by(user_id=user_id).with_entities(Performance.task_id).all()
+    completed_task_ids = [t.task_id for t in completed_tasks]
+    
     response = []
-    '''
-    {
-        id: 1,
-        text: "Event 1",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(11),
-      },
-    '''
     for task in allTasks:
         response.append({
             'id': task.id,
             'text': task.name,
             'start': datetime.datetime.combine(task.date, task.start_time).isoformat(),
             'end': datetime.datetime.combine(task.date, task.end_time).isoformat(),
-            'priority': task.priority
-
+            'priority': task.priority,
+            'completed': task.id in completed_task_ids
         })
     return response
 
-def getFreeTimes(user_id, date):
+def getFreeTimes(user_id, date, preferred_study_time):
     # Query all tasks for the given user and date, ordered by start time
-    tasks = Task.query.filter_by(user_id=user_id, date=date).order_by(Task.start_time).all()
+    if preferred_study_time == "morning":
+        tasks = Task.query.filter_by(user_id=user_id, date=date).order_by(Task.start_time).all()
+        # Initialize current_time to the start of the day (00:00:00)
+        current_time = datetime.time(0, 0, 0)
+    else:
+        tasks = Task.query.filter_by(user_id=user_id, date=date).order_by(Task.start_time.desc()).all()
+        # Initialize current_time to the end of the day (23:59:59)
+        current_time = datetime.time(23, 59, 59)
 
     # Initialize a list to hold free time slots
     response = []
 
-    # Initialize current_time to the start of the day (00:00:00)
-    current_time = datetime.time(0, 0, 0)
-
     # Iterate over each task for the given date
     for task in tasks:
         # Check if there is free time before the current task starts
-        if current_time < task.start_time:
-            # Append the free time slot to the response list
-            response.append((current_time, task.start_time))
-        
-        # Update current_time to be the end time of the current task
-        current_time = max(current_time, task.end_time)
+        if preferred_study_time == "morning":
+            if current_time < task.start_time:
+                # Append the free time slot to the response list
+                response.append((current_time, task.start_time))
+            # Update current_time to be the end time of the current task
+            current_time = max(current_time, task.end_time)
+        else: 
+            if task.end_time < current_time:
+                # Append the free time slot to the response list
+                response.append((task.end_time, current_time))
+            # Update current_time to be the start time of the current task
+            current_time = min(current_time, task.start_time)
 
     # Check if there is free time after the last task until the end of the day (23:59:59)
-    if current_time < datetime.time(23, 59, 59):
-        # Append the free time slot to the response list
-        response.append((current_time, datetime.time(23, 59, 59)))
+    if preferred_study_time == "morning":
+        if current_time < datetime.time(23, 59, 59):
+            # Append the free time slot to the response list
+            response.append((current_time, datetime.time(23, 59, 59)))
+    else:
+        if current_time > datetime.time(0, 0, 0):
+            # Append the free time slot to the response list
+            response.append((datetime.time(0, 0, 0), current_time))
 
     # Return the list of free time slots for the given date
     return response
+
+
 
 def generate_study_plan(user, task):
     today = datetime.datetime.now().date()
@@ -100,48 +73,51 @@ def generate_study_plan(user, task):
     if days <= 0:
         days = 1  # Minimum one day to handle short time frames
     
-    # Adjust the frequency of study based on priority
-    study_interval = 1  # Default to studying every day
-    if task.priority == "High":
+    # Adjust the frequency and duration of study based on priority
+    if task.priority.lower() == "high":
         study_interval = 1
-    elif task.priority == "Medium":
-        study_interval = max(days // 5, 1)  # Study less frequently for medium priority
-    elif task.priority == "Low":
-        study_interval = max(days // 3, 1)  # Study even less frequently for low priority
-
-    totalStudy = user.study_hours_per_day * (days // study_interval)
-    studyTime = user.study_hours_per_day
+        study_duration = 2  # 2 hours for high priority
+    elif task.priority.lower() == "medium":
+        study_interval = 2
+        study_duration = 1.5  # 1.5 hours for medium priority
+    else:  # Low priority
+        study_interval = 3
+        study_duration = 1  # 1 hour for low priority
 
     studySessions = []
-    study_day_counter = 0  # Counter to track when to schedule the next study session based on priority
+    preferred_study_time = user.preferred_study_time.lower()
 
-    while today <= future:
-        if study_day_counter % study_interval == 0:  # Check if it's a day to schedule study based on priority
-            freeTimes = getFreeTimes(user.id, today)
-            for times in freeTimes:
-                length = (datetime.datetime.combine(datetime.date.min, times[1]) - datetime.datetime.combine(datetime.date.min, times[0])).seconds / 3600
-                if studyTime <= length:
-                    totalStudy -= studyTime
-                    start_time = times[0]
-                    end_time = (datetime.datetime.combine(datetime.date.min, times[0]) + datetime.timedelta(hours=studyTime)).time()
+    for day in range(days):
+        if day % study_interval == 0:  # Check if it's a day to schedule study based on priority
+            study_date = today + datetime.timedelta(days=day)
+            freeTimes = getFreeTimes(user.id, study_date, preferred_study_time)
+            
+            for start_time, end_time in freeTimes:
+                slot_duration = (datetime.datetime.combine(datetime.date.min, end_time) - 
+                                 datetime.datetime.combine(datetime.date.min, start_time)).seconds / 3600
+                
+                if slot_duration >= study_duration:
+                    if preferred_study_time == "morning":
+                        session_start = start_time
+                        session_end = (datetime.datetime.combine(datetime.date.min, start_time) + 
+                                       datetime.timedelta(hours=study_duration)).time()
+                    else:
+                        session_end = end_time
+                        session_start = (datetime.datetime.combine(datetime.date.min, end_time) - 
+                                         datetime.timedelta(hours=study_duration)).time()
+                    
                     study = Task(
                         user_id=user.id, 
                         name="Study for " + task.name, 
                         task_type="Study", 
                         priority=task.priority,
-                        date=today, 
-                        start_time=start_time, 
-                        end_time=end_time,
+                        date=study_date, 
+                        start_time=session_start, 
+                        end_time=session_end,
                         parent_id=task.id
                     )
                     studySessions.append(study)
                     break  # Break after scheduling a study session for the day
-
-        today += datetime.timedelta(days=1)
-        study_day_counter += 1
-        remaining_days = max((future - today).days, 1)  # Ensure at least one day
-        if remaining_days < days:  # Adjust study time if we're closer to the task date
-            studyTime = totalStudy / remaining_days
 
     return studySessions
 

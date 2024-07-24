@@ -10,32 +10,39 @@ body {
 /* Container */
 .container {
     display: flex;
+    padding: 15px;
     flex-direction: column;
-    padding: 20px;
     border-radius: 10px;
-    background-color: #f0f0f5;
+    background-color: #fafeff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 20px;
+    margin: 35px 10px 10px;
 }
 
 /* Toolbar */
 .toolbar {
     display: flex;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     align-items: center;
     justify-content: center;
     position: relative;
 }
 
 .toolbar .titleee {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     font-size: 2.5rem;
     font-weight: bold;
     color: #2A2D44;
-    margin: 0;
+    margin-left: 5vh;
+    margin-right: 10px;
+}
+
+.slogan{
+    font-size: 1.8rem;
+    font-weight: normal;
+    color: #2A2D44;
+    margin-right: auto;
 }
 
 .toolbar-group {
@@ -45,7 +52,6 @@ body {
 .toolbargroups {
     display: flex;
     align-items: center;
-    margin-right: auto;
 }
 
 .toolbar button {
@@ -81,14 +87,22 @@ body {
 .navigator {
     margin-right: 20px;
     background-color: #fff;
+    height: 68vh;
     padding: 10px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.navigator > * {
+    max-height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
 .navigator_default_main {
     background-color: transparent;
     border: 0;
+    position: unset !important;
 }
 
 .navigator_default_dayother {
@@ -105,32 +119,100 @@ body {
 .navigator_default_title, .navigator_default_titleright, .navigator_default_titleleft {
     background-color: transparent;
     font-family: "Google Sans", Roboto, Arial, sans-serif;
-    color: #2A2D44;
+    color: #2c3e51;
     border: 0;
     font-weight: bold;
     font-size: 18px;
 }
 
+/* Agenda */
+.planner{
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.agendaTitle{
+    display: flex;
+    justify-content: center;
+    font-size: 1.1em;
+    font-weight: bolder;
+    margin: 10px 10px 10px 10px;
+    color: #E07A5F;
+}
+
+.agenda{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    height: 25vh;
+    max-height: 25vh;
+}
+
+.dates{
+    font-size: .9em;
+    color: #574641;
+}
+
+.task{
+    font-size: .9em;
+    font-weight: bold;
+    margin-left: 30px;
+}
+
+.task-circle {
+    display: flex;
+    height: 10px; 
+    width: 10px; 
+    border-radius: 50%; 
+    margin-right: 5%; 
+    background-color: rgba(173, 216, 230, 0.5);
+}
+
+.prior{
+    display: flex;
+    flex-direction: row;
+    margin-left: 10px;
+    align-items: center;
+}
+
 /* Calendar */
+.calendar_default_main > div{
+    overflow: scroll;
+}
+
+.calendar_default_main{
+    height: 570px !important;
+    background: rgb(255, 255, 255);
+    border: 0px solid rgb(192, 192, 192);
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
 .calendar_default_cell_inner {
     background: transparent;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #f9f9f9;
     border-radius: 5px;
     padding: 5px;
 }
 
 .calendar_default_rowheader_inner, .calendar_default_colheader_inner {
-    background-color: #2A2D44;
-    color: #fff;
-    border-radius: 5px;
+    background-color: transparent;
+    color: #2c3e51;
+    border-color: transparent;
+    border-radius: 10px;
     padding: 5px;
     font-size: 14px;
     font-weight: bold;
 }
 
 .calendar_default_corner_inner {
-    background-color: #2A2D44;
-    color: #fff;
+    background-color: transparent;
+    color: transparent;
+    border-color: transparent;
     border-radius: 5px;
     padding: 5px;
     font-size: 14px;
@@ -139,131 +221,95 @@ body {
 
 .calendar_default_monthheader_inner {
     background-color: #2A2D44;
-    color: #fff;
+    color: transparent;
     border-radius: 5px;
     padding: 5px;
     font-size: 14px;
     font-weight: bold;
 }
 
+.calendar_default_cell_business .calendar_default_cell_inner {
+    background: transparent;
+}
+
 /* Events */
 body .calendar_default_event_inner, body .month_default_event_inner {
-    background: #a3c9f1;
-    color: #000;
+    background: rgba(163, 201, 241, .7);
+    color: #000000;
     font-size: 12pt;
+    opacity: .7;
     padding: 5px;
-    opacity: 0.8;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    white-space: nowrap;
+    white-space: normal;
+    text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 /* Priority Colors */
+/* pretty sure this doesn't do anything bc its assigned in getTasks*/
 .calendar_default_event_inner[data-priority="High"] {
-    background-color: #ff6b6b;
+    background-color: #C13333;
 }
 
 .calendar_default_event_inner[data-priority="Medium"] {
-    background-color: #f0a500;
+    background: #F1A80B;
 }
 
 .calendar_default_event_inner[data-priority="Low"] {
-    background-color: #4caf50;
+    background-color: #0A600E;
 }
 
-/* Modal */
-.chakra-modal__header {
-    flex: 0;
-    padding: var(--chakra-space-6);
-    font-size: var(--chakra-fontSizes-xl);
-    font-weight: var(--chakra-fontWeights-semibold);
-    background-color: #E07A5F;
-    color: var(--chakra-colors-white);
-    border-radius: 10px 10px 0 0;
+.calendar_default_event_inner[data-priority="blue"] {
+    background-color: #63ace5;
 }
 
-.chakra-modal__content {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    width: 100%;
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-    border-radius: var(--chakra-radii-md);
-    color: inherit;
-    margin: auto;
-    z-index: var(--chakra-zIndices-modal);
-    background: var(--modal-bg);
-    box-shadow: var(--modal-shadow);
-    max-width: var(--chakra-sizes-md);
+.calendar_default_event_inner[data-priority="purple"] {
+    background-color: #b48ead;
 }
 
-/* Input */
-.chakra-input {
-    width: 100%;
-    height: var(--input-height);
-    font-size: var(--input-font-size);
-    padding: var(--input-padding);
-    border-radius: var(--input-border-radius);
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-    transition: all 0.2s;
-    border: 1px solid #ccc;
-    background: #fff;
+.calendar_default_event_inner[data-priority="pink"] {
+    background-color: #ff9ff3;
 }
 
-.chakra-input:focus {
-    border-color: #E07A5F;
-    box-shadow: 0 0 5px rgba(224, 122, 95, 0.5);
+.calendar_default_event_inner[data-priority="yellow"] {
+    background-color: #ffcc29;
 }
 
-/* Button */
-.chakra-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    white-space: nowrap;
-    vertical-align: middle;
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-    line-height: 1.2;
-    border-radius: var(--chakra-radii-md);
-    font-weight: var(--chakra-fontWeights-semibold);
-    transition: all 0.2s;
-    height: var(--chakra-sizes-10);
-    min-width: var(--chakra-sizes-10);
-    font-size: var(--chakra-fontSizes-md);
-    padding: var(--chakra-space-4);
-    background: #E07A5F;
-    color: var(--chakra-colors-white);
-    margin-top: var(--chakra-space-4);
-    cursor: pointer;
-}
-
-.chakra-button:hover {
-    background-color: #d96548;
+.calendar_default_event_inner[data-priority="grey"] {
+    background-color: #bdc3c7;
 }
 
 /* Quotes */
 .quotes .quote-item {
     font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-size: 16px;
     align-self: flex-end;
     padding: 15px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    width: 300px;
+    width: 40vh;
     background-color: #fff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-left: 20px;
+    margin-right: 10px;
     position: relative;
 }
+
+/* to limit the size for the headers;
+    inside quotes quotesitem -- 
+    font-size: clamp(1em, 1.5vw, 1.2em); /* Adjusted for more dynamic resizing 
+    position: relative;
+    overflow: hidden;
+
+    inside quotes quoteitem p
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+*/
 
 .quotes .quote-item p {
     margin: 0;
@@ -288,7 +334,9 @@ body .calendar_default_event_inner, body .month_default_event_inner {
     margin-right: 10px;
     margin-bottom: 0px;
     padding-bottom: 0;
+    height: 60%;
 }
+
 /* Forms */
 .create-class-btn {
     display: block;  /* Ensure the button is a block-level element to fit the full width */
@@ -301,117 +349,3 @@ body .calendar_default_event_inner, body .month_default_event_inner {
     font-size: 16px;  /* Font size  */
     cursor: pointer;
 }
-
-/* Misc */
-.create {
-    margin-right: auto;
-    margin-left: 15px;
-    box-sizing: border-box;
-}
-
-.css-1kfu8nn {
-    border: 0;
-    box-shadow: 0 5px 7px rgba(0, 0, 0, 0.80) !important;
-    text-shadow: none !important;
-}
-
-.chakra-modal__header {
-    flex: 0;
-    padding-inline-start: var(--chakra-space-6);
-    padding-inline-end: var(--chakra-space-6);
-    padding-top: var(--chakra-space-4);
-    padding-bottom: var(--chakra-space-4);
-    font-size: var(--chakra-fontSizes-xl);
-    font-weight: var(--chakra-fontWeights-semibold);
-    background-color: #E07A5F;
-    color: var(--chakra-colors-white);
-}
-
-.chakra-modal__content {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    width: 100%;
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-    border-radius: var(--chakra-radii-md);
-    color: inherit;
-    margin-top: auto;
-    margin-bottom: auto;
-    margin-inline-start: auto;
-    margin-inline-end: auto;
-    z-index: var(--chakra-zIndices-modal);
-    background: var(--modal-bg);
-    box-shadow: var(--modal-shadow);
-    max-width: var(--chakra-sizes-md);
-}
-
-.chakra-form__label {
-    display: block;
-    text-align: start;
-    font-size: var(--chakra-fontSizes-md);
-    margin-inline-end: var(--chakra-space-3);
-    margin-bottom: var(--chakra-space-2);
-    font-weight: var(--chakra-fontWeights-medium);
-    transition-property: var(--chakra-transition-property-common);
-    transition-duration: var(--chakra-transition-duration-normal);
-    opacity: 1;
-}
-
-.chakra-input {
-    width: 100%;
-    height: var(--input-height);
-    font-size: var(--input-font-size);
-    padding-inline-start: var(--input-padding);
-    padding-inline-end: var(--input-padding);
-    border-radius: var(--input-border-radius);
-    min-width: 0px;
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-    position: relative;
-    appearance: none;
-    transition-property: var(--chakra-transition-property-common);
-    transition-duration: var(--chakra-transition-duration-normal);
-    border: 1px solid;
-    border-color: inherit;
-    background: inherit;
-}
-
-.chakra-stack {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    gap: 0.5rem;
-}
-
-.chakra-modal__body {
-    padding-inline-start: var(--chakra-space-6);
-    padding-inline-end: var(--chakra-space-6);
-    padding-top: var(--chakra-space-2);
-    padding-bottom: var(--chakra-space-2);
-    flex: 1;
-}
-
-.chakra-modal__close-btn {
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: var(--close-button-size);
-    height: var(--close-button-size);
-    border-radius: var(--chakra-radii-md);
-    transition-property: var(--chakra-transition-property-common);
-    transition-duration: var(--chakra-transition-duration-normal);
-    background: var(--close-button-bg);
-    font-size: var(--chakra-fontSizes-xs);
-    position: absolute;
-    top: var(--chakra-space-2);
-    right: var(--chakra-space-3);
-}
-
-.chakra-form__required-indicator {
-    margin-inline-start: var(--chakra-space-1);
-    color: var(--chakra-colors-red-500);
-}  
