@@ -124,26 +124,34 @@ const Calendar = ({ userId }) => {
         }
     };
 
-    // whenever getTasks is called needs to call agenda too (in case)
     const [tasksWithColors, setTasksWithColors] = useState([]);
 
-    const agenda = async () => {
+    const daily = async () => {
         try {
             const response = await axios.get(`${url}:8000/schedule/${userId}`);
-            console.log("Tasks from backend: ", response.data);
-    
+
+            const currentDate = new DayPilot.Date(startDate)
+
             const priorityColorMap = {
                 "High": '#C13333', // Soft Red
                 "Medium": '#F1A80B', // Gold
                 "Low": '#0A600E' // Soft Green
             };
-    
-            // Transform tasks into string representations including their colors
-           const tasksWithColorsStr = response.data.map((task) => {
-                const color = priorityColorMap[task.priority] || 'rgba(173, 216, 230, 0.5)';
-                return `Task: ${task.name}, Priority: ${task.priority}, Color: ${color}`;
-            });
 
+            const tasksWithColorsStr = response.data
+                .filter(task => {
+                    const taskDate = new DayPilot.Date(task.startTime); // Adjust this line based on your actual data structure
+                    return taskDate.toString("M/d/yyyy") === currentDate.toString("M/d/yyyy") && task.id > 88;
+                })
+                .map((task) => {
+                    const color = priorityColorMap[task.priority] || 'rgba(173, 216, 230, 0.5)';
+                    const startTimeFormatted = new DayPilot.Date(task.startTime).toString("hh:mm tt");
+                    const endTimeFormatted = new DayPilot.Date(task.endTime).toString("hh:mm tt");
+                    return `Task: ${task.text}, Priority: ${task.priority}, Color: ${color}, Start: ${startTimeFormatted}, End: ${endTimeFormatted}`;
+                });
+
+            //debugging to make sure it sends the correct tasks
+            console.log(tasksWithColorsStr);
             setTasksWithColors(tasksWithColorsStr);
 
         } catch (error) {
@@ -264,7 +272,7 @@ const Calendar = ({ userId }) => {
     useEffect(() => {
         getTasks();
         fetchQuote();
-        agenda();
+        daily();
     }, []);
 
     const handleCreateAssessment = async () => {
@@ -308,8 +316,8 @@ const Calendar = ({ userId }) => {
                         </div>
                         <button onClick={() => setStartDate(DayPilot.Date.today())} className={"standalone"}>Today</button>
                     </div>
-                    <h1 className='titleee'> CampusCal {' '}</h1>
-                    <span class="slogan">  - Optimize Learning</span>
+                    <h1 className='titleee'> CampusCal</h1>
+                    <span className="slogan">  - Optimize Learning</span>
                     <div className={"quotes"}>
                         {quote && (
                             <div className="quote-item">
@@ -317,7 +325,6 @@ const Calendar = ({ userId }) => {
                                 <p>- {quote.author}</p>
                             </div>
                         )}
-
                     </div>
                 </div>
 
@@ -331,10 +338,20 @@ const Calendar = ({ userId }) => {
                             events={events}
                         />
                         <button onClick={createClass} className="create-class-btn">Create Class</button>
-                        <div>
-                            {tasksWithColors.map((taskStr, index) => (
-                                <div key={index}>{taskStr}</div>
-                            ))}
+                        <div className="planner">
+                            <h2>Today's Agenda</h2>
+                            <div className={"agenda"}>
+                                {tasksWithColors.length > 0 ? (
+                                    tasksWithColors.map((taskstr, index) => (
+                                        <div key={index}>
+                                            <div>{taskstr.startTimeFormatted} - {taskstr.endTimeFormatted}</div>
+                                            <div><strong>{taskstr.name}</strong></div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div> No plans for today! </div>
+                                )}
+                            </div>
                         </div>
                     </div>
 
@@ -370,7 +387,7 @@ const Calendar = ({ userId }) => {
                     />
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 export default Calendar;
