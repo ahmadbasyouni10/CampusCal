@@ -1,5 +1,3 @@
-// source: https://code.daypilot.org/27556/react-day-week-month-calendar
-
 import React, { useEffect, useRef, useState } from 'react';
 import { DayPilot, DayPilotCalendar, DayPilotMonth, DayPilotNavigator } from "@daypilot/daypilot-lite-react";
 import "./Calendar.css";
