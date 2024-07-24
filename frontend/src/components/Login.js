@@ -6,11 +6,13 @@ const LoginForm = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const url = window.location.protocol +"//" + window.location.hostname;
+
+  const url = process.env.REACT_APP_API_URL;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${url}:8000/login`, { username, password }, {
+      const response = await axios.post(`${url}/login`, { username, password }, {
         headers: {
           'Content-Type': 'application/json',
         },

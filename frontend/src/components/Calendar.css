@@ -177,6 +177,26 @@ body .calendar_default_event_inner, body .month_default_event_inner {
     background-color: #4caf50;
 }
 
+.calendar_default_event_inner[data-priority="blue"] {
+    background-color: #63ace5;
+}
+
+.calendar_default_event_inner[data-priority="purple"] {
+    background-color: #b48ead;
+}
+
+.calendar_default_event_inner[data-priority="pink"] {
+    background-color: #ff9ff3;
+}
+
+.calendar_default_event_inner[data-priority="yellow"] {
+    background-color: #ffcc29;
+}
+
+.calendar_default_event_inner[data-priority="grey"] {
+    background-color: #bdc3c7;
+}
+
 /* Modal */
 .chakra-modal__header {
     flex: 0;

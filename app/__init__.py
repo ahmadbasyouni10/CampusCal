@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS  # Import CORS
 import os
@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 db = SQLAlchemy()
 load_dotenv()
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
     app.config['DEBUG'] = True 
 
     # Load environment variables

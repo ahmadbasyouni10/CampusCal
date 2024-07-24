@@ -1,84 +1,84 @@
 .performance-container {
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: center;
-  padding: 40px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: var(--chakra-radii-md);
-  background: #fff;
-}
-
-.pie-charts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Increased minimum width */
-  gap: 30px; /* Increased gap */
-  margin-bottom: 40px;
-}
-
-.pie-chart-container {
-  background: #f9f9f9;
-  padding: 20px;
-  border-radius: var(--chakra-radii-md);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  min-height: 400px; /* Increased minimum height */
-  display: flex;
-  flex-direction: column;
-}
-
-.pie-chart {
-  flex-grow: 1;
-  width: 100%;
-  height: 100%;
-  min-height: 350px; /* Increased minimum height for the chart */
-}
-
-.task-forms-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-}
-
-.task-item {
-  background: #f9f9f9;
-  padding: 20px;
-  border-radius: var(--chakra-radii-md);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.task-item p {
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.task-item label {
-  display: block;
-  margin: 10px 0;
-  font-size: var(--chakra-fontSizes-sm);
-  color: #333;
-}
-
-.task-item input,
-.task-item select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: var(--chakra-radii-sm);
-}
-
-.task-item button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: var(--chakra-radii-sm);
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.task-item button:hover {
-  background-color: #45a049;
-}
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: var(--chakra-radii-md);
+    background: #fff;
+  }
+  
+  .pie-charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Increased minimum width */
+    gap: 30px; /* Increased gap */
+    margin-bottom: 40px;
+  }
+  
+  .pie-chart-container {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: var(--chakra-radii-md);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    min-height: 400px; /* Increased minimum height */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .pie-chart {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    min-height: 350px; /* Increased minimum height for the chart */
+  }
+  
+  .task-forms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .task-item {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: var(--chakra-radii-md);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .task-item p {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .task-item label {
+    display: block;
+    margin: 10px 0;
+    font-size: var(--chakra-fontSizes-sm);
+    color: #333;
+  }
+  
+  .task-item input,
+  .task-item select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: var(--chakra-radii-sm);
+  }
+  
+  .task-item button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: var(--chakra-radii-sm);
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .task-item button:hover {
+    background-color: #45a049;
+  }

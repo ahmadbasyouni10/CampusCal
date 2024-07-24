@@ -9,7 +9,7 @@ const Performance = ({ userId }) => {
   const [taskRatings, setTaskRatings] = useState({});
   const [studyRatings, setStudyRatings] = useState({});
   const [feelings, setFeelings] = useState({});
-  const url = window.location.protocol + "//" + window.location.hostname;
+  const url = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchTasks();
@@ -17,7 +17,7 @@ const Performance = ({ userId }) => {
   
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`${url}:8000/get_performance_tasks/${userId}`);
+      const response = await axios.get(`${url}/get_performance_tasks/${userId}`);
       console.log("Fetched tasks:", response.data);
       setTasks(response.data);
     } catch (error) {
@@ -47,7 +47,7 @@ const Performance = ({ userId }) => {
     };
 
     try {
-      await axios.post(`${url}:8000/update_performance`, ratingData);
+      await axios.post(`${url}/update_performance`, ratingData);
       alert("Performance updated successfully!");
     } catch (error) {
       console.error("Error updating performance:", error);

@@ -16,7 +16,7 @@ const Calendar = ({ userId }) => {
   const [weekView, setWeekView] = useState();
   const [monthView, setMonthView] = useState();
 
-  const url = window.location.protocol +"//" + window.location.hostname;
+  const url = process.env.REACT_APP_API_URL;
 
   const onTimeRangeSelected = async (args) => {
     try {
@@ -65,7 +65,7 @@ const Calendar = ({ userId }) => {
         end: args.end,
         performance: null
         };
-        const response = await axios(`${url}:8000/add_assessment`, {
+        const response = await axios(`${url}/add_assessment`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ const Calendar = ({ userId }) => {
         console.log(response);
         if (modal.result.plan == true) {
             // /schedule/<int:user_id>/task/<int:task_id>/new_study_plan
-            const response2 = await axios.post(`${url}:8000/schedule/${userId}/task/${response.data.task_id}/new_study_plan`, {
+            const response2 = await axios.post(`${url}/schedule/${userId}/task/${response.data.task_id}/new_study_plan`, {
                 headers: {
                     'Content-Type': 'application/json',
                 }
@@ -91,7 +91,7 @@ const Calendar = ({ userId }) => {
 
   const fetchQuote = async () => {
     try {
-        const response = await axios.get(`${url}:8000/quotes`);
+        const response = await axios.get(`${url}/quotes`);
         setQuote(response.data)
     } catch (error) {
         console.error('Error fetching quotes:', error);
@@ -100,16 +100,21 @@ const Calendar = ({ userId }) => {
 
   const getTasks = async () => {
     try {
-      const response = await axios.get(`${url}:8000/schedule/${userId}`);
+      const response = await axios.get(`${url}/schedule/${userId}`);
       console.log("Tasks from backend: ", response.data);
       const tasksWithColors = response.data.map((task) => {
         // Debugging: Log the priority value received from the backend
         // console.log("Priority from backend:", task.priority);
         
         const priorityColorMap = {
-          "High": '#ff6b6b', // Soft Red
-          "Medium": '#f0a500', // Gold
-          "Low": '#4caf50' // Soft Green
+            "High": '#ff6b6b', // Soft Red
+            "Medium": '#f0a500', // Gold
+            "Low": '#4caf50', // Soft Green
+            "blue": '#63ace5',
+            "purple": '#b48ead',
+            "pink": '#ff9ff3',
+            "yellow": '#ffcc29',
+            "grey": '#bdc3c7'
         };
         // Ensure case-insensitive comparison and trim spaces
         const color = priorityColorMap[task.priority] || 'rgba(173, 216, 230, 0.5)';
@@ -135,7 +140,7 @@ const Calendar = ({ userId }) => {
     }
 
     try {
-        const response = await axios.delete(`${url}:8000/schedule/${userId}/task/${args.e.data.id}/remove`, {
+        const response = await axios.delete(`${url}/schedule/${userId}/task/${args.e.data.id}/remove`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -150,19 +155,26 @@ const Calendar = ({ userId }) => {
 
   const createClass = async () => {
     const form = [
-        {name: "Class Name", id: "name", required: true, type: 'text', cssClass: 'form-input'},
-        {name: "Starting Time", id: "startTime", required: true, timeFormat: "HH:mm",  type: 'time', cssClass: 'form-input'},
-        {name: "Ending Time", id: "endTime", required: true, timeFormat: "HH:mm",  type: 'time', cssClass: 'form-input'},
-        {name: "Start Date", id: "start", required: true, dateFormat: "MM/dd/yyyy", type: "date", cssClass: 'form-input'},
-        {name: "End Date", id: "end", required: true, dateFormat: "MM/dd/yyyy", type: "date", cssClass: 'form-input'},
-        {name: "Sunday", id: 'sunday', type: 'checkbox', cssClass: 'form-checkbox'},
-        {name: "Monday", id: 'monday', type: 'checkbox', cssClass: 'form-checkbox'},
-        {name: "Tuesday", id: 'tuesday', type: 'checkbox', cssClass: 'form-checkbox'},
-        {name: "Wednesday", id: 'wednesday', type: 'checkbox', cssClass: 'form-checkbox'},
-        {name: "Thursday", id: 'thursday', type: 'checkbox', cssClass: 'form-checkbox'},
-        {name: "Friday", id: 'friday', type: 'checkbox', cssClass: 'form-checkbox'},
-        {name: "Saturday", id: 'saturday', type: 'checkbox', cssClass: 'form-checkbox'},
-    ]
+        {name: "Class Name", id: "name", required: true, type: 'text', cssClass: 'form-input form-left'},
+        {name: "Starting Time", id: "startTime", required: true, timeFormat: "HH:mm", type: 'time', cssClass: 'form-input form-left'},
+        {name: "Ending Time", id: "endTime", required: true, timeFormat: "HH:mm", type: 'time', cssClass: 'form-input form-left'},
+        {name: "Start Date", id: "start", required: true, dateFormat: "MM/dd/yyyy", type: "date", cssClass: 'form-input form-left'},
+        {name: "End Date", id: "end", required: true, dateFormat: "MM/dd/yyyy", type: "date", cssClass: 'form-input form-left'},
+        {name: "Color", id: "color", type: 'select', cssClass: 'form-input form-left', options: [
+            {name: "Blue", id: "blue"},
+            {name: "Purple", id: "purple"},
+            {name: "Pink", id: "pink"},
+            {name: "Yellow", id: "yellow"},
+            {name: "Grey", id: "grey"},
+        ]},
+        {name: "Sunday", id: 'sunday', type: 'checkbox', cssClass: 'form-checkbox form-right'},
+        {name: "Monday", id: 'monday', type: 'checkbox', cssClass: 'form-checkbox form-right'},
+        {name: "Tuesday", id: 'tuesday', type: 'checkbox', cssClass: 'form-checkbox form-right'},
+        {name: "Wednesday", id: 'wednesday', type: 'checkbox', cssClass: 'form-checkbox form-right'},
+        {name: "Thursday", id: 'thursday', type: 'checkbox', cssClass: 'form-checkbox form-right'},
+        {name: "Friday", id: 'friday', type: 'checkbox', cssClass: 'form-checkbox form-right'},
+        {name: "Saturday", id: 'saturday', type: 'checkbox', cssClass: 'form-checkbox form-right'}
+    ];
     const data = {
         name: "Linear Algebra",
         startTime: "08:30",
@@ -175,7 +187,8 @@ const Calendar = ({ userId }) => {
         wednesday: true,
         thursday: false,
         friday: false,
-        saturday: false
+        saturday: false,
+        color: "blue"
     }
     const properties = {
         name: "Create Class",
@@ -216,11 +229,12 @@ const Calendar = ({ userId }) => {
                 thursday: modal.result.thursday,
                 friday: modal.result.friday,
                 saturday: modal.result.saturday
-            }
+            },
+            color: modal.result.color
         };
         console.log(newEvent)
 
-        const response = await axios(`http://localhost:8000/schedule/${userId}/classes`, {
+        const response = await axios(`${url}/schedule/${userId}/classes`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
