@@ -2,7 +2,7 @@
 
 College students involve themselves in a variety of activities, whether that be academic, extracurricular, or otherwise. Too many college students overwhelm their schedules without taking a look at how realistic their commitments are, which leads to stress and burnout. Through CampusCal, college students will be much less overwhelmed about their time management skills, which will lead to an increase in overall well-being and academic performance. 
 ## Live Site
-Visited our hosted website at https://campuscal-frontend.onrender.com/
+Visit our hosted website at https://campuscal-frontend.onrender.com/
 If the site is down, please send a message to acabrera04164@gmail.com
 ## Getting Started
 Clone this repository in your development folder.
