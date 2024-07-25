@@ -1,6 +1,9 @@
 # CampusCal
 
 College students involve themselves in a variety of activities, whether that be academic, extracurricular, or otherwise. Too many college students overwhelm their schedules without taking a look at how realistic their commitments are, which leads to stress and burnout. Through CampusCal, college students will be much less overwhelmed about their time management skills, which will lead to an increase in overall well-being and academic performance. 
+## Live Site
+Visited our hosted website at https://campuscal-frontend.onrender.com/
+If the site is down, please send a message to acabrera04164@gmail.com
 ## Getting Started
 Clone this repository in your development folder.
 ```bash
@@ -13,21 +16,18 @@ To start our frontend, from the root directory:
 
 ```bash
 cd frontend
-npm install react-scripts
+npm install
 npm start
 ```
 To start our backend, in a new terminal, from the root directory:
 
 ```bash
-cd app
+cd backend
 pip install virtualenv
-pip install Flask-SQLAlchemy
-pip install flask-cors
-pip install flask-login
-pip install pandas
-pip install requests
+pip install -r requirements.txt
 virtualenv test
 source test/bin/activate
+cd app
 flask --app __init__ run -p 8000 --reload
 ```
 ## How to run locally
