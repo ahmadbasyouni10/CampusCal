@@ -28,16 +28,24 @@ const Calendar = ({ userId }) => {
           name: "Event Name",
           id: "name",
           type: "text",
+          cssClass: "custom-input" // Add this line
         },
         {
           name: "Priority Low/Medium/High",
           id: "priority",
-          type: "text",
+          type: "select", // Changed to select for better UX
+          options: [
+            { name: "Low", id: "Low" },
+            { name: "Medium", id: "Medium" },
+            { name: "High", id: "High" }
+          ],
+          cssClass: "custom-select" // Add this line
         },
         {
           type: "checkbox",
           id: "plan",
           name: "Would you like to create a study plan?",
+          cssClass: "custom-checkbox" // Add this line
         },
       ];
 
@@ -319,11 +327,15 @@ const Calendar = ({ userId }) => {
       color: "blue",
     };
     const properties = {
-      name: "Create Class",
-      theme: "modal_custom",
-      okText: "Submit",
-      cancelText: "Cancel",
-    };
+        theme: "modal_custom",
+        okText: "Submit",
+        cancelText: "Cancel",
+        cssClassNames: {
+          form: "custom-form",
+          label: "custom-label",
+          button: "custom-button"
+        }
+      };
     const modal = await DayPilot.Modal.form(form, data, properties);
     if (modal.canceled) {
       return;
