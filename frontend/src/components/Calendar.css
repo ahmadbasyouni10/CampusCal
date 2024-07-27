@@ -176,12 +176,30 @@ body {
 body .calendar_default_event_inner,
 body .month_default_event_inner {
     color: #fff !important;
-    font-size: 12pt !important;
+    font-size: 14pt !important; /* Increased from 12pt */
     opacity: 0.9 !important;
     padding: 5px !important;
     border-radius: 5px !important;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15) !important;
     font-family: 'Poppins', sans-serif !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    height: 100% !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+}
+
+/* This ensures the text stays within the bounds of the event box */
+.calendar_default_event_inner div,
+.month_default_event_inner div {
+    width: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
 }
 
 /* Priority Colors */
