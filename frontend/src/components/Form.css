@@ -8,6 +8,9 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  background-color: #763568; /* Set background color to purple */
+  padding: 20px; /* Add padding to the container */
+  border-radius: 8px; /* Add border radius for rounded corners */
 }
 
 form {
