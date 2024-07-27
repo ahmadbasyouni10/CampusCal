@@ -12,16 +12,19 @@
 
 /* Navbar specific styles */
 header {
-  background-color: #2c3e50;
-  width: 100%;
+  background-color: #763568;
+  width: 95%;
   height: 60px;
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  border-radius: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 nav ul {
@@ -37,31 +40,32 @@ nav ul li {
 
 nav ul li a {
   display: block;
-  color: #ecf0f1;
+  color: #fff;
   text-align: center;
   padding: 14px 20px;
   text-decoration: none;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 nav ul li a:hover {
-  background-color: #34495e;
-  border-radius: 4px;
+  background-color: #a73147;
+  border-radius: 20px;
 }
 
 /* Main content styles */
 .App {
-    display: flex;
-    flex-direction: column;
-    height: 94vh;
-    overflow-y: auto;
-    background-color: #fafeff;
-    padding-top: 40px; /* Space for the fixed header */
+  display: flex;
+  flex-direction: column;
+  height: 94vh;
+  overflow-y: auto;
+  background-color: #a73147;
+  padding-top: 80px; /* Increased space for the fixed header */
 }
 
 .calendar-container {
-  height: calc(100vh - 80px); /* Adjusted to account for the header */
+  height: calc(100vh - 120px); /* Adjusted to account for the header */
   overflow-y: auto;
 }
 
