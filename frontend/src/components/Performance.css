@@ -87,15 +87,15 @@
 
 .pie-charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Increased from 300px to 400px */
+  gap: 30px; /* Increased from 20px to 30px for more space */
+  margin-bottom: 40px; /* Increased from 30px to 40px */
 }
 
 .pie-chart-container {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 15px;
-  padding: 15px;
+  padding: 20px; /* Increased from 15px to 20px */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -105,26 +105,27 @@
 }
 
 .pie-chart-container h3 {
-  font-size: 1.2rem;
-  margin-bottom: 15px;
+  font-size: 1.3rem; /* Increased from 1.2rem to 1.3rem */
+  margin-bottom: 20px; /* Increased from 15px to 20px */
   color: #f0d3da;
 }
 
 .pie-chart {
-  height: 250px;
+  height: 350px; /* Increased from 250px to 350px */
 }
 
 .feedback-forms-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Increased from 250px to 300px */
+  gap: 30px; /* Increased from 20px to 30px for more vertical space */
 }
 
 .feedback-form {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 15px;
-  padding: 20px;
+  padding: 25px; /* Increased from 20px to 25px */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 20px; /* Added margin-bottom for additional vertical space */
 }
 
 .feedback-form:hover {
